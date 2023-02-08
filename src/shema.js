@@ -153,7 +153,7 @@ const schema = {
           },
           dateCreated: { type: Number, default: () => new Date().getTime() },
           dateLastUpdated: { type: Number, default: () => new Date().getTime() },
-          internalRef: { type: String },
+          internalRef: { type: String, required: true },
           paymentId: { type: String },
           projectCode: { type: String, required: true },
           eventCode: { type: String },

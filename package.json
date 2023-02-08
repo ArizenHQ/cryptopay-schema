@@ -1,6 +1,6 @@
 {
   "name": "cryptopay-schema",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "main": "index.js",
   "type": "module",
   "repository": "git@github.com:ArizenHQ/cryptopay-schema.git",
