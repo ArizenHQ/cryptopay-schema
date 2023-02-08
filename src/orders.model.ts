@@ -11,7 +11,11 @@ let User: any;
 let Account: any;
 let Order: any;
 
-const init = async () => {
+export class Orders {
+  constructor() {
+    this.init()
+  }
+init = async () => {
   const secretsString: any = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
 
   Crypto = {
@@ -33,9 +37,8 @@ const init = async () => {
   Order = table.getModel("Order");
 };
 
-init();
 
-exports.insert = async (accountId, data) => {
+insert = async (accountId, data) => {
   try {
     const account = await Account.get({ id: data.accountId });
     table.setContext({ accountId: data.accountId });
@@ -50,11 +53,11 @@ exports.insert = async (accountId, data) => {
   }
 };
 
-exports.findById = async (id) => {
+findById = async (id) => {
   return Order.get({ id: id }, { index: "gs2", follow: true });
 };
 
-exports.findPublicById = async (id) => {
+findPublicById = async (id) => {
   let order = await Order.get({ id: id }, { index: "gs2", follow: true });
   
   
@@ -68,28 +71,28 @@ exports.findPublicById = async (id) => {
   return order;
 };
 
-exports.getById = async (id) => {
+getById = async (id) => {
   return Order.get({ id: id }, { index: "gs1", follow: true });
 };
 
-exports.list = async (accountId, query) => {
+list = async (accountId, query) => {
   let key = {};
   if (accountId) key = { pk: `account#${accountId}` };
   return Order.find(key,  { index: "gs1", follow: true }, query);
 };
 
-exports.patchById = async (id, data) => {
+patchById = async (id, data) => {
   let order = await Order.get({ id: id }, { index: "gs2", follow: true });
   table.setContext({ accountId: order.accountId });
   data.id = id;
   return Order.update(data);
 };
 
-exports.removeById = async (id) => {
+emoveById = async (id) => {
   let order = await Order.get({ id: id }, { index: "gs2", follow: true });
   if(!order) throw new Error(`Order not found`);
   return Order.remove({ sk: `order#${id}`, pk: `account#${order.accountId}` });
 };
 
-
-export default init
+}
+export default Orders

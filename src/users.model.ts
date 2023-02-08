@@ -11,59 +11,63 @@ let User: any;
 let Project: any;
 let Account: any;
 
-const init = async () => {
-  const secretsString: any = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
+export class Users {
+  constructor() {
+    this.init()
+  }
 
-  Crypto = {
-    primary: {
-      cipher: "aes-256-gcm",
-      password: secretsString.CryptoPrimaryPassword,
-    },
+  init = async () => {
+    const secretsString: any = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
+
+    Crypto = {
+      primary: {
+        cipher: "aes-256-gcm",
+        password: secretsString.CryptoPrimaryPassword,
+      },
+    };
+
+    table = new Table({
+      client: client,
+      schema: Schema,
+      partial: false,
+      crypto: Crypto,
+      name: "CryptoPay-Accounts",
+    });
+    User = table.getModel("User");
+    Project = table.getModel("Project");
+    Account = table.getModel("Account");
   };
 
-  table = new Table({
-    client: client,
-    schema: Schema,
-    partial: false,
-    crypto: Crypto,
-    name: "CryptoPay-Accounts",
-  });
-  User = table.getModel("User");
-  Project = table.getModel("Project");
-  Account = table.getModel("Account");
-};
+  insert = async (data) => {
+    table.setContext({ accountId: data.accountId });
+    return User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel });
+  };
 
-init();
+  findById = async (id) => {
+    return User.get({ id: id }, { index: "gs4", follow: true });
+  };
 
-exports.insert = async (data) => {
-  table.setContext({ accountId: data.accountId });
-  return User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel });
-};
+  findByApiKey = async (apiKey) => {
+    return User.find({ apiKey: apiKey }, { index: "gs1", follow: true });
+  };
 
-exports.findById = async (id) => {
-  return User.get({ id: id }, { index: "gs4", follow: true });
-};
+  getByEmail = async (email) => {
+    return User.get({ email: email });
+  };
 
-exports.findByApiKey = async (apiKey) => {
-  return User.find({ apiKey: apiKey }, { index: "gs1", follow: true });
-};
+  findByEmail = async (email) => {
+    return User.find({ email: email }, { index: "gs1", follow: true });
+  };
 
-exports.getByEmail = async (email) => {
-  return User.get({ email: email });
-};
+  list = async (accountId, query) => {
+    let key = {};
+    if (accountId) key = { pk: `account#${accountId}` };
+    return User.find(key, { index: "gs1", follow: true }, query);
+  };
 
-exports.findByEmail = async (email) => {
-  return User.find({ email: email }, { index: "gs1", follow: true });
-};
+  removeById = async (id) => {
+    return User.remove({ id: id }, { index: "gs4", follow: true });
+  };
+}
 
-exports.list = async (accountId, query) => {
-  let key = {};
-  if (accountId) key = { pk: `account#${accountId}` };
-  return User.find(key,  { index: "gs1", follow: true }, query);
-};
-
-exports.removeById = async (id) => {
-  return User.remove({ id: id }, { index: "gs4", follow: true });
-};
-
-export default init
+export default Users

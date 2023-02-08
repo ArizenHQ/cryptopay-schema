@@ -12,7 +12,11 @@ let User: any;
 let Project: any;
 let Account: any;
 
-const init = async () => {
+export class Projects {
+  constructor() {
+    this.init()
+  }
+init = async () => {
   const secretsString: any = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
 
   Crypto = {
@@ -34,9 +38,8 @@ const init = async () => {
   Account = table.getModel("Account");
 };
 
-init();
 
-exports.insert = async (data) => {
+insert = async (data) => {
   try {
     const account = await Account.get({ id: data.accountId });
     table.setContext({ accountId: data.accountId });
@@ -49,7 +52,7 @@ exports.insert = async (data) => {
       status: data.status,
       parameters: data.parameters,
     }).then(async (project) => {
-      createApiKey({accountName: account.name, project: project});
+      this.createApiKey({accountName: account.name, project: project});
       return project;
     })
   } catch (error) {
@@ -57,11 +60,11 @@ exports.insert = async (data) => {
   }
 };
 
-exports.findById = async (id) => {
+findById = async (id) => {
   return Project.get({ id: id }, { index: "gs2", follow: true });
 };
 
-exports.findPublicById = async (id) => {
+findPublicById = async (id) => {
   let project = await Project.get({ id: id }, { index: "gs2", follow: true });
   delete project.hmacPassword;
   delete project.apiKey;
@@ -73,35 +76,35 @@ exports.findPublicById = async (id) => {
   return project;
 };
 
-exports.findByApiKey = async (apiKey) => {
+findByApiKey = async (apiKey) => {
   return Project.get({ apiKey: apiKey }, { index: "gs3", follow: true });
 };
-exports.getById = async (id) => {
+getById = async (id) => {
   return Project.get({ id: id }, { index: "gs1", follow: true });
 };
 
-exports.list = async (accountId, query) => {
+list = async (accountId, query) => {
   let key = {};
   if (accountId) key = { pk: `account#${accountId}` };
   return Project.find(key,  { index: "gs1", follow: true }, query);
 };
 
-exports.patchById = async (id, data) => {
+patchById = async (id, data) => {
   let project = await Project.get({ id: id }, { index: "gs2", follow: true });
   table.setContext({ accountId: project.accountId });
   data.id = id;
-  createApiKey(data);
+  this.createApiKey(data);
   return Project.update(data);
 };
 
-exports.removeById = async (id) => {
+removeById = async (id) => {
   let project = await Project.get({ id: id }, { index: "gs2", follow: true });
   if(!project) throw new Error(`Project not found`);
   if(project.typeProject === "cryptoPayment") await removeApiKey(project.apiKeyId);
   return Project.remove({ sk: `project#${id}`, pk: `account#${project.accountId}` });
 };
 
-const createApiKey = async (obj) => {
+createApiKey = async (obj) => {
   if (obj.project.typeProject === "cryptoPayment") {
     await importApiKey(obj)
       .then(async (keyId: string) => {
@@ -118,5 +121,5 @@ const createApiKey = async (obj) => {
   }
 };
 
-
-export default init
+}
+export default Projects
