@@ -1,10 +1,9 @@
-const AWS = require("aws-sdk");
+import AWS from 'aws-sdk';
 
-module.exports = (secret="/cardpayment-service/adyen") => {
+const retrieveSecrets = (secret="/cardpayment-service/adyen") => {
 	//configure AWS SDK
 	const region = "eu-west-1";
 	const client = new AWS.SecretsManager({ region });
-
 	const SecretId = secret;
 	return new Promise((resolve, reject) => {
 		//retrieving secrets from secrets manager
@@ -17,3 +16,5 @@ module.exports = (secret="/cardpayment-service/adyen") => {
 		});
 	});
 };
+
+export default retrieveSecrets

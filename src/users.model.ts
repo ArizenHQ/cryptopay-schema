@@ -65,3 +65,5 @@ exports.list = async (accountId, query) => {
 exports.removeById = async (id) => {
   return User.remove({ id: id }, { index: "gs4", follow: true });
 };
+
+export default init

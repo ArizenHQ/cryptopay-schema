@@ -6,7 +6,7 @@
  * 
  */
 
-const crypto = require("crypto");
+import crypto from 'crypto'
 
 const Match = {
   uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
@@ -18,6 +18,7 @@ const Match = {
   zip: /^\d{5}(?:[-\s]\d{4})?$/,
   phone: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/,
   url: /^((http|https):\/\/)?([a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,5})(:[0-9]{1,5})?(\/.*)?$/,
+  permissionLevel: /^(1|4|16|128|2048)$/
 };
 
 // url regex
@@ -28,7 +29,7 @@ const randomString = () => {
   return crypto.randomBytes(5).toString("hex");
 }
 
-const schema = {
+const Schema = {
   format: 'onetable:1.1.0',
   version: '0.0.1',
   indexes: {
@@ -58,7 +59,7 @@ const schema = {
       email: { type: String, required: true, validate: Match.email, crypt: true, unique: true },
       password: { type: String, required: true, crypt: true },
       status: { type: String, required: true, default: "active", enum: ["active", "inactive"] },
-      permissionLevel: { type: Number, enum: [1, 4, 16, 2048], required: true },
+      permissionLevel: { type: Number, required: true, validate: Match.permissionLevel},
       apiKey: { type: String, default: () => crypto.createHash("sha256").update(Math.random().toString()).digest("hex") },
 
       //  Search by user name or by type
@@ -68,7 +69,7 @@ const schema = {
       gs3sk: { type: String, value: 'user#${permissionLevel}#${id}' },
       gs4sk: { type: String, value: 'user#${name}#${id}#${email}#${status}#${permissionLevel}' },
     },
-
+//
     Project: {
       pk: { type: String, value: 'account#${accountId}' },
       sk: { type: String, value: 'project#${id}' },
@@ -182,10 +183,11 @@ const schema = {
 
       }
     }
-  },
+  } as const ,
   params: {
     isoDates: true,
     timestamps: true,
   },
-};
-module.exports = schema;
+} as const
+
+export default Schema

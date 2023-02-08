@@ -1,17 +1,18 @@
-const {Dynamo} = require('dynamodb-onetable/Dynamo')
-const {Model, Table} = require ( 'dynamodb-onetable' )
-const {DynamoDBClient} = require ( '@aws-sdk/client-dynamodb' )
-const client = new Dynamo({client: new DynamoDBClient({ region: "eu-west-1" })})
-const schema = require("./shema.js")
-const retrieveSecrets = require("./utils/retrieveSecrets");
-let Crypto;
-let table;
-let User;
-let Project;
-let Account;
+import {Dynamo} from 'dynamodb-onetable/Dynamo'
+import {Model, Table, OneSchema} from 'dynamodb-onetable' 
+import {DynamoDBClient} from '@aws-sdk/client-dynamodb' 
+const clientAccount = new Dynamo({client: new DynamoDBClient({ region: "eu-west-1" })})
+import Schema from './schema';
+import retrieveSecrets from "./utils/retrieveSecrets";
+
+let Crypto: {};
+let table: Table;
+let User: any;
+let Project: any;
+let Account: any;
 
 const init = async () => {
-  const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
+  const secretsString: any = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
 
   Crypto = {
     primary: {
@@ -21,9 +22,8 @@ const init = async () => {
   };
 
   table = new Table({
-    client: client,
-    name: "Accounts",
-    schema: schema,
+    client: clientAccount,
+    schema: Schema,
     partial: false,
     crypto: Crypto,
     name: "CryptoPay-Accounts",
@@ -66,3 +66,5 @@ exports.patchById = async (id, data) => {
 exports.removeById = async (id) => {
     return Account.remove({id:id})
 }
+
+export default init

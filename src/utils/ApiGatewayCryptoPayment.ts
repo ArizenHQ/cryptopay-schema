@@ -1,8 +1,9 @@
-const { APIGatewayClient, CreateApiKeyCommand, CreateUsagePlanKeyCommand, DeleteApiKeyCommand, GetApiKeyCommand } = require("@aws-sdk/client-api-gateway");
-const client = new APIGatewayClient({ region: "eu-west-1" });
-const retrieveSecrets = require("./retrieveSecrets");
+import { APIGatewayClient, CreateApiKeyCommand, CreateUsagePlanKeyCommand, DeleteApiKeyCommand, GetApiKeyCommand } from '@aws-sdk/client-api-gateway'
 
-exports.importApiKey = async (obj) => {
+const clientUtils = new APIGatewayClient({ region: "eu-west-1" });
+import retrieveSecrets from "./retrieveSecrets";
+
+const importApiKey = async (obj: any) => {
     const params = {
         customerId: obj.project.accountId,
         enabled: true,
@@ -16,7 +17,7 @@ exports.importApiKey = async (obj) => {
   return new Promise(async (resolve, reject) => {
 
     try {
-        const data = await client.send(command);
+        const data = await clientUtils.send(command);
         resolve(data.id)
       } catch (error) {
         reject(error);
@@ -24,7 +25,7 @@ exports.importApiKey = async (obj) => {
   });
 };
 
-exports.removeApiKey = async (apiKeyId) => {
+const removeApiKey = async (apiKeyId: string) => {
     const params = {
         apiKey: apiKeyId
     }
@@ -33,7 +34,7 @@ exports.removeApiKey = async (apiKeyId) => {
   return new Promise(async (resolve, reject) => {
 
     try {
-        const data = await client.send(command);
+        const data = await clientUtils.send(command);
         resolve(data)
       } catch (error) {
         reject(error);
@@ -41,8 +42,8 @@ exports.removeApiKey = async (apiKeyId) => {
   });
 };
 
-exports.configureUsagePlanKey = async (keyId) => {
-    const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
+const configureUsagePlanKey = async (keyId: string) => {
+    const secretsString: any = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
     const inputUsagePlanKey = {
         keyId: keyId,
         keyType: "API_KEY",
@@ -53,7 +54,7 @@ exports.configureUsagePlanKey = async (keyId) => {
   return new Promise(async (resolve, reject) => {
 
     try {
-        const data = await client.send(command);
+        const data = await clientUtils.send(command);
         resolve(data.value)
 
       } catch (error) {
@@ -62,12 +63,13 @@ exports.configureUsagePlanKey = async (keyId) => {
   });
 };
 
-exports.getKeyRoute = async (apiKey) => {
+const getKeyRoute = async (apiKey: string) => {
     return new Promise((resolve, reject) => {});
 }
 
 
-exports.getApiKeyId = async (apiKey) => {
+const getApiKeyId = async (apiKey: string) => {
   const command = new GetApiKeyCommand({apiKey: apiKey});
     return new Promise((resolve, reject) => {});
 }
+export {getApiKeyId, getKeyRoute, configureUsagePlanKey, removeApiKey, importApiKey} 

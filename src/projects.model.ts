@@ -1,10 +1,10 @@
-const { Dynamo } = require("dynamodb-onetable/Dynamo");
-const { Model, Table } = require("dynamodb-onetable");
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+import { Dynamo } from "dynamodb-onetable/Dynamo";
+import { Model, Table } from "dynamodb-onetable";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
-const schema = require("./shema.js");
-const { importApiKey, configureUsagePlanKey, removeApiKey } = require("./utils/ApiGatewayCryptoPayment.js");
-const retrieveSecrets = require("./utils/retrieveSecrets");
+import Schema from "./schema.js";
+import {importApiKey, removeApiKey, configureUsagePlanKey}  from "./utils/ApiGatewayCryptoPayment.js";
+import retrieveSecrets from "./utils/retrieveSecrets";
 
 let Crypto;
 let table;
@@ -25,7 +25,7 @@ const init = async () => {
   table = new Table({
     client: client,
     name: "Accounts",
-    schema: schema,
+    schema: Schema,
     partial: false,
     crypto: Crypto,
     name: "CryptoPay-Accounts",
@@ -118,3 +118,6 @@ const createApiKey = async (obj) => {
       });
   }
 };
+
+
+export default init
