@@ -9,48 +9,52 @@ let table;
 let User;
 let Project;
 let Account;
-const init = async () => {
-    const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
-    Crypto = {
-        primary: {
-            cipher: "aes-256-gcm",
-            password: secretsString.CryptoPrimaryPassword,
-        },
+export class Accounts {
+    constructor() {
+        this.init();
+    }
+    insert = async (data) => {
+        return Account.create({ name: data.name });
     };
-    table = new Table({
-        client: clientAccount,
-        schema: Schema,
-        partial: false,
-        crypto: Crypto,
-        name: "CryptoPay-Accounts",
-    });
-    User = table.getModel("User");
-    Project = table.getModel("Project");
-    Account = table.getModel("Account");
-};
-init();
-exports.insert = async (data) => {
-    return Account.create({ name: data.name });
-};
-exports.findById = async (id) => {
-    return Account.get({ pk: `account#${id}` });
-};
-exports.getAccount = async (id) => {
-    return Account.get({ pk: `account#${id}` });
-};
-exports.getFullAccount = async (id) => {
-    table.setContext({ id: id });
-    return table.fetch(['Account', 'User', 'Project'], { pk: `account#${id}` });
-};
-exports.list = async (query) => {
-    return Account.scan({}, query);
-};
-exports.patchById = async (id, data) => {
-    let account = Account.find({ id: id });
-    return account.update(data);
-};
-exports.removeById = async (id) => {
-    return Account.remove({ id: id });
-};
-export default init;
+    findById = async (id) => {
+        return Account.get({ pk: `account#${id}` });
+    };
+    getAccount = async (id) => {
+        return Account.get({ pk: `account#${id}` });
+    };
+    getFullAccount = async (id) => {
+        table.setContext({ id: id });
+        return table.fetch(['Account', 'User', 'Project'], { pk: `account#${id}` });
+    };
+    list = async (query) => {
+        return Account.scan({}, query);
+    };
+    patchById = async (id, data) => {
+        let account = Account.find({ id: id });
+        return account.update(data);
+    };
+    removeById = async (id) => {
+        return Account.remove({ id: id });
+    };
+    init = async () => {
+        const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
+        Crypto = {
+            primary: {
+                cipher: "aes-256-gcm",
+                password: secretsString.CryptoPrimaryPassword,
+            },
+        };
+        table = new Table({
+            client: clientAccount,
+            schema: Schema,
+            partial: false,
+            crypto: Crypto,
+            name: "CryptoPay-Accounts",
+        });
+        User = table.getModel("User");
+        Project = table.getModel("Project");
+        Account = table.getModel("Account");
+    };
+}
+export default Accounts;
 //# sourceMappingURL=accounts.model.js.map
