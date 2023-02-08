@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "repository": "git@github.com:ArizenHQ/cryptopay-schema.git",
-  "author": "Alexandre Ouicher <aouicher@cobalt.fr>",
+  "author": "Alexandre Ouicher <alex@coinhouse.com>",
   "license": "MIT",
   "dependencies": {
     "crypto": "^1.0.1"
