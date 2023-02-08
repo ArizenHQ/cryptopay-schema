@@ -1,7 +1,8 @@
 {
   "name": "cryptopay-schema",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "index.js",
+  "type": "module",
   "repository": "git@github.com:ArizenHQ/cryptopay-schema.git",
   "author": "Alexandre Ouicher <aouicher@cobalt.fr>",
   "license": "MIT",
