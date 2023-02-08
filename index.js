@@ -177,7 +177,12 @@ const schema = {
           webhookUrl: { type: String, validate: Match.url },
         }
 
-      }
+      },
+      gs1pk: { type: String, value: 'order#' },
+      gs1sk: { type: String, value: 'order#${projectCode}#${id}' },
+      gs2sk: { type: String, value: 'user#${success}#${id}' },
+      gs3sk: { type: String, value: 'user#${eventCode}#${id}' },
+      gs4sk: { type: String, value: 'user#${projectCode}#${id}#${customerAddress}#${publicAddressDest}#${tx_hash}' },
     }
   },
   params: {
