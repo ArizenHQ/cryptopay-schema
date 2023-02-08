@@ -1,6 +1,6 @@
-const Accounts = require('./accounts.model');
-const Users = require('./users.model');
-const Projects = require('./projects.model');
+const Accounts = require('./src/accounts.model');
+const Users = require('./src/users.model');
+const Projects = require('./src/projects.model');
 
 
 const exports = module.exports = {}
