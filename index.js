@@ -20,9 +20,6 @@ const Match = {
   url: /^((http|https):\/\/)?([a-zA-Z0-9]+([\-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z]{2,5})(:[0-9]{1,5})?(\/.*)?$/,
 };
 
-// url regex
-
-
 // function to generate a random string with 10 characters
 const randomString = () => {
   return crypto.randomBytes(5).toString("hex");
