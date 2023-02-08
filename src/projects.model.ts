@@ -6,14 +6,14 @@ import Schema from "./schema.js";
 import {importApiKey, removeApiKey, configureUsagePlanKey}  from "./utils/ApiGatewayCryptoPayment.js";
 import retrieveSecrets from "./utils/retrieveSecrets";
 
-let Crypto;
-let table;
-let User;
-let Project;
-let Account;
+let Crypto: {};
+let table: Table;
+let User: any;
+let Project: any;
+let Account: any;
 
 const init = async () => {
-  const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
+  const secretsString: any = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
 
   Crypto = {
     primary: {
@@ -24,7 +24,6 @@ const init = async () => {
 
   table = new Table({
     client: client,
-    name: "Accounts",
     schema: Schema,
     partial: false,
     crypto: Crypto,
@@ -105,7 +104,7 @@ exports.removeById = async (id) => {
 const createApiKey = async (obj) => {
   if (obj.project.typeProject === "cryptoPayment") {
     await importApiKey(obj)
-      .then(async (keyId) => {
+      .then(async (keyId: string) => {
         await configureUsagePlanKey(keyId).catch((error) => {
           console.error(error);
           throw new Error(`Error during configure usage plan key ${error}`);

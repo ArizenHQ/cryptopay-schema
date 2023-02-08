@@ -20,7 +20,6 @@ const init = async () => {
     };
     table = new Table({
         client: client,
-        name: "Accounts",
         schema: Schema,
         partial: false,
         crypto: Crypto,

@@ -6,7 +6,9 @@ import Schema from './schema';
 import retrieveSecrets from "./utils/retrieveSecrets";
 let Crypto;
 let table;
+let User;
 let Account;
+let Order;
 const init = async () => {
     const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
     Crypto = {
@@ -17,7 +19,6 @@ const init = async () => {
     };
     table = new Table({
         client: client,
-        name: "Accounts",
         schema: Schema,
         partial: false,
         crypto: Crypto,

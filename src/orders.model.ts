@@ -5,12 +5,14 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
 
-let Crypto;
-let table;
-let Account;
+let Crypto: {};
+let table: Table;
+let User: any;
+let Account: any;
+let Order: any;
 
 const init = async () => {
-  const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
+  const secretsString: any = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
 
   Crypto = {
     primary: {
@@ -21,7 +23,6 @@ const init = async () => {
 
   table = new Table({
     client: client,
-    name: "Accounts",
     schema: Schema,
     partial: false,
     crypto: Crypto,
