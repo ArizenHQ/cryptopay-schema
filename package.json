@@ -1,12 +1,14 @@
 {
   "name": "cryptopay-schema",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "main": "index.js",
   "type": "module",
   "repository": "git@github.com:ArizenHQ/cryptopay-schema.git",
   "author": "Alexandre Ouicher <alex@coinhouse.com>",
   "license": "MIT",
   "dependencies": {
-    "crypto": "^1.0.1"
+    "aws-sdk": "^2.1311.0",
+    "crypto": "^1.0.1",
+    "dynamodb-onetable": "^2.5.1"
   }
 }
