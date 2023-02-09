@@ -96,7 +96,7 @@ var Orders = /** @class */ (function () {
         }); };
         this.scan = function (params, query) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Order.find(params, query)];
+                return [2 /*return*/, this.Order.scan(params, query)];
             });
         }); };
         this.getById = function (id) { return __awaiter(_this, void 0, void 0, function () {
@@ -126,7 +126,7 @@ var Orders = /** @class */ (function () {
                 }
             });
         }); };
-        this.emoveById = function (id) { return __awaiter(_this, void 0, void 0, function () {
+        this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             var order;
             return __generator(this, function (_b) {
                 switch (_b.label) {

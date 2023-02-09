@@ -77,7 +77,7 @@ export class Orders {
   };
   
   scan = async (params: any, query: any) => {
-    return this.Order.find(params, query)
+    return this.Order.scan(params, query)
   }
 
   getById = async (id: string) => {
@@ -97,7 +97,7 @@ export class Orders {
     return this.Order.update(data);
   };
 
-  emoveById = async (id: string) => {
+  removeById = async (id: string) => {
     let order = await this.Order.get({ id: id }, { index: "gs2", follow: true });
     if (!order) throw new Error(`Order not found`);
     return this.Order.remove({ sk: `order#${id}`, pk: `account#${order.accountId}` });

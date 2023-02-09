@@ -16,6 +16,6 @@ export declare class Orders {
     getById: (id: string) => Promise<any>;
     list: (accountId: string, query: any) => Promise<any>;
     patchById: (id: string, data: any) => Promise<any>;
-    emoveById: (id: string) => Promise<any>;
+    removeById: (id: string) => Promise<any>;
 }
 export default Orders;
