@@ -48,8 +48,9 @@ export class Orders {
     try {
       const account = await this.Account.get({ id: data.accountId });
       this.table.setContext({ accountId: data.accountId });
-
       data.accountId = accountId;
+
+      if(data.projectCode)data.codeProject = data.projectCode
 
       return this.Order.create(data).then(async (order: any) => {
         return order;
