@@ -41,7 +41,7 @@ var Dynamo_1 = require("dynamodb-onetable/Dynamo");
 var dynamodb_onetable_1 = require("dynamodb-onetable");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
-var schema_js_1 = require("./schema.js");
+var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var Users = /** @class */ (function () {
     function Users(secretsString) {
@@ -95,7 +95,7 @@ var Users = /** @class */ (function () {
         };
         this.table = new dynamodb_onetable_1.Table({
             client: client,
-            schema: schema_js_1.default,
+            schema: schema_1.default,
             partial: false,
             crypto: this.Crypto,
             name: "CryptoPay-Accounts",

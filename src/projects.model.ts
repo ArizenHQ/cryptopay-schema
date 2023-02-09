@@ -2,7 +2,7 @@ import { Dynamo } from "dynamodb-onetable/Dynamo";
 import { Model, Table } from "dynamodb-onetable";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
-import Schema from "./schema.js";
+import Schema from "./schema";
 import { importApiKey, removeApiKey, configureUsagePlanKey } from "./utils/ApiGatewayCryptoPayment.js";
 import retrieveSecrets from "./utils/retrieveSecrets";
 
