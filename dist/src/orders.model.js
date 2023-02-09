@@ -94,6 +94,11 @@ var Orders = /** @class */ (function () {
                 }
             });
         }); };
+        this.scan = function (params, query) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.Order.find(params, query)];
+            });
+        }); };
         this.getById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 return [2 /*return*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];

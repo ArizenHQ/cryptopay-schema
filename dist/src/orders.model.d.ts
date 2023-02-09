@@ -12,6 +12,7 @@ export declare class Orders {
     insert: (accountId: string, data: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;
+    scan: (params: any, query: any) => Promise<any>;
     getById: (id: string) => Promise<any>;
     list: (accountId: string, query: any) => Promise<any>;
     patchById: (id: string, data: any) => Promise<any>;

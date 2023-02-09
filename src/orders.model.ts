@@ -75,6 +75,10 @@ export class Orders {
 
     return order;
   };
+  
+  scan = async (params: any, query: any) => {
+    return this.Order.find(params, query)
+  }
 
   getById = async (id: string) => {
     return this.Order.get({ id: id }, { index: "gs1", follow: true });
