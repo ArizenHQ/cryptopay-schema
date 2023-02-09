@@ -31,7 +31,7 @@ export class Projects {
       client: client,
       schema: Schema,
       partial: false,
-      crypto: Crypto,
+      crypto: this.Crypto,
       name: "CryptoPay-Accounts",
     });
 
