@@ -14,16 +14,16 @@ export class Projects {
   User: any;
   Project: any;
   Account: any;
-  constructor() {
+  Order: any;
+  secretsString: any;
+  private constructor(secretsString: any) {
 
-    const secretsString: any = async () => { 
-      return await retrieveSecrets("/coinhouse-solution/CardPayment-configuration") 
-    };
+    this.secretsString = secretsString
 
     this.Crypto = {
       primary: {
         cipher: "aes-256-gcm",
-        password: secretsString.CryptoPrimaryPassword,
+        password: this.secretsString.CryptoPrimaryPassword,
       },
     };
 
@@ -38,8 +38,13 @@ export class Projects {
     this.User = this.table.getModel("User");
     this.Project = this.table.getModel("Project");
     this.Account = this.table.getModel("Account");
+    this.Order = this.table.getModel("Order");
   }
 
+  static init = async () => {
+    const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration")
+    return new Projects(secretsString)
+  }
 
 
   insert = async (data: any) => {

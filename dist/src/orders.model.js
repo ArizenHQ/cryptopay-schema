@@ -43,77 +43,45 @@ var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
-var Crypto;
-var table;
-var User;
-var Account;
-var Order;
 var Orders = /** @class */ (function () {
-    function Orders() {
+    function Orders(secretsString) {
         var _this = this;
-        this.init = function () { return __awaiter(_this, void 0, void 0, function () {
-            var secretsString;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
-                    case 1:
-                        secretsString = _a.sent();
-                        Crypto = {
-                            primary: {
-                                cipher: "aes-256-gcm",
-                                password: secretsString.CryptoPrimaryPassword,
-                            },
-                        };
-                        table = new dynamodb_onetable_1.Table({
-                            client: client,
-                            schema: schema_1.default,
-                            partial: false,
-                            crypto: Crypto,
-                            name: "CryptoPay-Accounts",
-                        });
-                        User = table.getModel("User");
-                        Account = table.getModel("Account");
-                        Order = table.getModel("Order");
-                        return [2 /*return*/];
-                }
-            });
-        }); };
         this.insert = function (accountId, data) { return __awaiter(_this, void 0, void 0, function () {
             var account, error_1;
             var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, Account.get({ id: data.accountId })];
+                        _b.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.Account.get({ id: data.accountId })];
                     case 1:
-                        account = _a.sent();
-                        table.setContext({ accountId: data.accountId });
+                        account = _b.sent();
+                        this.table.setContext({ accountId: data.accountId });
                         data.accountId = accountId;
-                        return [2 /*return*/, Order.create(data).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
-                                return __generator(this, function (_a) {
+                        return [2 /*return*/, this.Order.create(data).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
+                                return __generator(this, function (_b) {
                                     return [2 /*return*/, order];
                                 });
                             }); })];
                     case 2:
-                        error_1 = _a.sent();
+                        error_1 = _b.sent();
                         throw new Error("Error during add new order ".concat(error_1));
                     case 3: return [2 /*return*/];
                 }
             });
         }); };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, Order.get({ id: id }, { index: "gs2", follow: true })];
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.Order.get({ id: id }, { index: "gs2", follow: true })];
             });
         }); };
         this.findPublicById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             var order;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, Order.get({ id: id }, { index: "gs2", follow: true })];
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs2", follow: true })];
                     case 1:
-                        order = _a.sent();
+                        order = _b.sent();
                         ///////delete project.hmacPassword;
                         ///////delete project.apiKey;
                         ///////delete project.accountId;
@@ -125,48 +93,79 @@ var Orders = /** @class */ (function () {
             });
         }); };
         this.getById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, Order.get({ id: id }, { index: "gs1", follow: true })];
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
             });
         }); };
         this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {
             var key;
-            return __generator(this, function (_a) {
+            return __generator(this, function (_b) {
                 key = {};
                 if (accountId)
                     key = { pk: "account#".concat(accountId) };
-                return [2 /*return*/, Order.find(key, { index: "gs1", follow: true }, query)];
+                return [2 /*return*/, this.Order.find(key, { index: "gs1", follow: true }, query)];
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
             var order;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, Order.get({ id: id }, { index: "gs2", follow: true })];
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs2", follow: true })];
                     case 1:
-                        order = _a.sent();
-                        table.setContext({ accountId: order.accountId });
+                        order = _b.sent();
+                        this.table.setContext({ accountId: order.accountId });
                         data.id = id;
-                        return [2 /*return*/, Order.update(data)];
+                        return [2 /*return*/, this.Order.update(data)];
                 }
             });
         }); };
         this.emoveById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             var order;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, Order.get({ id: id }, { index: "gs2", follow: true })];
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs2", follow: true })];
                     case 1:
-                        order = _a.sent();
+                        order = _b.sent();
                         if (!order)
                             throw new Error("Order not found");
-                        return [2 /*return*/, Order.remove({ sk: "order#".concat(id), pk: "account#".concat(order.accountId) })];
+                        return [2 /*return*/, this.Order.remove({ sk: "order#".concat(id), pk: "account#".concat(order.accountId) })];
                 }
             });
         }); };
-        this.init();
+        this.secretsString = secretsString;
+        this.Crypto = {
+            primary: {
+                cipher: "aes-256-gcm",
+                password: this.secretsString.CryptoPrimaryPassword,
+            },
+        };
+        this.table = new dynamodb_onetable_1.Table({
+            client: client,
+            schema: schema_1.default,
+            partial: false,
+            crypto: this.Crypto,
+            name: "CryptoPay-Accounts",
+        });
+        this.User = this.table.getModel("User");
+        this.Project = this.table.getModel("Project");
+        this.Account = this.table.getModel("Account");
+        this.Order = this.table.getModel("Order");
     }
+    var _a;
+    _a = Orders;
+    Orders.init = function () { return __awaiter(void 0, void 0, void 0, function () {
+        var secretsString;
+        return __generator(_a, function (_b) {
+            switch (_b.label) {
+                case 0: return [4 /*yield*/, (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
+                case 1:
+                    secretsString = _b.sent();
+                    return [2 /*return*/, new Orders(secretsString)];
+            }
+        });
+    }); };
     return Orders;
 }());
 exports.Orders = Orders;
 exports.default = Orders;
+//# sourceMappingURL=orders.model.js.map

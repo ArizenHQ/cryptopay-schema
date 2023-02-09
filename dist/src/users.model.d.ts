@@ -1,6 +1,14 @@
+import { Table } from "dynamodb-onetable";
 export declare class Users {
-    constructor();
-    init: () => Promise<void>;
+    Crypto: any;
+    table: Table;
+    User: any;
+    Project: any;
+    Account: any;
+    Order: any;
+    secretsString: any;
+    private constructor();
+    static init: () => Promise<Users>;
     insert: (data: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findByApiKey: (apiKey: string) => Promise<any>;

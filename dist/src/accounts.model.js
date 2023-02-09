@@ -40,85 +40,84 @@ exports.Accounts = void 0;
 var Dynamo_1 = require("dynamodb-onetable/Dynamo");
 var dynamodb_onetable_1 = require("dynamodb-onetable");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var clientAccount = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
+var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
-var Crypto;
-var table;
-var User;
-var Project;
-var Account;
 var Accounts = /** @class */ (function () {
-    function Accounts() {
+    function Accounts(secretsString) {
         var _this = this;
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, Account.create({ name: data.name })];
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.Account.create({ name: data.name })];
             });
         }); };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, Account.get({ pk: "account#".concat(id) })];
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.Account.get({ pk: "account#".concat(id) })];
             });
         }); };
         this.getAccount = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, Account.get({ pk: "account#".concat(id) })];
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.Account.get({ pk: "account#".concat(id) })];
             });
         }); };
         this.getFullAccount = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                table.setContext({ id: id });
-                return [2 /*return*/, table.fetch(['Account', 'User', 'Project'], { pk: "account#".concat(id) })];
+            return __generator(this, function (_b) {
+                this.table.setContext({ id: id });
+                return [2 /*return*/, this.table.fetch(['Account', 'User', 'Project'], { pk: "account#".concat(id) })];
             });
         }); };
         this.list = function (query) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, Account.scan({}, query)];
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.Account.scan({}, query)];
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
             var account;
-            return __generator(this, function (_a) {
-                account = Account.find({ id: id });
+            return __generator(this, function (_b) {
+                account = this.Account.find({ id: id });
                 return [2 /*return*/, account.update(data)];
             });
         }); };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, Account.remove({ id: id })];
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.Account.remove({ id: id })];
             });
         }); };
-        this.init = function () { return __awaiter(_this, void 0, void 0, function () {
-            var secretsString;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
-                    case 1:
-                        secretsString = _a.sent();
-                        Crypto = {
-                            primary: {
-                                cipher: "aes-256-gcm",
-                                password: secretsString.CryptoPrimaryPassword,
-                            },
-                        };
-                        table = new dynamodb_onetable_1.Table({
-                            client: clientAccount,
-                            schema: schema_1.default,
-                            partial: false,
-                            crypto: Crypto,
-                            name: "CryptoPay-Accounts",
-                        });
-                        User = table.getModel("User");
-                        Project = table.getModel("Project");
-                        Account = table.getModel("Account");
-                        return [2 /*return*/];
-                }
-            });
-        }); };
-        this.init();
+        this.secretsString = secretsString;
+        this.Crypto = {
+            primary: {
+                cipher: "aes-256-gcm",
+                password: this.secretsString.CryptoPrimaryPassword,
+            },
+        };
+        this.table = new dynamodb_onetable_1.Table({
+            client: client,
+            schema: schema_1.default,
+            partial: false,
+            crypto: this.Crypto,
+            name: "CryptoPay-Accounts",
+        });
+        this.User = this.table.getModel("User");
+        this.Project = this.table.getModel("Project");
+        this.Account = this.table.getModel("Account");
+        this.Order = this.table.getModel("Order");
     }
+    var _a;
+    _a = Accounts;
+    Accounts.init = function () { return __awaiter(void 0, void 0, void 0, function () {
+        var secretsString;
+        return __generator(_a, function (_b) {
+            switch (_b.label) {
+                case 0: return [4 /*yield*/, (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
+                case 1:
+                    secretsString = _b.sent();
+                    return [2 /*return*/, new Accounts(secretsString)];
+            }
+        });
+    }); };
     return Accounts;
 }());
 exports.Accounts = Accounts;
 exports.default = Accounts;
+//# sourceMappingURL=accounts.model.js.map

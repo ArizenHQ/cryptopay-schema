@@ -1,6 +1,14 @@
+import { Table } from "dynamodb-onetable";
 export declare class Orders {
-    constructor();
-    init: () => Promise<void>;
+    Crypto: any;
+    table: Table;
+    User: any;
+    Project: any;
+    Account: any;
+    Order: any;
+    secretsString: any;
+    private constructor();
+    static init: () => Promise<Orders>;
     insert: (accountId: string, data: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;

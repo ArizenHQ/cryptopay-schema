@@ -1,5 +1,14 @@
+import { Table } from 'dynamodb-onetable';
 export declare class Accounts {
-    constructor();
+    Crypto: any;
+    table: Table;
+    User: any;
+    Project: any;
+    Account: any;
+    Order: any;
+    secretsString: any;
+    private constructor();
+    static init: () => Promise<Accounts>;
     insert: (data: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     getAccount: (id: string) => Promise<any>;
@@ -7,6 +16,5 @@ export declare class Accounts {
     list: (query: any) => Promise<any>;
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;
-    init: () => Promise<void>;
 }
 export default Accounts;

@@ -5,7 +5,10 @@ export declare class Projects {
     User: any;
     Project: any;
     Account: any;
-    constructor();
+    Order: any;
+    secretsString: any;
+    private constructor();
+    static init: () => Promise<Projects>;
     insert: (data: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;

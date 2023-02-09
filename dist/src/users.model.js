@@ -43,84 +43,83 @@ var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
 var schema_js_1 = require("./schema.js");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
-var Crypto;
-var table;
-var User;
-var Project;
-var Account;
 var Users = /** @class */ (function () {
-    function Users() {
+    function Users(secretsString) {
         var _this = this;
-        this.init = function () { return __awaiter(_this, void 0, void 0, function () {
-            var secretsString;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
-                    case 1:
-                        secretsString = _a.sent();
-                        Crypto = {
-                            primary: {
-                                cipher: "aes-256-gcm",
-                                password: secretsString.CryptoPrimaryPassword,
-                            },
-                        };
-                        table = new dynamodb_onetable_1.Table({
-                            client: client,
-                            schema: schema_js_1.default,
-                            partial: false,
-                            crypto: Crypto,
-                            name: "CryptoPay-Accounts",
-                        });
-                        User = table.getModel("User");
-                        Project = table.getModel("Project");
-                        Account = table.getModel("Account");
-                        return [2 /*return*/];
-                }
-            });
-        }); };
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                table.setContext({ accountId: data.accountId });
-                return [2 /*return*/, User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel })];
+            return __generator(this, function (_b) {
+                this.table.setContext({ accountId: data.accountId });
+                return [2 /*return*/, this.User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel })];
             });
         }); };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, User.get({ id: id }, { index: "gs4", follow: true })];
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.User.get({ id: id }, { index: "gs4", follow: true })];
             });
         }); };
         this.findByApiKey = function (apiKey) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, User.find({ apiKey: apiKey }, { index: "gs1", follow: true })];
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.User.find({ apiKey: apiKey }, { index: "gs1", follow: true })];
             });
         }); };
         this.getByEmail = function (email) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, User.get({ email: email })];
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.User.get({ email: email })];
             });
         }); };
         this.findByEmail = function (email) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, User.find({ email: email }, { index: "gs1", follow: true })];
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.User.find({ email: email }, { index: "gs1", follow: true })];
             });
         }); };
         this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {
             var key;
-            return __generator(this, function (_a) {
+            return __generator(this, function (_b) {
                 key = {};
                 if (accountId)
                     key = { pk: "account#".concat(accountId) };
-                return [2 /*return*/, User.find(key, { index: "gs1", follow: true }, query)];
+                return [2 /*return*/, this.User.find(key, { index: "gs1", follow: true }, query)];
             });
         }); };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, User.remove({ id: id }, { index: "gs4", follow: true })];
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.User.remove({ id: id }, { index: "gs4", follow: true })];
             });
         }); };
-        this.init();
+        this.secretsString = secretsString;
+        this.Crypto = {
+            primary: {
+                cipher: "aes-256-gcm",
+                password: this.secretsString.CryptoPrimaryPassword,
+            },
+        };
+        this.table = new dynamodb_onetable_1.Table({
+            client: client,
+            schema: schema_js_1.default,
+            partial: false,
+            crypto: this.Crypto,
+            name: "CryptoPay-Accounts",
+        });
+        this.User = this.table.getModel("User");
+        this.Project = this.table.getModel("Project");
+        this.Account = this.table.getModel("Account");
+        this.Order = this.table.getModel("Order");
     }
+    var _a;
+    _a = Users;
+    Users.init = function () { return __awaiter(void 0, void 0, void 0, function () {
+        var secretsString;
+        return __generator(_a, function (_b) {
+            switch (_b.label) {
+                case 0: return [4 /*yield*/, (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
+                case 1:
+                    secretsString = _b.sent();
+                    return [2 /*return*/, new Users(secretsString)];
+            }
+        });
+    }); };
     return Users;
 }());
 exports.Users = Users;
 exports.default = Users;
+//# sourceMappingURL=users.model.js.map

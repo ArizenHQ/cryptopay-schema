@@ -181,3 +181,4 @@ var Schema = {
     },
 };
 exports.default = Schema;
+//# sourceMappingURL=schema.js.map
