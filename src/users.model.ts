@@ -38,36 +38,36 @@ export class Users {
     Account = table.getModel("Account");
   };
 
-  insert = async (data) => {
+  insert = async (data: any) => {
     table.setContext({ accountId: data.accountId });
     return User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel });
   };
 
-  findById = async (id) => {
+  findById = async (id: string) => {
     return User.get({ id: id }, { index: "gs4", follow: true });
   };
 
-  findByApiKey = async (apiKey) => {
+  findByApiKey = async (apiKey: string) => {
     return User.find({ apiKey: apiKey }, { index: "gs1", follow: true });
   };
 
-  getByEmail = async (email) => {
+  getByEmail = async (email: string) => {
     return User.get({ email: email });
   };
 
-  findByEmail = async (email) => {
+  findByEmail = async (email: string) => {
     return User.find({ email: email }, { index: "gs1", follow: true });
   };
 
-  list = async (accountId, query) => {
+  list = async (accountId: string, query: any) => {
     let key = {};
     if (accountId) key = { pk: `account#${accountId}` };
     return User.find(key, { index: "gs1", follow: true }, query);
   };
 
-  removeById = async (id) => {
+  removeById = async (id: string) => {
     return User.remove({ id: id }, { index: "gs4", follow: true });
   };
-}
 
+}
 export default Users

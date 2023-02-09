@@ -1,4 +1,4 @@
-import AWS from 'aws-sdk';
+import * as AWS from 'aws-sdk';
 
 const retrieveSecrets = (secret="/cardpayment-service/adyen") => {
 	//configure AWS SDK
@@ -7,7 +7,7 @@ const retrieveSecrets = (secret="/cardpayment-service/adyen") => {
 	const SecretId = secret;
 	return new Promise((resolve, reject) => {
 		//retrieving secrets from secrets manager
-		client.getSecretValue({ SecretId }, (err, data) => {
+		client.getSecretValue({ SecretId }, (err, data: any) => {
 			if (err) {
 				reject(err);
 			} else {

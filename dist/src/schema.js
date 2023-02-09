@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Overview schema
  * ATTENTION: this schema is used by the cryptopay-nftTransfert project
@@ -5,8 +6,9 @@
  *
  *
  */
-import crypto from 'crypto';
-const Match = {
+Object.defineProperty(exports, "__esModule", { value: true });
+var crypto_1 = require("crypto");
+var Match = {
     uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
     email: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     name: /^[a-z0-9 ,.'-]+$/i,
@@ -19,10 +21,10 @@ const Match = {
 };
 // url regex
 // function to generate a random string with 10 characters
-const randomString = () => {
-    return crypto.randomBytes(5).toString("hex");
+var randomString = function () {
+    return (0, crypto_1.randomBytes)(5).toString("hex");
 };
-const Schema = {
+var Schema = {
     format: 'onetable:1.1.0',
     version: '0.0.1',
     indexes: {
@@ -52,7 +54,7 @@ const Schema = {
             password: { type: String, required: true, crypt: true },
             status: { type: String, required: true, default: "active", enum: ["active", "inactive"] },
             permissionLevel: { type: Number, required: true, validate: Match.permissionLevel },
-            apiKey: { type: String, default: () => crypto.createHash("sha256").update(Math.random().toString()).digest("hex") },
+            apiKey: { type: String, default: function () { return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex"); } },
             //  Search by user name or by type
             gs1pk: { type: String, value: 'user#' },
             gs1sk: { type: String, value: 'user#${email}#${id}' },
@@ -70,9 +72,9 @@ const Schema = {
             status: { type: String, required: true, default: 'active', enum: ['active', 'inactive'] },
             codeProject: { type: String, required: true, unique: true },
             typeProject: { type: String, required: true, enum: ['cardPayment', 'cryptoPayment'] },
-            apiKey: { type: String, default: () => crypto.createHash("sha256").update(Math.random().toString()).digest("hex") },
+            apiKey: { type: String, default: function () { return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex"); } },
             apiKeyId: { type: String },
-            hmacPassword: { type: String, default: () => randomString(), crypt: true },
+            hmacPassword: { type: String, default: function () { return randomString(); }, crypt: true },
             description: { type: String, required: false },
             parameters: {
                 type: Object,
@@ -142,8 +144,8 @@ const Schema = {
                             lastname: { type: String },
                         }
                     },
-                    dateCreated: { type: Number, default: () => new Date().getTime() },
-                    dateLastUpdated: { type: Number, default: () => new Date().getTime() },
+                    dateCreated: { type: Number, default: function () { return new Date().getTime(); } },
+                    dateLastUpdated: { type: Number, default: function () { return new Date().getTime(); } },
                     internalRef: { type: String, required: true },
                     paymentId: { type: String },
                     projectCode: { type: String, required: true },
@@ -178,5 +180,4 @@ const Schema = {
         timestamps: true,
     },
 };
-export default Schema;
-//# sourceMappingURL=schema.js.map
+exports.default = Schema;

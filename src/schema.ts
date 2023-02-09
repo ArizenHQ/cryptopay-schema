@@ -6,7 +6,7 @@
  * 
  */
 
-import crypto from 'crypto'
+import {randomBytes, createHash} from 'crypto'
 
 const Match = {
   uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
@@ -26,7 +26,7 @@ const Match = {
 
 // function to generate a random string with 10 characters
 const randomString = () => {
-  return crypto.randomBytes(5).toString("hex");
+  return randomBytes(5).toString("hex");
 }
 
 const Schema = {
@@ -60,7 +60,7 @@ const Schema = {
       password: { type: String, required: true, crypt: true },
       status: { type: String, required: true, default: "active", enum: ["active", "inactive"] },
       permissionLevel: { type: Number, required: true, validate: Match.permissionLevel},
-      apiKey: { type: String, default: () => crypto.createHash("sha256").update(Math.random().toString()).digest("hex") },
+      apiKey: { type: String, default: () => createHash("sha256").update(Math.random().toString()).digest("hex") },
 
       //  Search by user name or by type
       gs1pk: { type: String, value: 'user#' },
@@ -80,7 +80,7 @@ const Schema = {
       status: { type: String, required: true, default: 'active', enum: ['active', 'inactive'] },
       codeProject: { type: String, required: true, unique: true },
       typeProject: { type: String, required: true, enum: ['cardPayment', 'cryptoPayment'] },
-      apiKey: { type: String, default: () => crypto.createHash("sha256").update(Math.random().toString()).digest("hex") },
+      apiKey: { type: String, default: () => createHash("sha256").update(Math.random().toString()).digest("hex") },
       apiKeyId: { type: String },
       hmacPassword: { type: String, default: () => randomString(), crypt: true },
       description: { type: String, required: false },

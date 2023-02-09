@@ -1,8 +1,8 @@
 {
   "name": "cryptopay-schema",
-  "version": "0.0.18",
-  "main": "index.ts",
-  "type": "module",
+  "version": "0.0.20",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
       "build": "rm -fr dist/* && tsc -p tsconfig.json"
   },
