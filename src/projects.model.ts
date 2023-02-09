@@ -6,44 +6,47 @@ import Schema from "./schema.js";
 import { importApiKey, removeApiKey, configureUsagePlanKey } from "./utils/ApiGatewayCryptoPayment.js";
 import retrieveSecrets from "./utils/retrieveSecrets";
 
-let Crypto: {};
-let table: Table;
-let User: any;
-let Project: any;
-let Account: any;
+
 
 export class Projects {
+  Crypto: any;
+  table: Table;
+  User: any;
+  Project: any;
+  Account: any;
   constructor() {
-    this.init()
-  }
-  init = async () => {
-    const secretsString: any = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
 
-    Crypto = {
+    const secretsString: any = async () => { 
+      return await retrieveSecrets("/coinhouse-solution/CardPayment-configuration") 
+    };
+
+    this.Crypto = {
       primary: {
         cipher: "aes-256-gcm",
         password: secretsString.CryptoPrimaryPassword,
       },
     };
 
-    table = new Table({
+    this.table = new Table({
       client: client,
       schema: Schema,
       partial: false,
       crypto: Crypto,
       name: "CryptoPay-Accounts",
     });
-    User = table.getModel("User");
-    Project = table.getModel("Project");
-    Account = table.getModel("Account");
-  };
+
+    this.User = this.table.getModel("User");
+    this.Project = this.table.getModel("Project");
+    this.Account = this.table.getModel("Account");
+  }
+
 
 
   insert = async (data: any) => {
     try {
-      const account = await Account.get({ id: data.accountId });
-      table.setContext({ accountId: data.accountId });
-      return Project.create({
+      const account = await this.Account.get({ id: data.accountId });
+      this.table.setContext({ accountId: data.accountId });
+      return this.Project.create({
         name: data.name,
         accountId: data.accountId,
         codeProject: data.codeProject,
@@ -61,11 +64,11 @@ export class Projects {
   };
 
   findById = async (id: string) => {
-    return Project.get({ id: id }, { index: "gs2", follow: true });
+    return this.Project.get({ id: id }, { index: "gs2", follow: true });
   };
 
   findPublicById = async (id: string) => {
-    let project = await Project.get({ id: id }, { index: "gs2", follow: true });
+    let project = await this.Project.get({ id: id }, { index: "gs2", follow: true });
     delete project.hmacPassword;
     delete project.apiKey;
     delete project.accountId;
@@ -77,31 +80,31 @@ export class Projects {
   };
 
   findByApiKey = async (apiKey: string) => {
-    return Project.get({ apiKey: apiKey }, { index: "gs3", follow: true });
+    return this.Project.get({ apiKey: apiKey }, { index: "gs3", follow: true });
   };
   getById = async (id: string) => {
-    return Project.get({ id: id }, { index: "gs1", follow: true });
+    return this.Project.get({ id: id }, { index: "gs1", follow: true });
   };
 
   list = async (accountId: string, query: any) => {
     let key = {};
     if (accountId) key = { pk: `account#${accountId}` };
-    return Project.find(key, { index: "gs1", follow: true }, query);
+    return this.Project.find(key, { index: "gs1", follow: true }, query);
   };
 
   patchById = async (id: string, data: any) => {
-    let project = await Project.get({ id: id }, { index: "gs2", follow: true });
-    table.setContext({ accountId: project.accountId });
+    let project = await this.Project.get({ id: id }, { index: "gs2", follow: true });
+    this.table.setContext({ accountId: project.accountId });
     data.id = id;
     this.createApiKey(data);
-    return Project.update(data);
+    return this.Project.update(data);
   };
 
   removeById = async (id: string) => {
-    let project = await Project.get({ id: id }, { index: "gs2", follow: true });
+    let project = await this.Project.get({ id: id }, { index: "gs2", follow: true });
     if (!project) throw new Error(`Project not found`);
     if (project.typeProject === "cryptoPayment") await removeApiKey(project.apiKeyId);
-    return Project.remove({ sk: `project#${id}`, pk: `account#${project.accountId}` });
+    return this.Project.remove({ sk: `project#${id}`, pk: `account#${project.accountId}` });
   };
 
   createApiKey = async (obj: any) => {
@@ -112,7 +115,7 @@ export class Projects {
             console.error(error);
             throw new Error(`Error during configure usage plan key ${error}`);
           });
-          await Project.update({ id: obj.project.id, apiKeyId: keyId });
+          await this.Project.update({ id: obj.project.id, apiKeyId: keyId });
         })
         .catch((error) => {
           console.error(error);

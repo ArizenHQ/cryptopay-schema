@@ -44,41 +44,9 @@ var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient(
 var schema_js_1 = require("./schema.js");
 var ApiGatewayCryptoPayment_js_1 = require("./utils/ApiGatewayCryptoPayment.js");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
-var Crypto;
-var table;
-var User;
-var Project;
-var Account;
 var Projects = /** @class */ (function () {
     function Projects() {
         var _this = this;
-        this.init = function () { return __awaiter(_this, void 0, void 0, function () {
-            var secretsString;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
-                    case 1:
-                        secretsString = _a.sent();
-                        Crypto = {
-                            primary: {
-                                cipher: "aes-256-gcm",
-                                password: secretsString.CryptoPrimaryPassword,
-                            },
-                        };
-                        table = new dynamodb_onetable_1.Table({
-                            client: client,
-                            schema: schema_js_1.default,
-                            partial: false,
-                            crypto: Crypto,
-                            name: "CryptoPay-Accounts",
-                        });
-                        User = table.getModel("User");
-                        Project = table.getModel("Project");
-                        Account = table.getModel("Account");
-                        return [2 /*return*/];
-                }
-            });
-        }); };
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
             var account_1, error_1;
             var _this = this;
@@ -86,11 +54,11 @@ var Projects = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, Account.get({ id: data.accountId })];
+                        return [4 /*yield*/, this.Account.get({ id: data.accountId })];
                     case 1:
                         account_1 = _a.sent();
-                        table.setContext({ accountId: data.accountId });
-                        return [2 /*return*/, Project.create({
+                        this.table.setContext({ accountId: data.accountId });
+                        return [2 /*return*/, this.Project.create({
                                 name: data.name,
                                 accountId: data.accountId,
                                 codeProject: data.codeProject,
@@ -113,14 +81,14 @@ var Projects = /** @class */ (function () {
         }); };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, Project.get({ id: id }, { index: "gs2", follow: true })];
+                return [2 /*return*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
             });
         }); };
         this.findPublicById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             var project;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, Project.get({ id: id }, { index: "gs2", follow: true })];
+                    case 0: return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
                     case 1:
                         project = _a.sent();
                         delete project.hmacPassword;
@@ -135,12 +103,12 @@ var Projects = /** @class */ (function () {
         }); };
         this.findByApiKey = function (apiKey) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, Project.get({ apiKey: apiKey }, { index: "gs3", follow: true })];
+                return [2 /*return*/, this.Project.get({ apiKey: apiKey }, { index: "gs3", follow: true })];
             });
         }); };
         this.getById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, Project.get({ id: id }, { index: "gs1", follow: true })];
+                return [2 /*return*/, this.Project.get({ id: id }, { index: "gs1", follow: true })];
             });
         }); };
         this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {
@@ -149,20 +117,20 @@ var Projects = /** @class */ (function () {
                 key = {};
                 if (accountId)
                     key = { pk: "account#".concat(accountId) };
-                return [2 /*return*/, Project.find(key, { index: "gs1", follow: true }, query)];
+                return [2 /*return*/, this.Project.find(key, { index: "gs1", follow: true }, query)];
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
             var project;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, Project.get({ id: id }, { index: "gs2", follow: true })];
+                    case 0: return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
                     case 1:
                         project = _a.sent();
-                        table.setContext({ accountId: project.accountId });
+                        this.table.setContext({ accountId: project.accountId });
                         data.id = id;
                         this.createApiKey(data);
-                        return [2 /*return*/, Project.update(data)];
+                        return [2 /*return*/, this.Project.update(data)];
                 }
             });
         }); };
@@ -170,7 +138,7 @@ var Projects = /** @class */ (function () {
             var project;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, Project.get({ id: id }, { index: "gs2", follow: true })];
+                    case 0: return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
                     case 1:
                         project = _a.sent();
                         if (!project)
@@ -180,7 +148,7 @@ var Projects = /** @class */ (function () {
                     case 2:
                         _a.sent();
                         _a.label = 3;
-                    case 3: return [2 /*return*/, Project.remove({ sk: "project#".concat(id), pk: "account#".concat(project.accountId) })];
+                    case 3: return [2 /*return*/, this.Project.remove({ sk: "project#".concat(id), pk: "account#".concat(project.accountId) })];
                 }
             });
         }); };
@@ -200,7 +168,7 @@ var Projects = /** @class */ (function () {
                                             })];
                                         case 1:
                                             _a.sent();
-                                            return [4 /*yield*/, Project.update({ id: obj.project.id, apiKeyId: keyId })];
+                                            return [4 /*yield*/, this.Project.update({ id: obj.project.id, apiKeyId: keyId })];
                                         case 2:
                                             _a.sent();
                                             return [2 /*return*/];
@@ -218,7 +186,30 @@ var Projects = /** @class */ (function () {
                 }
             });
         }); };
-        this.init();
+        var secretsString = function () { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        }); };
+        this.Crypto = {
+            primary: {
+                cipher: "aes-256-gcm",
+                password: secretsString.CryptoPrimaryPassword,
+            },
+        };
+        this.table = new dynamodb_onetable_1.Table({
+            client: client,
+            schema: schema_js_1.default,
+            partial: false,
+            crypto: Crypto,
+            name: "CryptoPay-Accounts",
+        });
+        this.User = this.table.getModel("User");
+        this.Project = this.table.getModel("Project");
+        this.Account = this.table.getModel("Account");
     }
     return Projects;
 }());

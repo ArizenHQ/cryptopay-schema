@@ -1,6 +1,11 @@
+import { Table } from "dynamodb-onetable";
 export declare class Projects {
+    Crypto: any;
+    table: Table;
+    User: any;
+    Project: any;
+    Account: any;
     constructor();
-    init: () => Promise<void>;
     insert: (data: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;
