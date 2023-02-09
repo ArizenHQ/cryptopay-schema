@@ -204,7 +204,7 @@ var Projects = /** @class */ (function () {
             client: client,
             schema: schema_js_1.default,
             partial: false,
-            crypto: Crypto,
+            crypto: this.Crypto,
             name: "CryptoPay-Accounts",
         });
         this.User = this.table.getModel("User");
