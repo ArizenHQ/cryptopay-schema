@@ -6,7 +6,7 @@
  * 
  */
 
-import {randomBytes, createHash} from 'crypto'
+import { randomBytes, createHash } from 'crypto'
 
 const Match = {
   uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
@@ -59,7 +59,7 @@ const Schema = {
       email: { type: String, required: true, validate: Match.email, crypt: true, unique: true },
       password: { type: String, required: true, crypt: true },
       status: { type: String, required: true, default: "active", enum: ["active", "inactive"] },
-      permissionLevel: { type: Number, required: true, validate: Match.permissionLevel},
+      permissionLevel: { type: Number, required: true, validate: Match.permissionLevel },
       apiKey: { type: String, default: () => createHash("sha256").update(Math.random().toString()).digest("hex") },
 
       //  Search by user name or by type
@@ -69,7 +69,7 @@ const Schema = {
       gs3sk: { type: String, value: 'user#${permissionLevel}#${id}' },
       gs4sk: { type: String, value: 'user#${name}#${id}#${email}#${status}#${permissionLevel}' },
     },
-//
+    //
     Project: {
       pk: { type: String, value: 'account#${accountId}' },
       sk: { type: String, value: 'project#${id}' },
@@ -134,56 +134,55 @@ const Schema = {
               name: { type: String },
               version: { type: Number },
             },
-          },
-          audit: {
-            type: Object,
-            default: {}
-          },
-          countryCode: { type: String },
-          currency: { type: String, enum: ["ETH", "MATIC", "EUR"] },
-          customerAddress: { type: String, validate: Match.cryptoAddress },
-          publicAddressDest: { type: String, validate: Match.cryptoAddress },
-          customer: {
-            type: Object,
-            default: {},
-            schema: {
-              email: { type: String, validate: Match.email },
-              firstname: { type: String },
-              lastname: { type: String },
-            }
-          },
-          dateCreated: { type: Number, default: () => new Date().getTime() },
-          dateLastUpdated: { type: Number, default: () => new Date().getTime() },
-          internalRef: { type: String, required: true },
-          paymentId: { type: String },
-          projectCode: { type: String, required: true },
-          eventCode: { type: String },
-          eventDate: { type: String },
-          statusDetail: { type: String },
-          statusOrder: { type: String },
-          success: { type: Boolean },
-          tokenId: { type: Number },
-          tx_date: { type: String },
-          tx_hash: { type: String },
-          notificationFromAdyen: {type: Object, default: {}},
-          session: {type: Object, default: {}},
-          urlsRedirect: {
-            type: Object,
-            default: {},
-            schema: {
-              urlRedirectSuccess: { type: String, validate: Match.url },
-              urlRedirectPending: { type: String, validate: Match.url },
-              urlRedirectFailed: { type: String, validate: Match.url },
-              urlRedirectError: { type: String, validate: Match.url }
-            },
-          },
-          walletAddress: { type: String, validate: Match.cryptoAddress },
-          webhookUrl: { type: String, validate: Match.url },
+          }
         }
-
-      }
+      },
+      audit: {
+        type: Object,
+        default: {}
+      },
+      countryCode: { type: String },
+      currency: { type: String, enum: ["ETH", "MATIC", "EUR"] },
+      customerAddress: { type: String, validate: Match.cryptoAddress },
+      publicAddressDest: { type: String, validate: Match.cryptoAddress },
+      customer: {
+        type: Object,
+        default: {},
+        schema: {
+          email: { type: String, validate: Match.email },
+          firstname: { type: String },
+          lastname: { type: String },
+        }
+      },
+      dateCreated: { type: Number, default: () => new Date().getTime() },
+      dateLastUpdated: { type: Number, default: () => new Date().getTime() },
+      internalRef: { type: String, required: true },
+      paymentId: { type: String },
+      codeProject: { type: String, required: true },
+      eventCode: { type: String },
+      eventDate: { type: String },
+      statusDetail: { type: String },
+      statusOrder: { type: String },
+      success: { type: Boolean },
+      tokenId: { type: Number },
+      tx_date: { type: String },
+      tx_hash: { type: String },
+      notificationFromAdyen: { type: Object, default: {} },
+      session: { type: Object, default: {} },
+      urlsRedirect: {
+        type: Object,
+        default: {},
+        schema: {
+          urlRedirectSuccess: { type: String, validate: Match.url },
+          urlRedirectPending: { type: String, validate: Match.url },
+          urlRedirectFailed: { type: String, validate: Match.url },
+          urlRedirectError: { type: String, validate: Match.url }
+        },
+      },
+      walletAddress: { type: String, validate: Match.cryptoAddress },
+      webhookUrl: { type: String, validate: Match.url },
     }
-  } as const ,
+  } as const,
   params: {
     isoDates: true,
     timestamps: true,

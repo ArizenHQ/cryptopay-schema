@@ -312,123 +312,123 @@ declare const Schema: {
                             };
                         };
                     };
-                    readonly audit: {
-                        readonly type: ObjectConstructor;
-                        readonly default: {};
-                    };
-                    readonly countryCode: {
-                        readonly type: StringConstructor;
-                    };
-                    readonly currency: {
-                        readonly type: StringConstructor;
-                        readonly enum: readonly ["ETH", "MATIC", "EUR"];
-                    };
-                    readonly customerAddress: {
-                        readonly type: StringConstructor;
-                        readonly validate: RegExp;
-                    };
-                    readonly publicAddressDest: {
-                        readonly type: StringConstructor;
-                        readonly validate: RegExp;
-                    };
-                    readonly customer: {
-                        readonly type: ObjectConstructor;
-                        readonly default: {};
-                        readonly schema: {
-                            readonly email: {
-                                readonly type: StringConstructor;
-                                readonly validate: RegExp;
-                            };
-                            readonly firstname: {
-                                readonly type: StringConstructor;
-                            };
-                            readonly lastname: {
-                                readonly type: StringConstructor;
-                            };
-                        };
-                    };
-                    readonly dateCreated: {
-                        readonly type: NumberConstructor;
-                        readonly default: () => number;
-                    };
-                    readonly dateLastUpdated: {
-                        readonly type: NumberConstructor;
-                        readonly default: () => number;
-                    };
-                    readonly internalRef: {
-                        readonly type: StringConstructor;
-                        readonly required: true;
-                    };
-                    readonly paymentId: {
-                        readonly type: StringConstructor;
-                    };
-                    readonly projectCode: {
-                        readonly type: StringConstructor;
-                        readonly required: true;
-                    };
-                    readonly eventCode: {
-                        readonly type: StringConstructor;
-                    };
-                    readonly eventDate: {
-                        readonly type: StringConstructor;
-                    };
-                    readonly statusDetail: {
-                        readonly type: StringConstructor;
-                    };
-                    readonly statusOrder: {
-                        readonly type: StringConstructor;
-                    };
-                    readonly success: {
-                        readonly type: BooleanConstructor;
-                    };
-                    readonly tokenId: {
-                        readonly type: NumberConstructor;
-                    };
-                    readonly tx_date: {
-                        readonly type: StringConstructor;
-                    };
-                    readonly tx_hash: {
-                        readonly type: StringConstructor;
-                    };
-                    readonly notificationFromAdyen: {
-                        readonly type: ObjectConstructor;
-                        readonly default: {};
-                    };
-                    readonly session: {
-                        readonly type: ObjectConstructor;
-                        readonly default: {};
-                    };
-                    readonly urlsRedirect: {
-                        readonly type: ObjectConstructor;
-                        readonly default: {};
-                        readonly schema: {
-                            readonly urlRedirectSuccess: {
-                                readonly type: StringConstructor;
-                                readonly validate: RegExp;
-                            };
-                            readonly urlRedirectPending: {
-                                readonly type: StringConstructor;
-                                readonly validate: RegExp;
-                            };
-                            readonly urlRedirectFailed: {
-                                readonly type: StringConstructor;
-                                readonly validate: RegExp;
-                            };
-                            readonly urlRedirectError: {
-                                readonly type: StringConstructor;
-                                readonly validate: RegExp;
-                            };
-                        };
-                    };
-                    readonly walletAddress: {
+                };
+            };
+            readonly audit: {
+                readonly type: ObjectConstructor;
+                readonly default: {};
+            };
+            readonly countryCode: {
+                readonly type: StringConstructor;
+            };
+            readonly currency: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["ETH", "MATIC", "EUR"];
+            };
+            readonly customerAddress: {
+                readonly type: StringConstructor;
+                readonly validate: RegExp;
+            };
+            readonly publicAddressDest: {
+                readonly type: StringConstructor;
+                readonly validate: RegExp;
+            };
+            readonly customer: {
+                readonly type: ObjectConstructor;
+                readonly default: {};
+                readonly schema: {
+                    readonly email: {
                         readonly type: StringConstructor;
                         readonly validate: RegExp;
                     };
-                    readonly webhookUrl: {
+                    readonly firstname: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly lastname: {
+                        readonly type: StringConstructor;
+                    };
+                };
+            };
+            readonly dateCreated: {
+                readonly type: NumberConstructor;
+                readonly default: () => number;
+            };
+            readonly dateLastUpdated: {
+                readonly type: NumberConstructor;
+                readonly default: () => number;
+            };
+            readonly internalRef: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly paymentId: {
+                readonly type: StringConstructor;
+            };
+            readonly codeProject: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly eventCode: {
+                readonly type: StringConstructor;
+            };
+            readonly eventDate: {
+                readonly type: StringConstructor;
+            };
+            readonly statusDetail: {
+                readonly type: StringConstructor;
+            };
+            readonly statusOrder: {
+                readonly type: StringConstructor;
+            };
+            readonly success: {
+                readonly type: BooleanConstructor;
+            };
+            readonly tokenId: {
+                readonly type: NumberConstructor;
+            };
+            readonly tx_date: {
+                readonly type: StringConstructor;
+            };
+            readonly tx_hash: {
+                readonly type: StringConstructor;
+            };
+            readonly notificationFromAdyen: {
+                readonly type: ObjectConstructor;
+                readonly default: {};
+            };
+            readonly session: {
+                readonly type: ObjectConstructor;
+                readonly default: {};
+            };
+            readonly urlsRedirect: {
+                readonly type: ObjectConstructor;
+                readonly default: {};
+                readonly schema: {
+                    readonly urlRedirectSuccess: {
+                        readonly type: StringConstructor;
+                        readonly validate: RegExp;
+                    };
+                    readonly urlRedirectPending: {
+                        readonly type: StringConstructor;
+                        readonly validate: RegExp;
+                    };
+                    readonly urlRedirectFailed: {
+                        readonly type: StringConstructor;
+                        readonly validate: RegExp;
+                    };
+                    readonly urlRedirectError: {
                         readonly type: StringConstructor;
                         readonly validate: RegExp;
                     };
                 };
+            };
+            readonly walletAddress: {
+                readonly type: StringConstructor;
+                readonly validate: RegExp;
+            };
+            readonly webhookUrl: {
+                readonly type: StringConstructor;
+                readonly validate: RegExp;
             };
         };
     };
