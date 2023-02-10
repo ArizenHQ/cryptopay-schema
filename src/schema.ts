@@ -181,6 +181,11 @@ const Schema = {
       },
       walletAddress: { type: String, validate: Match.cryptoAddress },
       webhookUrl: { type: String, validate: Match.url },
+      gs1pk: { type: String, value: 'order#' },
+      gs1sk: { type: String, value: 'order#${id}' },
+      gs2sk: { type: String, value: 'order#${typeOrder}#${codeProject}' },
+      gs3sk: { type: String, value: 'order#${success}' },
+      gs4sk: { type: String, value: 'order#${id}#${id}#${typeOrder}#${codeProject}#${success}' },
     }
   } as const,
   params: {

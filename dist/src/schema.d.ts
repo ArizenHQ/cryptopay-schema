@@ -430,6 +430,26 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly validate: RegExp;
             };
+            readonly gs1pk: {
+                readonly type: StringConstructor;
+                readonly value: "order#";
+            };
+            readonly gs1sk: {
+                readonly type: StringConstructor;
+                readonly value: "order#${id}";
+            };
+            readonly gs2sk: {
+                readonly type: StringConstructor;
+                readonly value: "order#${typeOrder}#${codeProject}";
+            };
+            readonly gs3sk: {
+                readonly type: StringConstructor;
+                readonly value: "order#${success}";
+            };
+            readonly gs4sk: {
+                readonly type: StringConstructor;
+                readonly value: "order#${id}#${id}#${typeOrder}#${codeProject}#${success}";
+            };
         };
     };
     readonly params: {
