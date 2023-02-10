@@ -91,14 +91,14 @@ export class Orders {
   };
 
   patchById = async (id: string, data: any) => {
-    let order = await this.Order.get({ id: id }, { index: "gs2", follow: true });
+    let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
     this.table.setContext({ accountId: order.accountId });
     data.id = id;
     return this.Order.update(data);
   };
 
   removeById = async (id: string) => {
-    let order = await this.Order.get({ id: id }, { index: "gs2", follow: true });
+    let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
     if (!order) throw new Error(`Order not found`);
     return this.Order.remove({ sk: `order#${id}`, pk: `account#${order.accountId}` });
   };
