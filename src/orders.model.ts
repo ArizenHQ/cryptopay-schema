@@ -75,7 +75,7 @@ export class Orders {
 
     return order;
   };
-  
+
   scan = async (params: any, query: any) => {
     return this.Order.scan(params, query)
   }
@@ -91,10 +91,15 @@ export class Orders {
   };
 
   patchById = async (id: string, data: any) => {
-    let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
-    this.table.setContext({ accountId: order.accountId });
-    data.id = id;
-    return this.Order.update(data);
+    try {
+      let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
+      if (!order) throw new Error(`no order fund for id: ${id}`)
+      this.table.setContext({ accountId: order.accountId });
+      data.id = id;
+      return this.Order.update(data);
+    } catch (err) {
+      throw new Error(`Error during update order ${err}`);
+    }
   };
 
   removeById = async (id: string) => {

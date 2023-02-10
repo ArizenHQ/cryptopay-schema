@@ -114,15 +114,23 @@ var Orders = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var order;
+            var order, err_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs2", follow: true })];
+                    case 0:
+                        _b.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
                         order = _b.sent();
+                        if (!order)
+                            throw new Error("no order fund for id: ".concat(id));
                         this.table.setContext({ accountId: order.accountId });
                         data.id = id;
                         return [2 /*return*/, this.Order.update(data)];
+                    case 2:
+                        err_1 = _b.sent();
+                        throw new Error("Error during update order ".concat(err_1));
+                    case 3: return [2 /*return*/];
                 }
             });
         }); };
@@ -130,7 +138,7 @@ var Orders = /** @class */ (function () {
             var order;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs2", follow: true })];
+                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
                         order = _b.sent();
                         if (!order)
