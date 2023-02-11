@@ -6,6 +6,7 @@ export declare class Accounts {
     Project: any;
     Account: any;
     Order: any;
+    Payment: any;
     secretsString: any;
     private constructor();
     static init: () => Promise<Accounts>;

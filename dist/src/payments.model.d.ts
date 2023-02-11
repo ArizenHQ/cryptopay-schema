@@ -1,5 +1,5 @@
 import { Table } from "dynamodb-onetable";
-export declare class Orders {
+export declare class Payments {
     Crypto: any;
     table: Table;
     User: any;
@@ -9,14 +9,15 @@ export declare class Orders {
     Payment: any;
     secretsString: any;
     private constructor();
-    static init: () => Promise<Orders>;
+    static init: () => Promise<Payments>;
     insert: (accountId: string, data: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;
     scan: (params: any, query: any) => Promise<any>;
     getById: (id: string) => Promise<any>;
+    getByOrderId: (orderId: string) => Promise<any>;
     list: (accountId: string, query: any) => Promise<any>;
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;
 }
-export default Orders;
+export default Payments;

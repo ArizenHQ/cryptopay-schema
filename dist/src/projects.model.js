@@ -204,6 +204,7 @@ var Projects = /** @class */ (function () {
         this.Project = this.table.getModel("Project");
         this.Account = this.table.getModel("Account");
         this.Order = this.table.getModel("Order");
+        this.Payment = this.table.getModel("Payment");
     }
     var _a;
     _a = Projects;

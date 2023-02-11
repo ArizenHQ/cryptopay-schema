@@ -1,10 +1,3 @@
-/**
- * Overview schema
- * ATTENTION: this schema is used by the cryptopay-nftTransfert project
- * have to be updated in another project as well
- *
- *
- */
 declare const Schema: {
     readonly format: "onetable:1.1.0";
     readonly version: "0.0.1";
@@ -448,7 +441,95 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "order#${id}#${id}#${typeOrder}#${codeProject}#${success}";
+                readonly value: "order#${id}#${typeOrder}#${codeProject}#${success}#${tx_hash}";
+            };
+        };
+        readonly Payment: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "account#${accountId}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "payment#${id}";
+            };
+            readonly id: {
+                readonly type: StringConstructor;
+                readonly generate: "uuid";
+                readonly validate: RegExp;
+            };
+            readonly dateCreated: {
+                readonly type: NumberConstructor;
+                readonly default: () => number;
+            };
+            readonly dateLastUpdated: {
+                readonly type: NumberConstructor;
+                readonly default: () => number;
+            };
+            readonly address: {
+                readonly type: StringConstructor;
+                readonly validate: RegExp;
+            };
+            readonly dateTime: {
+                readonly type: NumberConstructor;
+            };
+            readonly txId: {
+                readonly type: StringConstructor;
+            };
+            readonly amount: {
+                readonly type: NumberConstructor;
+            };
+            readonly fees: {
+                readonly type: NumberConstructor;
+            };
+            readonly currency: {
+                readonly type: StringConstructor;
+            };
+            readonly from: {
+                readonly type: StringConstructor;
+            };
+            readonly to: {
+                readonly type: StringConstructor;
+            };
+            readonly type: {
+                readonly type: StringConstructor;
+            };
+            readonly credit: {
+                readonly type: NumberConstructor;
+            };
+            readonly debit: {
+                readonly type: NumberConstructor;
+            };
+            readonly context: {
+                readonly type: ObjectConstructor;
+                readonly default: {};
+            };
+            readonly orderId: {
+                readonly type: StringConstructor;
+            };
+            readonly audit: {
+                readonly type: ObjectConstructor;
+                readonly default: readonly [];
+            };
+            readonly gs1pk: {
+                readonly type: StringConstructor;
+                readonly value: "payment#";
+            };
+            readonly gs1sk: {
+                readonly type: StringConstructor;
+                readonly value: "payment#${id}";
+            };
+            readonly gs2sk: {
+                readonly type: StringConstructor;
+                readonly value: "payment#${orderId}";
+            };
+            readonly gs3sk: {
+                readonly type: StringConstructor;
+                readonly value: "payment#${type}";
+            };
+            readonly gs4sk: {
+                readonly type: StringConstructor;
+                readonly value: "payment#${id}#${orderId}#${address}#${txId}#${currency}";
             };
         };
     };

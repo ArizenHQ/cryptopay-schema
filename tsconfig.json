@@ -6,8 +6,5 @@
     "outDir": "./dist",
     "strict": true,
     "sourceMap": true
-  },
-  "exclude": [
-    "test.ts"
-  ]
+  }
 }

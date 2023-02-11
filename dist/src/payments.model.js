@@ -36,15 +36,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Orders = void 0;
+exports.Payments = void 0;
 var Dynamo_1 = require("dynamodb-onetable/Dynamo");
 var dynamodb_onetable_1 = require("dynamodb-onetable");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
-var Orders = /** @class */ (function () {
-    function Orders(secretsString) {
+var Payments = /** @class */ (function () {
+    function Payments(secretsString) {
         var _this = this;
         this.insert = function (accountId, data) { return __awaiter(_this, void 0, void 0, function () {
             var account, error_1;
@@ -58,50 +58,47 @@ var Orders = /** @class */ (function () {
                         account = _b.sent();
                         this.table.setContext({ accountId: data.accountId });
                         data.accountId = accountId;
-                        if (data.projectCode)
-                            data.codeProject = data.projectCode;
-                        return [2 /*return*/, this.Order.create(data).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
+                        return [2 /*return*/, this.Payment.create(data).then(function (payment) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_b) {
-                                    return [2 /*return*/, order];
+                                    return [2 /*return*/, payment];
                                 });
                             }); })];
                     case 2:
                         error_1 = _b.sent();
-                        throw new Error("Error during add new order ".concat(error_1));
+                        throw new Error("Error during add new payment ".concat(error_1));
                     case 3: return [2 /*return*/];
                 }
             });
         }); };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Order.get({ id: id }, { index: "gs2", follow: true })];
+                return [2 /*return*/, this.Payment.get({ id: id }, { index: "gs2", follow: true })];
             });
         }); };
         this.findPublicById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             var order;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs2", follow: true })];
+                    case 0: return [4 /*yield*/, this.Payment.get({ id: id }, { index: "gs2", follow: true })];
                     case 1:
                         order = _b.sent();
-                        ///////delete project.hmacPassword;
-                        ///////delete project.apiKey;
-                        ///////delete project.accountId;
-                        ///////delete project.status;
-                        ///////delete project.created;
-                        ///////delete project.updated;
                         return [2 /*return*/, order];
                 }
             });
         }); };
         this.scan = function (params, query) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Order.scan(params, query)];
+                return [2 /*return*/, this.Payment.scan(params, query)];
             });
         }); };
         this.getById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
+                return [2 /*return*/, this.Payment.get({ id: id }, { index: "gs1", follow: true })];
+            });
+        }); };
+        this.getByOrderId = function (orderId) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_b) {
+                return [2 /*return*/, this.scan({ orderId: orderId }, {})];
             });
         }); };
         this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {
@@ -110,23 +107,23 @@ var Orders = /** @class */ (function () {
                 key = {};
                 if (accountId)
                     key = { pk: "account#".concat(accountId) };
-                return [2 /*return*/, this.Order.find(key, { index: "gs1", follow: true }, query)];
+                return [2 /*return*/, this.Payment.find(key, { index: "gs1", follow: true }, query)];
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var order, err_1;
+            var payment, err_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
+                        return [4 /*yield*/, this.Payment.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
-                        order = _b.sent();
-                        if (!order)
+                        payment = _b.sent();
+                        if (!payment)
                             throw new Error("no order fund for id: ".concat(id));
-                        this.table.setContext({ accountId: order.accountId });
+                        this.table.setContext({ accountId: payment.accountId });
                         data.id = id;
-                        return [2 /*return*/, this.Order.update(data)];
+                        return [2 /*return*/, this.Payment.update(data)];
                     case 2:
                         err_1 = _b.sent();
                         throw new Error("Error during update order ".concat(err_1));
@@ -135,15 +132,15 @@ var Orders = /** @class */ (function () {
             });
         }); };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            var order;
+            var payment;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
+                    case 0: return [4 /*yield*/, this.Payment.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
-                        order = _b.sent();
-                        if (!order)
+                        payment = _b.sent();
+                        if (!payment)
                             throw new Error("Order not found");
-                        return [2 /*return*/, this.Order.remove({ sk: "order#".concat(id), pk: "account#".concat(order.accountId) })];
+                        return [2 /*return*/, this.Payment.remove({ sk: "order#".concat(id), pk: "account#".concat(payment.accountId) })];
                 }
             });
         }); };
@@ -168,20 +165,20 @@ var Orders = /** @class */ (function () {
         this.Payment = this.table.getModel("Payment");
     }
     var _a;
-    _a = Orders;
-    Orders.init = function () { return __awaiter(void 0, void 0, void 0, function () {
+    _a = Payments;
+    Payments.init = function () { return __awaiter(void 0, void 0, void 0, function () {
         var secretsString;
         return __generator(_a, function (_b) {
             switch (_b.label) {
                 case 0: return [4 /*yield*/, (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
                 case 1:
                     secretsString = _b.sent();
-                    return [2 /*return*/, new Orders(secretsString)];
+                    return [2 /*return*/, new Payments(secretsString)];
             }
         });
     }); };
-    return Orders;
+    return Payments;
 }());
-exports.Orders = Orders;
-exports.default = Orders;
-//# sourceMappingURL=orders.model.js.map
+exports.Payments = Payments;
+exports.default = Payments;
+//# sourceMappingURL=payments.model.js.map
