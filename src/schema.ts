@@ -1,11 +1,3 @@
-/**
- * Overview schema
- * ATTENTION: this schema is used by the cryptopay-nftTransfert project
- * have to be updated in another project as well
- * 
- * 
- */
-
 import { randomBytes, createHash } from 'crypto'
 
 const Match = {
@@ -21,10 +13,6 @@ const Match = {
   permissionLevel: /^(1|4|16|128|2048)$/
 };
 
-// url regex
-
-
-// function to generate a random string with 10 characters
 const randomString = () => {
   return randomBytes(5).toString("hex");
 }
@@ -45,7 +33,6 @@ const Schema = {
       sk: { type: String, value: 'account#' },
       id: { type: String, generate: 'uuid' },
       name: { type: String, required: true, unique: true, validate: Match.name },
-      //  Search by account name or by type
       gs1pk: { type: String, value: 'account#' },
       gs1sk: { type: String, value: 'account#${name}${id}' },
     },
@@ -61,15 +48,12 @@ const Schema = {
       status: { type: String, required: true, default: "active", enum: ["active", "inactive"] },
       permissionLevel: { type: Number, required: true, validate: Match.permissionLevel },
       apiKey: { type: String, default: () => createHash("sha256").update(Math.random().toString()).digest("hex") },
-
-      //  Search by user name or by type
       gs1pk: { type: String, value: 'user#' },
       gs1sk: { type: String, value: 'user#${email}#${id}' },
       gs2sk: { type: String, value: 'user#${status}#${id}' },
       gs3sk: { type: String, value: 'user#${permissionLevel}#${id}' },
       gs4sk: { type: String, value: 'user#${name}#${id}#${email}#${status}#${permissionLevel}' },
     },
-    //
     Project: {
       pk: { type: String, value: 'account#${accountId}' },
       sk: { type: String, value: 'project#${id}' },
@@ -99,7 +83,6 @@ const Schema = {
           blockchain: { type: String, enum: ["ethereum", "polygon"] },
         },
       },
-      //  Search by product code or by type
       gs1pk: { type: String, value: 'project#' },
       gs1sk: { type: String, value: 'project#${codeProject}' },
       gs2sk: { type: String, value: 'project#${id}' },
@@ -185,7 +168,33 @@ const Schema = {
       gs1sk: { type: String, value: 'order#${id}' },
       gs2sk: { type: String, value: 'order#${typeOrder}#${codeProject}' },
       gs3sk: { type: String, value: 'order#${success}' },
-      gs4sk: { type: String, value: 'order#${id}#${id}#${typeOrder}#${codeProject}#${success}' },
+      gs4sk: { type: String, value: 'order#${id}#${typeOrder}#${codeProject}#${success}#${tx_hash}' },
+    },
+    Payment: {
+      pk: { type: String, value: 'account#${accountId}' },
+      sk: { type: String, value: 'payment#${id}' },
+      id: { type: String, generate: 'uuid', validate: Match.uuid },
+      dateCreated: { type: Number, default: () => new Date().getTime() },
+      dateLastUpdated: { type: Number, default: () => new Date().getTime() },
+      address: {type: String, validate: Match.cryptoAddress},
+      dateTime: {type: Number},
+      txId: {type: String},
+      amount: { type: Number },
+      fees: { type: Number },
+      currency: { type: String },
+      from: { type: String },
+      to: { type: String },
+      type: { type: String },
+      credit: { type: Number },
+      debit: { type: Number },
+      context: {  type: Object, default: {}  },
+      orderId: { type: String },
+      audit: {  type: Object, default: [] },
+      gs1pk: { type: String, value: 'payment#' },
+      gs1sk: { type: String, value: 'payment#${id}' },
+      gs2sk: { type: String, value: 'payment#${orderId}' },
+      gs3sk: { type: String, value: 'payment#${type}' },
+      gs4sk: { type: String, value: 'payment#${id}#${orderId}#${address}#${txId}#${currency}' },
     }
   } as const,
   params: {

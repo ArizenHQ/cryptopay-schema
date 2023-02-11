@@ -5,7 +5,7 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
 
-export class Orders {
+export class Payments {
   Crypto: any;
   table: Table;
   User: any;
@@ -38,12 +38,11 @@ export class Orders {
     this.Account = this.table.getModel("Account");
     this.Order = this.table.getModel("Order");
     this.Payment = this.table.getModel("Payment");
-
   }
 
   static init = async () => {
     const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration")
-    return new Orders(secretsString)
+    return new Payments(secretsString)
   }
 
 
@@ -52,64 +51,58 @@ export class Orders {
       const account = await this.Account.get({ id: data.accountId });
       this.table.setContext({ accountId: data.accountId });
       data.accountId = accountId;
-      if (data.projectCode) data.codeProject = data.projectCode
-      return this.Order.create(data).then(async (order: any) => {
-        return order;
+      return this.Payment.create(data).then(async (payment: any) => {
+        return payment;
       })
     } catch (error) {
-      throw new Error(`Error during add new order ${error}`);
+      throw new Error(`Error during add new payment ${error}`);
     }
   };
 
   findById = async (id: string) => {
-    return this.Order.get({ id: id }, { index: "gs2", follow: true });
+    return this.Payment.get({ id: id }, { index: "gs2", follow: true });
   };
 
   findPublicById = async (id: string) => {
-    let order = await this.Order.get({ id: id }, { index: "gs2", follow: true });
-
-
-    ///////delete project.hmacPassword;
-    ///////delete project.apiKey;
-    ///////delete project.accountId;
-    ///////delete project.status;
-    ///////delete project.created;
-    ///////delete project.updated;
-
+    let order = await this.Payment.get({ id: id }, { index: "gs2", follow: true });
     return order;
   };
 
   scan = async (params: any, query: any) => {
-    return this.Order.scan(params, query)
+    return this.Payment.scan(params, query)
   }
 
   getById = async (id: string) => {
-    return this.Order.get({ id: id }, { index: "gs1", follow: true });
+    return this.Payment.get({ id: id }, { index: "gs1", follow: true });
   };
+
+  getByOrderId = async (orderId: string) => {
+    return this.scan({orderId: orderId}, {})
+  }
 
   list = async (accountId: string, query: any) => {
     let key = {};
     if (accountId) key = { pk: `account#${accountId}` };
-    return this.Order.find(key, { index: "gs1", follow: true }, query);
+    return this.Payment.find(key, { index: "gs1", follow: true }, query);
   };
 
   patchById = async (id: string, data: any) => {
     try {
-      let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
-      if (!order) throw new Error(`no order fund for id: ${id}`)
-      this.table.setContext({ accountId: order.accountId });
+      let payment = await this.Payment.get({ id: id }, { index: "gs1", follow: true });
+      if (!payment) throw new Error(`no order fund for id: ${id}`)
+      this.table.setContext({ accountId: payment.accountId });
       data.id = id;
-      return this.Order.update(data);
+      return this.Payment.update(data);
     } catch (err) {
       throw new Error(`Error during update order ${err}`);
     }
   };
 
   removeById = async (id: string) => {
-    let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
-    if (!order) throw new Error(`Order not found`);
-    return this.Order.remove({ sk: `order#${id}`, pk: `account#${order.accountId}` });
+    let payment = await this.Payment.get({ id: id }, { index: "gs1", follow: true });
+    if (!payment) throw new Error(`Order not found`);
+    return this.Payment.remove({ sk: `order#${id}`, pk: `account#${payment.accountId}` });
   };
 
 }
-export default Orders
+export default Payments
