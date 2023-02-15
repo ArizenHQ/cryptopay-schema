@@ -7,6 +7,7 @@ export declare class Orders {
     Account: any;
     Order: any;
     Payment: any;
+    Kyt: any;
     secretsString: any;
     private constructor();
     static init: () => Promise<Orders>;

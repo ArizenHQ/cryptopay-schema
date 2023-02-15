@@ -7,6 +7,7 @@ export declare class Payments {
     Account: any;
     Order: any;
     Payment: any;
+    Kyt: any;
     secretsString: any;
     private constructor();
     static init: () => Promise<Payments>;
@@ -19,5 +20,6 @@ export declare class Payments {
     list: (accountId: string, query: any) => Promise<any>;
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;
+    getCountPaymentByTxId: (txId: string) => Promise<any>;
 }
 export default Payments;

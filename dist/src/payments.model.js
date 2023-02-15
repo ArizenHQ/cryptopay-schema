@@ -111,7 +111,7 @@ var Payments = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var payment, err_1;
+            var payment, currentDate, err_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -123,6 +123,8 @@ var Payments = /** @class */ (function () {
                             throw new Error("no order fund for id: ".concat(id));
                         this.table.setContext({ accountId: payment.accountId });
                         data.id = id;
+                        currentDate = new Date();
+                        data.dateLastUpdated = currentDate.getTime();
                         return [2 /*return*/, this.Payment.update(data)];
                     case 2:
                         err_1 = _b.sent();
@@ -144,6 +146,17 @@ var Payments = /** @class */ (function () {
                 }
             });
         }); };
+        this.getCountPaymentByTxId = function (txId) { return __awaiter(_this, void 0, void 0, function () {
+            var payments;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.scan({ txId: txId }, {})];
+                    case 1:
+                        payments = _b.sent();
+                        return [2 /*return*/, payments.count];
+                }
+            });
+        }); };
         this.secretsString = secretsString;
         this.Crypto = {
             primary: {
@@ -156,13 +169,14 @@ var Payments = /** @class */ (function () {
             schema: schema_1.default,
             partial: false,
             crypto: this.Crypto,
-            name: "CryptoPay-Accounts",
+            name: process.env.TABLE_CRYPTOPAY_ACCOUNTS,
         });
         this.User = this.table.getModel("User");
         this.Project = this.table.getModel("Project");
         this.Account = this.table.getModel("Account");
         this.Order = this.table.getModel("Order");
         this.Payment = this.table.getModel("Payment");
+        this.Kyt = this.table.getModel("Kyt");
     }
     var _a;
     _a = Payments;

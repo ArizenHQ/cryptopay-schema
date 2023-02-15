@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Payments = exports.Orders = exports.Projects = exports.Users = exports.Accounts = void 0;
+exports.Kyts = exports.Payments = exports.Orders = exports.Projects = exports.Users = exports.Accounts = void 0;
 var accounts_model_1 = require("./src/accounts.model");
 Object.defineProperty(exports, "Accounts", { enumerable: true, get: function () { return accounts_model_1.Accounts; } });
 var users_model_1 = require("./src/users.model");
@@ -11,4 +11,6 @@ var orders_model_1 = require("./src/orders.model");
 Object.defineProperty(exports, "Orders", { enumerable: true, get: function () { return orders_model_1.Orders; } });
 var payments_model_1 = require("./src/payments.model");
 Object.defineProperty(exports, "Payments", { enumerable: true, get: function () { return payments_model_1.Payments; } });
+var kyts_model_1 = require("./src/kyts.model");
+Object.defineProperty(exports, "Kyts", { enumerable: true, get: function () { return kyts_model_1.Kyts; } });
 //# sourceMappingURL=index.js.map

@@ -532,6 +532,70 @@ declare const Schema: {
                 readonly value: "payment#${id}#${orderId}#${address}#${txId}#${currency}";
             };
         };
+        readonly Kyt: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "account#${accountId}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "kyt#${id}";
+            };
+            readonly id: {
+                readonly type: StringConstructor;
+                readonly generate: "uuid";
+                readonly validate: RegExp;
+            };
+            readonly address: {
+                readonly type: StringConstructor;
+            };
+            readonly asset: {
+                readonly type: StringConstructor;
+            };
+            readonly type: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["address", "transfert"];
+            };
+            readonly txHash: {
+                readonly type: StringConstructor;
+            };
+            readonly network: {
+                readonly type: StringConstructor;
+            };
+            readonly direction: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["received", "sent"];
+            };
+            readonly userIdChaina: {
+                readonly type: StringConstructor;
+            };
+            readonly datetime: {
+                readonly type: StringConstructor;
+            };
+            readonly rating: {
+                readonly type: StringConstructor;
+            };
+            readonly gs1pk: {
+                readonly type: StringConstructor;
+                readonly value: "kyt#";
+            };
+            readonly gs1sk: {
+                readonly type: StringConstructor;
+                readonly value: "kyt#${id}";
+            };
+            readonly gs2sk: {
+                readonly type: StringConstructor;
+                readonly value: "kyt#${address}";
+            };
+            readonly gs3sk: {
+                readonly type: StringConstructor;
+                readonly value: "kyt#${type}";
+            };
+            readonly gs4sk: {
+                readonly type: StringConstructor;
+                readonly value: "kyt#${address}#${asset}#${type}#${network}#${userIdChaina}";
+            };
+        };
     };
     readonly params: {
         readonly isoDates: true;

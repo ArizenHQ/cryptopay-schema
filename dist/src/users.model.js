@@ -72,6 +72,21 @@ var Users = /** @class */ (function () {
                 return [2 /*return*/, this.User.find({ email: email }, { index: "gs1", follow: true })];
             });
         }); };
+        this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
+            var user, currentDate;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs4", follow: true })];
+                    case 1:
+                        user = _b.sent();
+                        this.table.setContext({ accountId: user.accountId });
+                        data.id = id;
+                        currentDate = new Date();
+                        data.dateLastUpdated = currentDate.getTime();
+                        return [2 /*return*/, this.User.update(data)];
+                }
+            });
+        }); };
         this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {
             var key;
             return __generator(this, function (_b) {
@@ -98,13 +113,14 @@ var Users = /** @class */ (function () {
             schema: schema_1.default,
             partial: false,
             crypto: this.Crypto,
-            name: "CryptoPay-Accounts",
+            name: process.env.TABLE_CRYPTOPAY_ACCOUNTS,
         });
         this.User = this.table.getModel("User");
         this.Project = this.table.getModel("Project");
         this.Account = this.table.getModel("Account");
         this.Order = this.table.getModel("Order");
         this.Payment = this.table.getModel("Payment");
+        this.Kyt = this.table.getModel("Kyt");
     }
     var _a;
     _a = Users;

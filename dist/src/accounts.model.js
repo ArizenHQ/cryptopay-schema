@@ -96,13 +96,14 @@ var Accounts = /** @class */ (function () {
             schema: schema_1.default,
             partial: false,
             crypto: this.Crypto,
-            name: "CryptoPay-Accounts",
+            name: process.env.TABLE_CRYPTOPAY_ACCOUNTS,
         });
         this.User = this.table.getModel("User");
         this.Project = this.table.getModel("Project");
         this.Account = this.table.getModel("Account");
         this.Order = this.table.getModel("Order");
         this.Payment = this.table.getModel("Payment");
+        this.Kyt = this.table.getModel("Kyt");
     }
     var _a;
     _a = Accounts;
