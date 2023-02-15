@@ -13,6 +13,7 @@ export class Payments {
   Account: any;
   Order: any;
   Payment: any;
+  Kyt: any;
   secretsString: any;
   private constructor(secretsString: any) {
 
@@ -38,6 +39,7 @@ export class Payments {
     this.Account = this.table.getModel("Account");
     this.Order = this.table.getModel("Order");
     this.Payment = this.table.getModel("Payment");
+    this.Kyt = this.table.getModel("Kyt");
   }
 
   static init = async () => {

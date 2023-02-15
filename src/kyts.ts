@@ -5,7 +5,7 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
 
-export class Orders {
+export class Kyts {
   Crypto: any;
   table: Table;
   User: any;
@@ -40,12 +40,11 @@ export class Orders {
     this.Order = this.table.getModel("Order");
     this.Payment = this.table.getModel("Payment");
     this.Kyt = this.table.getModel("Kyt");
-
   }
 
   static init = async () => {
     const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration")
-    return new Orders(secretsString)
+    return new Kyts(secretsString)
   }
 
 
@@ -54,66 +53,57 @@ export class Orders {
       const account = await this.Account.get({ id: data.accountId });
       this.table.setContext({ accountId: data.accountId });
       data.accountId = accountId;
-      if (data.projectCode) data.codeProject = data.projectCode
-      return this.Order.create(data).then(async (order: any) => {
-        return order;
+      return this.Kyt.create(data).then(async (kyt: any) => {
+        return kyt;
       })
     } catch (error) {
-      throw new Error(`Error during add new order ${error}`);
+      throw new Error(`Error during add new kyt ${error}`);
     }
   };
 
   findById = async (id: string) => {
-    return this.Order.get({ id: id }, { index: "gs2", follow: true });
+    return this.Kyt.get({ id: id }, { index: "gs2", follow: true });
   };
 
   findPublicById = async (id: string) => {
-    let order = await this.Order.get({ id: id }, { index: "gs2", follow: true });
-
-
-    ///////delete project.hmacPassword;
-    ///////delete project.apiKey;
-    ///////delete project.accountId;
-    ///////delete project.status;
-    ///////delete project.created;
-    ///////delete project.updated;
-
+    let order = await this.Kyt.get({ id: id }, { index: "gs2", follow: true });
     return order;
   };
 
   scan = async (params: any, query: any) => {
-    return this.Order.scan(params, query)
+    return this.Kyt.scan(params, query)
   }
 
   getById = async (id: string) => {
-    return this.Order.get({ id: id }, { index: "gs1", follow: true });
+    return this.Kyt.get({ id: id }, { index: "gs1", follow: true });
   };
+
 
   list = async (accountId: string, query: any) => {
     let key = {};
     if (accountId) key = { pk: `account#${accountId}` };
-    return this.Order.find(key, { index: "gs1", follow: true }, query);
+    return this.Kyt.find(key, { index: "gs1", follow: true }, query);
   };
 
   patchById = async (id: string, data: any) => {
     try {
-      let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
-      if (!order) throw new Error(`no order fund for id: ${id}`)
-      this.table.setContext({ accountId: order.accountId });
+      let kyt = await this.Kyt.get({ id: id }, { index: "gs1", follow: true });
+      if (!kyt) throw new Error(`no kyt fund for id: ${id}`)
+      this.table.setContext({ accountId: kyt.accountId });
       data.id = id;
       const currentDate = new Date();
       data.dateLastUpdated = currentDate.getTime();
-      return this.Order.update(data);
+      return this.Kyt.update(data);
     } catch (err) {
-      throw new Error(`Error during update order ${err}`);
+      throw new Error(`Error during update kyt ${err}`);
     }
   };
 
   removeById = async (id: string) => {
-    let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
-    if (!order) throw new Error(`Order not found`);
-    return this.Order.remove({ sk: `order#${id}`, pk: `account#${order.accountId}` });
+    let kyt = await this.Kyt.get({ id: id }, { index: "gs1", follow: true });
+    if (!kyt) throw new Error(`Kyt not found`);
+    return this.Kyt.remove({ sk: `kyt#${id}`, pk: `account#${kyt.accountId}` });
   };
 
 }
-export default Orders
+export default Kyts

@@ -16,6 +16,7 @@ export class Projects {
   Account: any;
   Order: any;
   Payment: any;
+  Kyt: any;
   secretsString: any;
   private constructor(secretsString: any) {
 
@@ -41,6 +42,7 @@ export class Projects {
     this.Account = this.table.getModel("Account");
     this.Order = this.table.getModel("Order");
     this.Payment = this.table.getModel("Payment");
+    this.Kyt = this.table.getModel("Kyt");
 
   }
 
