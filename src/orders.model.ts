@@ -99,6 +99,8 @@ export class Orders {
       if (!order) throw new Error(`no order fund for id: ${id}`)
       this.table.setContext({ accountId: order.accountId });
       data.id = id;
+      const currentDate = new Date();
+      data.dateLastUpdated = currentDate.getTime();
       return this.Order.update(data);
     } catch (err) {
       throw new Error(`Error during update order ${err}`);

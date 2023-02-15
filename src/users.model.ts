@@ -68,6 +68,15 @@ export class Users {
     return this.User.find({ email: email }, { index: "gs1", follow: true });
   };
 
+  patchById = async (id: string, data: any) => {
+    let user = await this.Project.get({ id: id }, { index: "gs4", follow: true });
+    this.table.setContext({ accountId: user.accountId });
+    data.id = id;
+    const currentDate = new Date();
+    data.dateLastUpdated = currentDate.getTime();
+    return this.User.update(data);
+  };
+
   list = async (accountId: string, query: any) => {
     let key = {};
     if (accountId) key = { pk: `account#${accountId}` };
