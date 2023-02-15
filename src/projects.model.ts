@@ -33,7 +33,7 @@ export class Projects {
       schema: Schema,
       partial: false,
       crypto: this.Crypto,
-      name: "CryptoPay-Accounts",
+      name: process.env.TABLE_CRYPTOPAY_ACCOUNTS,
     });
 
     this.User = this.table.getModel("User");
