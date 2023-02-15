@@ -104,5 +104,10 @@ export class Payments {
     return this.Payment.remove({ sk: `order#${id}`, pk: `account#${payment.accountId}` });
   };
 
+  getCountPaymentByTxId = async (txId: string) => {
+    let payments = await this.scan({txId: txId}, {})
+    return payments.count
+  }
+
 }
 export default Payments
