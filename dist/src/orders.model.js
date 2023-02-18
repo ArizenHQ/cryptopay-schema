@@ -59,7 +59,7 @@ var Orders = /** @class */ (function () {
                         this.table.setContext({ accountId: data.accountId });
                         data.accountId = accountId;
                         if (data.codeProject)
-                            data.projectCode = data.codeProject;
+                            data.codeProject = data.codeProject;
                         return [2 /*return*/, this.Order.create(data).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_b) {
                                     return [2 /*return*/, order];

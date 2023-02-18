@@ -8,7 +8,7 @@ const importApiKey = async (obj: any) => {
         customerId: obj.project.accountId,
         enabled: true,
         generateDistinctId: false,
-        name: `${obj.accountName}-${obj.project.projectCode}`,
+        name: `${obj.accountName}-${obj.project.codeProject}`,
         value: obj.project.apiKey,
         description: `Created the ${new Date().toISOString()} for account ${obj.accountName}`,
     }

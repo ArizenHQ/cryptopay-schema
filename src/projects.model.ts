@@ -59,7 +59,7 @@ export class Projects {
       return this.Project.create({
         name: data.name,
         accountId: data.accountId,
-        projectCode: data.projectCode,
+        codeProject: data.codeProject,
         typeProject: data.typeProject,
         description: data.description,
         status: data.status,
