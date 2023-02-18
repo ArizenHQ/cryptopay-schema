@@ -155,7 +155,7 @@ declare const Schema: {
                 readonly default: "active";
                 readonly enum: readonly ["active", "inactive"];
             };
-            readonly codeProject: {
+            readonly projectCode: {
                 readonly type: StringConstructor;
                 readonly required: true;
                 readonly unique: true;
@@ -229,7 +229,7 @@ declare const Schema: {
             };
             readonly gs1sk: {
                 readonly type: StringConstructor;
-                readonly value: "project#${codeProject}";
+                readonly value: "project#${projectCode}";
             };
             readonly gs2sk: {
                 readonly type: StringConstructor;
@@ -241,7 +241,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "project#${name}#${id}#${codeProject}";
+                readonly value: "project#${name}#${id}#${projectCode}";
             };
         };
         readonly Order: {
@@ -357,7 +357,7 @@ declare const Schema: {
             readonly paymentId: {
                 readonly type: StringConstructor;
             };
-            readonly codeProject: {
+            readonly projectCode: {
                 readonly type: StringConstructor;
                 readonly required: true;
             };
@@ -433,7 +433,7 @@ declare const Schema: {
             };
             readonly gs2sk: {
                 readonly type: StringConstructor;
-                readonly value: "order#${typeOrder}#${codeProject}";
+                readonly value: "order#${typeOrder}#${projectCode}";
             };
             readonly gs3sk: {
                 readonly type: StringConstructor;
@@ -441,7 +441,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "order#${id}#${typeOrder}#${codeProject}#${success}#${tx_hash}";
+                readonly value: "order#${id}#${typeOrder}#${projectCode}#${success}#${tx_hash}";
             };
         };
         readonly Payment: {

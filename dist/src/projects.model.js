@@ -61,7 +61,7 @@ var Projects = /** @class */ (function () {
                         return [2 /*return*/, this.Project.create({
                                 name: data.name,
                                 accountId: data.accountId,
-                                codeProject: data.codeProject,
+                                projectCode: data.projectCode,
                                 typeProject: data.typeProject,
                                 description: data.description,
                                 status: data.status,
