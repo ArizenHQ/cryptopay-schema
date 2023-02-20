@@ -61,8 +61,31 @@ var Orders = /** @class */ (function () {
                         if (data.projectCode)
                             data.codeProject = data.projectCode;
                         return [2 /*return*/, this.Order.create(data).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
-                                return __generator(this, function (_b) {
-                                    return [2 /*return*/, order];
+                                var project;
+                                var _b, _c, _d, _e, _f;
+                                return __generator(this, function (_g) {
+                                    switch (_g.label) {
+                                        case 0: return [4 /*yield*/, this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true })];
+                                        case 1:
+                                            project = _g.sent();
+                                            delete order.notificationFromAdyen;
+                                            delete order.session;
+                                            delete order.applicationInfo;
+                                            delete order.audit;
+                                            delete order.countryCode;
+                                            delete order.typeOrder;
+                                            if (Object.keys(order.urlsRedirect).length === 0) {
+                                                order.urlsRedirect = {
+                                                    urlRedirectSuccess: (_b = project.parameters) === null || _b === void 0 ? void 0 : _b.urlRedirectSuccess,
+                                                    urlRedirectPending: (_c = project.parameters) === null || _c === void 0 ? void 0 : _c.urlRedirectPending,
+                                                    urlRedirectFailed: (_d = project.parameters) === null || _d === void 0 ? void 0 : _d.urlRedirectFailed,
+                                                    urlRedirectError: (_e = project.parameters) === null || _e === void 0 ? void 0 : _e.urlRedirectError
+                                                };
+                                            }
+                                            if (!order.webhookUrl)
+                                                order.webhookUrl = (_f = project.parameters) === null || _f === void 0 ? void 0 : _f.webhookUrl;
+                                            return [2 /*return*/, order];
+                                    }
                                 });
                             }); })];
                     case 2:
@@ -84,12 +107,6 @@ var Orders = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs2", follow: true })];
                     case 1:
                         order = _b.sent();
-                        ///////delete project.hmacPassword;
-                        ///////delete project.apiKey;
-                        ///////delete project.accountId;
-                        ///////delete project.status;
-                        ///////delete project.created;
-                        ///////delete project.updated;
                         return [2 /*return*/, order];
                 }
             });

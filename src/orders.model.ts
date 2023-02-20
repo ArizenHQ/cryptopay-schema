@@ -64,7 +64,7 @@ export class Orders {
         delete order.audit;
         delete order.countryCode;
         delete order.typeOrder;
-
+        
         if (Object.keys(order.urlsRedirect).length === 0) {
           order.urlsRedirect = {
             urlRedirectSuccess: project.parameters?.urlRedirectSuccess,
@@ -86,7 +86,7 @@ export class Orders {
   };
 
   findPublicById = async (id: string) => {
-
+    let order = await this.Order.get({ id: id }, { index: "gs2", follow: true });
     return order;
   };
 
