@@ -1,13 +1,16 @@
 {
   "name": "cryptopay-schema",
-  "version": "0.0.59",
+  "version": "0.0.68",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.json"
   },
-  "repository": "git@github.com:ArizenHQ/cryptopay-schema.git",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ArizenHQ/cryptopay-schema.git"
+  },
   "author": "Alexandre Ouicher <alex@coinhouse.com>",
   "license": "MIT",
   "dependencies": {
@@ -24,5 +27,10 @@
     "npm-run-all": "^4.1.5",
     "rimraf": "^4.1.2",
     "typescript": "^4.3.4"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/ArizenHQ/cryptopay-schema/issues"
+  },
+  "homepage": "https://github.com/ArizenHQ/cryptopay-schema#readme",
+  "description": ""
 }
