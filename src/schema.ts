@@ -93,6 +93,8 @@ const Schema = {
       pk: { type: String, value: 'account#${accountId}' },
       sk: { type: String, value: 'order#${id}' },
       id: { type: String, generate: 'uuid', validate: Match.uuid },
+      orderId: {type: String, value: '${id}'},
+      OrderId: {type: String, value: '${id}'},
       accountId: { type: String, required: true },
       typeOrder: { type: String, required: true, enum: ['card', 'crypto'] },
       amount: { type: Number, required: true },

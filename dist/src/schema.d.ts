@@ -258,6 +258,14 @@ declare const Schema: {
                 readonly generate: "uuid";
                 readonly validate: RegExp;
             };
+            readonly orderId: {
+                readonly type: StringConstructor;
+                readonly value: "${id}";
+            };
+            readonly OrderId: {
+                readonly type: StringConstructor;
+                readonly value: "${id}";
+            };
             readonly accountId: {
                 readonly type: StringConstructor;
                 readonly required: true;
