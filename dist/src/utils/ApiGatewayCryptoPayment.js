@@ -47,7 +47,7 @@ var importApiKey = function (obj) { return __awaiter(void 0, void 0, void 0, fun
             customerId: obj.project.accountId,
             enabled: true,
             generateDistinctId: false,
-            name: "".concat(obj.accountName, "-").concat(obj.project.projectCode),
+            name: "".concat(obj.accountName, "-").concat(obj.project.codeProject),
             value: obj.project.apiKey,
             description: "Created the ".concat(new Date().toISOString(), " for account ").concat(obj.accountName),
         };
