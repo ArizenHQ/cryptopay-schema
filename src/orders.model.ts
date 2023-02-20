@@ -55,7 +55,25 @@ export class Orders {
       this.table.setContext({ accountId: data.accountId });
       data.accountId = accountId;
       if (data.projectCode) data.codeProject = data.projectCode
+
       return this.Order.create(data).then(async (order: any) => {
+        const project  = await this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true })
+        delete order.notificationFromAdyen;
+        delete order.session;
+        delete order.applicationInfo;
+        delete order.audit;
+        delete order.countryCode;
+        delete order.typeOrder;
+
+        if (Object.keys(order.urlsRedirect).length === 0) {
+          order.urlsRedirect = {
+            urlRedirectSuccess: project.parameters?.urlRedirectSuccess,
+            urlRedirectPending: project.parameters?.urlRedirectPending,
+            urlRedirectFailed: project.parameters?.urlRedirectFailed,
+            urlRedirectError: project.parameters?.urlRedirectError
+          }
+        }
+        if (!order.webhookUrl) order.webhookUrl = project.parameters?.webhookUrl
         return order;
       })
     } catch (error) {
@@ -68,15 +86,6 @@ export class Orders {
   };
 
   findPublicById = async (id: string) => {
-    let order = await this.Order.get({ id: id }, { index: "gs2", follow: true });
-
-
-    ///////delete project.hmacPassword;
-    ///////delete project.apiKey;
-    ///////delete project.accountId;
-    ///////delete project.status;
-    ///////delete project.created;
-    ///////delete project.updated;
 
     return order;
   };
