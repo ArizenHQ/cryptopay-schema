@@ -32,5 +32,6 @@
     "url": "https://github.com/ArizenHQ/cryptopay-schema/issues"
   },
   "homepage": "https://github.com/ArizenHQ/cryptopay-schema#readme",
-  "description": ""
+  "description": "",
+  "private": true
 }
