@@ -44,16 +44,18 @@ var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient(
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var projects_model_1 = require("./projects.model");
+var accounts_model_1 = require("./accounts.model");
 var Orders = /** @class */ (function () {
     function Orders(secretsString) {
         var _this = this;
         this.insert = function (accountId, order) { return __awaiter(_this, void 0, void 0, function () {
-            var account_1, projects, error_1;
+            var accounts, account_1, projects, error_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 4, , 5]);
+                        accounts = accounts_model_1.Accounts.init();
                         return [4 /*yield*/, this.Account.get({ id: order.accountId })];
                     case 1:
                         account_1 = _b.sent();

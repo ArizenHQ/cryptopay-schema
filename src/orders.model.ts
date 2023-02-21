@@ -5,6 +5,7 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { Projects } from "./projects.model";
+import { Accounts } from "./accounts.model";
 
 export class Orders {
   Crypto: any;
@@ -52,7 +53,8 @@ export class Orders {
 
   insert = async (accountId: string, order: any) => {
     try {
-      const account = await this.Account.get({ id: order.accountId });
+      const accounts = Accounts.init()
+      const account = await (await accounts).findById(order.accountId);
       this.table.setContext({ accountId: order.accountId });
       order.accountId = accountId;
       if (order.projectCode && !order.codeProject) { order.codeProject = order.projectCode }

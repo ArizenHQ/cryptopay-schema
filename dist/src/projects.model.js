@@ -110,7 +110,6 @@ var Projects = /** @class */ (function () {
                         project = _b.sent();
                         delete project.hmacPassword;
                         delete project.apiKey;
-                        delete project.accountId;
                         delete project.status;
                         delete project.created;
                         delete project.updated;
