@@ -65,7 +65,12 @@ export class Orders {
             externalPlatform: {
               integrator: account.name,
               name: _project.name,
+            },
+            merchantApplication: {
+              name: _project.name,
             }
+            
+            
           }
     
           if (Object.keys(order.urlsRedirect).length === 0) {

@@ -69,6 +69,9 @@ var Orders = /** @class */ (function () {
                                         externalPlatform: {
                                             integrator: account_1.name,
                                             name: _project.name,
+                                        },
+                                        merchantApplication: {
+                                            name: _project.name,
                                         }
                                     };
                                     if (Object.keys(order.urlsRedirect).length === 0) {
