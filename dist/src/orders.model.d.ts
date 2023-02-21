@@ -11,7 +11,7 @@ export declare class Orders {
     secretsString: any;
     private constructor();
     static init: () => Promise<Orders>;
-    insert: (accountId: string, data: any) => Promise<any>;
+    insert: (accountId: string, order: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;
     scan: (params: any, query: any) => Promise<any>;

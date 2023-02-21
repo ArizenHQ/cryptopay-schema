@@ -46,52 +46,60 @@ var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var Orders = /** @class */ (function () {
     function Orders(secretsString) {
         var _this = this;
-        this.insert = function (accountId, data) { return __awaiter(_this, void 0, void 0, function () {
-            var account, error_1;
+        this.insert = function (accountId, order) { return __awaiter(_this, void 0, void 0, function () {
+            var account_1, error_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.Account.get({ id: data.accountId })];
+                        _b.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, this.Account.get({ id: order.accountId })];
                     case 1:
-                        account = _b.sent();
-                        this.table.setContext({ accountId: data.accountId });
-                        data.accountId = accountId;
-                        if (data.projectCode)
-                            data.codeProject = data.projectCode;
-                        return [2 /*return*/, this.Order.create(data).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
-                                var project;
+                        account_1 = _b.sent();
+                        this.table.setContext({ accountId: order.accountId });
+                        order.accountId = accountId;
+                        if (order.projectCode && !order.codeProject) {
+                            order.codeProject = order.projectCode;
+                        }
+                        return [4 /*yield*/, this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true }).then(function (_project) {
                                 var _b, _c, _d, _e, _f;
-                                return __generator(this, function (_g) {
-                                    switch (_g.label) {
-                                        case 0: return [4 /*yield*/, this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true })];
-                                        case 1:
-                                            project = _g.sent();
-                                            delete order.notificationFromAdyen;
-                                            delete order.session;
-                                            delete order.applicationInfo;
-                                            delete order.audit;
-                                            delete order.countryCode;
-                                            delete order.typeOrder;
-                                            if (Object.keys(order.urlsRedirect).length === 0) {
-                                                order.urlsRedirect = {
-                                                    urlRedirectSuccess: (_b = project.parameters) === null || _b === void 0 ? void 0 : _b.urlRedirectSuccess,
-                                                    urlRedirectPending: (_c = project.parameters) === null || _c === void 0 ? void 0 : _c.urlRedirectPending,
-                                                    urlRedirectFailed: (_d = project.parameters) === null || _d === void 0 ? void 0 : _d.urlRedirectFailed,
-                                                    urlRedirectError: (_e = project.parameters) === null || _e === void 0 ? void 0 : _e.urlRedirectError
-                                                };
-                                            }
-                                            if (!order.webhookUrl)
-                                                order.webhookUrl = (_f = project.parameters) === null || _f === void 0 ? void 0 : _f.webhookUrl;
-                                            return [2 /*return*/, order];
+                                if (Object.keys(_project).length === 0) {
+                                    order.codeProject = _project.codeProject;
+                                    order.applicationInfo = {
+                                        externalPlatform: {
+                                            integrator: account_1.name,
+                                            name: _project.name,
+                                        }
+                                    };
+                                    if (Object.keys(order.urlsRedirect).length === 0) {
+                                        order.urlsRedirect = {
+                                            urlRedirectSuccess: (_b = _project.parameters) === null || _b === void 0 ? void 0 : _b.urlRedirectSuccess,
+                                            urlRedirectPending: (_c = _project.parameters) === null || _c === void 0 ? void 0 : _c.urlRedirectPending,
+                                            urlRedirectFailed: (_d = _project.parameters) === null || _d === void 0 ? void 0 : _d.urlRedirectFailed,
+                                            urlRedirectError: (_e = _project.parameters) === null || _e === void 0 ? void 0 : _e.urlRedirectError
+                                        };
                                     }
+                                    if (!order.webhookUrl)
+                                        order.webhookUrl = (_f = _project.parameters) === null || _f === void 0 ? void 0 : _f.webhookUrl;
+                                }
+                            })];
+                    case 2:
+                        _b.sent();
+                        return [2 /*return*/, this.Order.create(order).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
+                                return __generator(this, function (_b) {
+                                    delete order.notificationFromAdyen;
+                                    delete order.session;
+                                    delete order.applicationInfo;
+                                    delete order.audit;
+                                    delete order.countryCode;
+                                    delete order.typeOrder;
+                                    return [2 /*return*/, order];
                                 });
                             }); })];
-                    case 2:
+                    case 3:
                         error_1 = _b.sent();
                         throw new Error("Error during add new order ".concat(error_1));
-                    case 3: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
                 }
             });
         }); };

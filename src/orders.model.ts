@@ -49,31 +49,46 @@ export class Orders {
   }
 
 
-  insert = async (accountId: string, data: any) => {
+  insert = async (accountId: string, order: any) => {
     try {
-      const account = await this.Account.get({ id: data.accountId });
-      this.table.setContext({ accountId: data.accountId });
-      data.accountId = accountId;
-      if (data.projectCode) data.codeProject = data.projectCode
+      const account = await this.Account.get({ id: order.accountId });
 
-      return this.Order.create(data).then(async (order: any) => {
-        const project  = await this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true })
+      this.table.setContext({ accountId: order.accountId });
+      order.accountId = accountId;
+
+      if (order.projectCode && !order.codeProject) { order.codeProject = order.projectCode }
+
+      await this.Project.get({codeProject: order.codeProject}, { index: "gs1", follow: true }).then((_project: any)=>{
+        if(Object.keys(_project).length === 0) {
+          order.codeProject = _project.codeProject;
+          order.applicationInfo = {
+            externalPlatform: {
+              integrator: account.name,
+              name: _project.name,
+            }
+          }
+    
+          if (Object.keys(order.urlsRedirect).length === 0) {
+            order.urlsRedirect = {
+              urlRedirectSuccess: _project.parameters?.urlRedirectSuccess,
+              urlRedirectPending: _project.parameters?.urlRedirectPending,
+              urlRedirectFailed: _project.parameters?.urlRedirectFailed,
+              urlRedirectError: _project.parameters?.urlRedirectError
+            }
+          }
+          if (!order.webhookUrl) order.webhookUrl = _project.parameters?.webhookUrl
+        }
+      })
+
+      return this.Order.create(order).then(async (order: any) => {
         delete order.notificationFromAdyen;
         delete order.session;
         delete order.applicationInfo;
         delete order.audit;
         delete order.countryCode;
         delete order.typeOrder;
-        
-        if (Object.keys(order.urlsRedirect).length === 0) {
-          order.urlsRedirect = {
-            urlRedirectSuccess: project.parameters?.urlRedirectSuccess,
-            urlRedirectPending: project.parameters?.urlRedirectPending,
-            urlRedirectFailed: project.parameters?.urlRedirectFailed,
-            urlRedirectError: project.parameters?.urlRedirectError
-          }
-        }
-        if (!order.webhookUrl) order.webhookUrl = project.parameters?.webhookUrl
+
+
         return order;
       })
     } catch (error) {
