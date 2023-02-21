@@ -52,27 +52,31 @@ var Payments = /** @class */ (function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
+                        _b.trys.push([0, 3, , 4]);
                         return [4 /*yield*/, this.Account.get({ id: data.accountId })];
                     case 1:
                         account = _b.sent();
                         this.table.setContext({ accountId: data.accountId });
                         data.accountId = accountId;
-                        return [2 /*return*/, this.Payment.create(data).then(function (payment) { return __awaiter(_this, void 0, void 0, function () {
+                        return [4 /*yield*/, this.Payment.create(data).then(function (payment) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_b) {
                                     return [2 /*return*/, payment];
                                 });
                             }); })];
-                    case 2:
+                    case 2: return [2 /*return*/, _b.sent()];
+                    case 3:
                         error_1 = _b.sent();
                         throw new Error("Error during add new payment ".concat(error_1));
-                    case 3: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
                 }
             });
         }); };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Payment.get({ id: id }, { index: "gs2", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Payment.get({ id: id }, { index: "gs2", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.findPublicById = function (id) { return __awaiter(_this, void 0, void 0, function () {
@@ -88,26 +92,39 @@ var Payments = /** @class */ (function () {
         }); };
         this.scan = function (params, query) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Payment.scan(params, query)];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Payment.scan(params, query)];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.getById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Payment.get({ id: id }, { index: "gs1", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Payment.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.getByOrderId = function (orderId) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.scan({ orderId: orderId }, {})];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.scan({ orderId: orderId }, {})];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {
             var key;
             return __generator(this, function (_b) {
-                key = {};
-                if (accountId)
-                    key = { pk: "account#".concat(accountId) };
-                return [2 /*return*/, this.Payment.find(key, { index: "gs1", follow: true }, query)];
+                switch (_b.label) {
+                    case 0:
+                        key = {};
+                        if (accountId)
+                            key = { pk: "account#".concat(accountId) };
+                        return [4 /*yield*/, this.Payment.find(key, { index: "gs1", follow: true }, query)];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
@@ -115,7 +132,7 @@ var Payments = /** @class */ (function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
+                        _b.trys.push([0, 3, , 4]);
                         return [4 /*yield*/, this.Payment.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
                         payment = _b.sent();
@@ -123,11 +140,12 @@ var Payments = /** @class */ (function () {
                             throw new Error("no order fund for id: ".concat(id));
                         this.table.setContext({ accountId: payment.accountId });
                         data.id = id;
-                        return [2 /*return*/, this.Payment.update(data)];
-                    case 2:
+                        return [4 /*yield*/, this.Payment.update(data)];
+                    case 2: return [2 /*return*/, _b.sent()];
+                    case 3:
                         err_1 = _b.sent();
                         throw new Error("Error during update order ".concat(err_1));
-                    case 3: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
                 }
             });
         }); };

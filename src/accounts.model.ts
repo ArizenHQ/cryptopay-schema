@@ -50,33 +50,33 @@ export class Accounts {
   }
 
   insert = async (data: any) => {
-    return this.Account.create({ name: data.name })
+    return await this.Account.create({ name: data.name })
   }
 
   findById = async (id: string) => {
-    return this.Account.get({ pk: `account#${id}` });
+    return await this.Account.get({ pk: `account#${id}` });
   }
   getAccount = async (id: string) => {
-    return this.Account.get({ pk: `account#${id}` });
+    return await this.Account.get({ pk: `account#${id}` });
   }
 
   getFullAccount = async (id: string) => {
     this.table.setContext({ id: id })
-    return this.table.fetch(['Account', 'User', 'Project'], { pk: `account#${id}` });
+    return await this.table.fetch(['Account', 'User', 'Project'], { pk: `account#${id}` });
   }
 
 
   list = async (query: any) => {
-    return this.Account.scan({}, query)
+    return await this.Account.scan({}, query)
   }
 
   patchById = async (id: string, data: any) => {
     let account = this.Account.find({ id: id });
-    return account.update(data)
+    return await account.update(data)
   }
 
   removeById = async (id: string) => {
-    return this.Account.remove({ id: id })
+    return await this.Account.remove({ id: id })
   }
 
 }

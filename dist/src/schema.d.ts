@@ -571,7 +571,7 @@ declare const Schema: {
             };
             readonly calls: {
                 readonly type: NumberConstructor;
-                readonly default: 0;
+                readonly default: 1;
             };
             readonly accountId: {
                 readonly type: StringConstructor;

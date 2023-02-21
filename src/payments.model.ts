@@ -53,7 +53,7 @@ export class Payments {
       const account = await this.Account.get({ id: data.accountId });
       this.table.setContext({ accountId: data.accountId });
       data.accountId = accountId;
-      return this.Payment.create(data).then(async (payment: any) => {
+      return await this.Payment.create(data).then(async (payment: any) => {
         return payment;
       })
     } catch (error) {
@@ -62,7 +62,7 @@ export class Payments {
   };
 
   findById = async (id: string) => {
-    return this.Payment.get({ id: id }, { index: "gs2", follow: true });
+    return await this.Payment.get({ id: id }, { index: "gs2", follow: true });
   };
 
   findPublicById = async (id: string) => {
@@ -71,21 +71,21 @@ export class Payments {
   };
 
   scan = async (params: any, query: any) => {
-    return this.Payment.scan(params, query)
+    return await this.Payment.scan(params, query)
   }
 
   getById = async (id: string) => {
-    return this.Payment.get({ id: id }, { index: "gs1", follow: true });
+    return await this.Payment.get({ id: id }, { index: "gs1", follow: true });
   };
 
   getByOrderId = async (orderId: string) => {
-    return this.scan({orderId: orderId}, {})
+    return await this.scan({orderId: orderId}, {})
   }
 
   list = async (accountId: string, query: any) => {
     let key = {};
     if (accountId) key = { pk: `account#${accountId}` };
-    return this.Payment.find(key, { index: "gs1", follow: true }, query);
+    return await this.Payment.find(key, { index: "gs1", follow: true }, query);
   };
 
   patchById = async (id: string, data: any) => {
@@ -94,7 +94,7 @@ export class Payments {
       if (!payment) throw new Error(`no order fund for id: ${id}`)
       this.table.setContext({ accountId: payment.accountId });
       data.id = id;
-      return this.Payment.update(data);
+      return await this.Payment.update(data);
     } catch (err) {
       throw new Error(`Error during update order ${err}`);
     }

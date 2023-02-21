@@ -50,40 +50,40 @@ export class Users {
 
   insert = async (data: any) => {
     this.table.setContext({ accountId: data.accountId });
-    return this.User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel });
+    return await this.User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel });
   };
 
   findById = async (id: string) => {
-    return this.User.get({ id: id }, { index: "gs4", follow: true });
+    return await this.User.get({ id: id }, { index: "gs4", follow: true });
   };
 
   findByApiKey = async (apiKey: string) => {
-    return this.User.find({ apiKey: apiKey }, { index: "gs1", follow: true });
+    return await this.User.find({ apiKey: apiKey }, { index: "gs1", follow: true });
   };
 
   getByEmail = async (email: string) => {
-    return this.User.get({ email: email });
+    return await this.User.get({ email: email });
   };
 
   findByEmail = async (email: string) => {
-    return this.User.find({ email: email }, { index: "gs1", follow: true });
+    return await this.User.find({ email: email }, { index: "gs1", follow: true });
   };
 
   patchById = async (id: string, data: any) => {
     let user = await this.Project.get({ id: id }, { index: "gs4", follow: true });
     this.table.setContext({ accountId: user.accountId });
     data.id = id;
-    return this.User.update(data);
+    return await this.User.update(data);
   };
 
   list = async (accountId: string, query: any) => {
     let key = {};
     if (accountId) key = { pk: `account#${accountId}` };
-    return this.User.find(key, { index: "gs1", follow: true }, query);
+    return await this.User.find(key, { index: "gs1", follow: true }, query);
   };
 
   removeById = async (id: string) => {
-    return this.User.remove({ id: id }, { index: "gs4", follow: true });
+    return await this.User.remove({ id: id }, { index: "gs4", follow: true });
   };
 
 }

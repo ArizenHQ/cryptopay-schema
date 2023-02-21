@@ -48,40 +48,63 @@ var Accounts = /** @class */ (function () {
         var _this = this;
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Account.create({ name: data.name })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Account.create({ name: data.name })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Account.get({ pk: "account#".concat(id) })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Account.get({ pk: "account#".concat(id) })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.getAccount = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Account.get({ pk: "account#".concat(id) })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Account.get({ pk: "account#".concat(id) })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.getFullAccount = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                this.table.setContext({ id: id });
-                return [2 /*return*/, this.table.fetch(['Account', 'User', 'Project'], { pk: "account#".concat(id) })];
+                switch (_b.label) {
+                    case 0:
+                        this.table.setContext({ id: id });
+                        return [4 /*yield*/, this.table.fetch(['Account', 'User', 'Project'], { pk: "account#".concat(id) })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.list = function (query) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Account.scan({}, query)];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Account.scan({}, query)];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
             var account;
             return __generator(this, function (_b) {
-                account = this.Account.find({ id: id });
-                return [2 /*return*/, account.update(data)];
+                switch (_b.label) {
+                    case 0:
+                        account = this.Account.find({ id: id });
+                        return [4 /*yield*/, account.update(data)];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Account.remove({ id: id })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Account.remove({ id: id })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.secretsString = secretsString;

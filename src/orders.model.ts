@@ -87,7 +87,7 @@ export class Orders {
       } else {
         throw new Error(`Project not found! Please check your codeProject or API Key`);
       }
-      return this.Order.create(order).then(async (order: any) => {
+      return await this.Order.create(order).then(async (order: any) => {
         delete order.notificationFromAdyen;
         delete order.session;
         delete order.applicationInfo;
@@ -102,7 +102,7 @@ export class Orders {
   };
 
   findById = async (id: string) => {
-    return this.Order.get({ id: id }, { index: "gs2", follow: true });
+    return await this.Order.get({ id: id }, { index: "gs2", follow: true });
   };
 
   findPublicById = async (id: string) => {
@@ -111,17 +111,17 @@ export class Orders {
   };
 
   scan = async (params: any, query: any) => {
-    return this.Order.scan(params, query)
+    return await this.Order.scan(params, query)
   }
 
   getById = async (id: string) => {
-    return this.Order.get({ id: id }, { index: "gs1", follow: true });
+    return await this.Order.get({ id: id }, { index: "gs1", follow: true });
   };
 
   list = async (accountId: string, query: any) => {
     let key = {};
     if (accountId) key = { pk: `account#${accountId}` };
-    return this.Order.find(key, { index: "gs1", follow: true }, query);
+    return await this.Order.find(key, { index: "gs1", follow: true }, query);
   };
 
   patchById = async (id: string, data: any) => {
@@ -130,7 +130,7 @@ export class Orders {
       if (!order) throw new Error(`no order fund for id: ${id}`)
       this.table.setContext({ accountId: order.accountId });
       data.id = id;
-      return this.Order.update(data);
+      return await this.Order.update(data);
     } catch (err) {
       throw new Error(`Error during update order ${err}`);
     }
@@ -139,7 +139,7 @@ export class Orders {
   removeById = async (id: string) => {
     let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
     if (!order) throw new Error(`Order not found`);
-    return this.Order.remove({ sk: `order#${id}`, pk: `account#${order.accountId}` });
+    return await this.Order.remove({ sk: `order#${id}`, pk: `account#${order.accountId}` });
   };
 
 }

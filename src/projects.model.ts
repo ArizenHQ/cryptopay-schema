@@ -65,7 +65,7 @@ export class Projects {
         status: data.status,
         parameters: data.parameters,
       }).then(async (project: any) => {
-        this.createApiKey({ accountName: account.name, project: project });
+        await this.createApiKey({ accountName: account.name, project: project });
         return project;
       })
     } catch (error) {
@@ -74,7 +74,7 @@ export class Projects {
   };
 
   findById = async (id: string) => {
-    return this.Project.get({ id: id }, { index: "gs2", follow: true });
+    return await this.Project.get({ id: id }, { index: "gs2", follow: true });
   };
 
   findPublicById = async (id: string) => {
@@ -100,10 +100,10 @@ export class Projects {
   };
 
   findByApiKey = async (apiKey: string) => {
-    return this.Project.get({ apiKey: apiKey }, { index: "gs3", follow: true });
+    return await this.Project.get({ apiKey: apiKey }, { index: "gs3", follow: true });
   };
   getById = async (id: string) => {
-    return this.Project.get({ id: id }, { index: "gs1", follow: true });
+    return await this.Project.get({ id: id }, { index: "gs1", follow: true });
   };
 
   list = async (accountId: string, query: any) => {

@@ -11,7 +11,7 @@ export declare class Kyts {
     secretsString: any;
     private constructor();
     static init: () => Promise<Kyts>;
-    insert: (accountId: string, data: any) => Promise<any>;
+    insert: (projectId: string, data: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;
     scan: (params: any, query: any) => Promise<any>;

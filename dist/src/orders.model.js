@@ -53,7 +53,7 @@ var Orders = /** @class */ (function () {
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
-                        _c.trys.push([0, 5, , 6]);
+                        _c.trys.push([0, 6, , 7]);
                         if (order.projectCode && !order.codeProject) {
                             order.codeProject = order.projectCode;
                         }
@@ -87,7 +87,7 @@ var Orders = /** @class */ (function () {
                             order.currency = order.currency.toUpperCase();
                         return [3 /*break*/, 4];
                     case 3: throw new Error("Project not found! Please check your codeProject or API Key");
-                    case 4: return [2 /*return*/, this.Order.create(order).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
+                    case 4: return [4 /*yield*/, this.Order.create(order).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
                             return __generator(this, function (_b) {
                                 delete order.notificationFromAdyen;
                                 delete order.session;
@@ -98,16 +98,20 @@ var Orders = /** @class */ (function () {
                                 return [2 /*return*/, order];
                             });
                         }); })];
-                    case 5:
+                    case 5: return [2 /*return*/, _c.sent()];
+                    case 6:
                         error_1 = _c.sent();
                         throw new Error("Error during add new order ".concat(error_1));
-                    case 6: return [2 /*return*/];
+                    case 7: return [2 /*return*/];
                 }
             });
         }); };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Order.get({ id: id }, { index: "gs2", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs2", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.findPublicById = function (id) { return __awaiter(_this, void 0, void 0, function () {
@@ -123,21 +127,31 @@ var Orders = /** @class */ (function () {
         }); };
         this.scan = function (params, query) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Order.scan(params, query)];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Order.scan(params, query)];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.getById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {
             var key;
             return __generator(this, function (_b) {
-                key = {};
-                if (accountId)
-                    key = { pk: "account#".concat(accountId) };
-                return [2 /*return*/, this.Order.find(key, { index: "gs1", follow: true }, query)];
+                switch (_b.label) {
+                    case 0:
+                        key = {};
+                        if (accountId)
+                            key = { pk: "account#".concat(accountId) };
+                        return [4 /*yield*/, this.Order.find(key, { index: "gs1", follow: true }, query)];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
@@ -145,7 +159,7 @@ var Orders = /** @class */ (function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
+                        _b.trys.push([0, 3, , 4]);
                         return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
                         order = _b.sent();
@@ -153,11 +167,12 @@ var Orders = /** @class */ (function () {
                             throw new Error("no order fund for id: ".concat(id));
                         this.table.setContext({ accountId: order.accountId });
                         data.id = id;
-                        return [2 /*return*/, this.Order.update(data)];
-                    case 2:
+                        return [4 /*yield*/, this.Order.update(data)];
+                    case 2: return [2 /*return*/, _b.sent()];
+                    case 3:
                         err_1 = _b.sent();
                         throw new Error("Error during update order ".concat(err_1));
-                    case 3: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
                 }
             });
         }); };
@@ -170,7 +185,8 @@ var Orders = /** @class */ (function () {
                         order = _b.sent();
                         if (!order)
                             throw new Error("Order not found");
-                        return [2 /*return*/, this.Order.remove({ sk: "order#".concat(id), pk: "account#".concat(order.accountId) })];
+                        return [4 /*yield*/, this.Order.remove({ sk: "order#".concat(id), pk: "account#".concat(order.accountId) })];
+                    case 2: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };

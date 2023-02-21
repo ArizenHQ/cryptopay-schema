@@ -48,28 +48,44 @@ var Users = /** @class */ (function () {
         var _this = this;
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                this.table.setContext({ accountId: data.accountId });
-                return [2 /*return*/, this.User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel })];
+                switch (_b.label) {
+                    case 0:
+                        this.table.setContext({ accountId: data.accountId });
+                        return [4 /*yield*/, this.User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.User.get({ id: id }, { index: "gs4", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.findByApiKey = function (apiKey) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.User.find({ apiKey: apiKey }, { index: "gs1", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.User.find({ apiKey: apiKey }, { index: "gs1", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.getByEmail = function (email) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.User.get({ email: email })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.User.get({ email: email })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.findByEmail = function (email) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.User.find({ email: email }, { index: "gs1", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.User.find({ email: email }, { index: "gs1", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
@@ -81,22 +97,30 @@ var Users = /** @class */ (function () {
                         user = _b.sent();
                         this.table.setContext({ accountId: user.accountId });
                         data.id = id;
-                        return [2 /*return*/, this.User.update(data)];
+                        return [4 /*yield*/, this.User.update(data)];
+                    case 2: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };
         this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {
             var key;
             return __generator(this, function (_b) {
-                key = {};
-                if (accountId)
-                    key = { pk: "account#".concat(accountId) };
-                return [2 /*return*/, this.User.find(key, { index: "gs1", follow: true }, query)];
+                switch (_b.label) {
+                    case 0:
+                        key = {};
+                        if (accountId)
+                            key = { pk: "account#".concat(accountId) };
+                        return [4 /*yield*/, this.User.find(key, { index: "gs1", follow: true }, query)];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.User.remove({ id: id }, { index: "gs4", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.User.remove({ id: id }, { index: "gs4", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.secretsString = secretsString;

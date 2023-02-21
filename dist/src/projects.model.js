@@ -68,8 +68,12 @@ var Projects = /** @class */ (function () {
                                 parameters: data.parameters,
                             }).then(function (project) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_b) {
-                                    this.createApiKey({ accountName: account_1.name, project: project });
-                                    return [2 /*return*/, project];
+                                    switch (_b.label) {
+                                        case 0: return [4 /*yield*/, this.createApiKey({ accountName: account_1.name, project: project })];
+                                        case 1:
+                                            _b.sent();
+                                            return [2 /*return*/, project];
+                                    }
                                 });
                             }); })];
                     case 2:
@@ -81,7 +85,10 @@ var Projects = /** @class */ (function () {
         }); };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.findPublicById = function (id) { return __awaiter(_this, void 0, void 0, function () {
@@ -119,12 +126,18 @@ var Projects = /** @class */ (function () {
         }); };
         this.findByApiKey = function (apiKey) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Project.get({ apiKey: apiKey }, { index: "gs3", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Project.get({ apiKey: apiKey }, { index: "gs3", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.getById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Project.get({ id: id }, { index: "gs1", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {

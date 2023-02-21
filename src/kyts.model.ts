@@ -48,21 +48,34 @@ export class Kyts {
   }
 
 
-  insert = async (accountId: string, data: any) => {
+  insert = async (projectId: string, data: any) => {
     try {
-      const account = await this.Account.get({ id: data.accountId });
-      this.table.setContext({ accountId: data.accountId });
-      data.accountId = accountId;
-      return this.Kyt.create(data).then(async (kyt: any) => {
-        return kyt;
-      })
+      const project = await this.Project.get({ id: projectId }, { index: "gs2", follow: true });
+      this.table.setContext({ accountId: project.accountId });
+      data.accountId = project.accountId;
+      data.projectId = projectId;
+
+      const kyt = await this.Kyt.get({ address: data.address }, { index: "gs2", follow: true })
+      let param = { add: { calls: 1 } };
+
+      if (kyt) {
+        data.id = kyt.id
+        return this.Kyt.update(data, param).then(async (_kyt: any) => {
+          return _kyt;
+        })
+      } else {
+        return this.Kyt.create(data).then(async (_kyt: any) => {
+          return _kyt;
+        })
+      }
     } catch (error) {
-      throw new Error(`Error during add new kyt ${error}`);
+      console.error(error)
+      throw new Error(`Error during add or update new kyt ${error}`);
     }
   };
 
   findById = async (id: string) => {
-    return this.Kyt.get({ id: id }, { index: "gs2", follow: true });
+    return await this.Kyt.get({ id: id }, { index: "gs2", follow: true });
   };
 
   findPublicById = async (id: string) => {
@@ -71,18 +84,18 @@ export class Kyts {
   };
 
   scan = async (params: any, query: any) => {
-    return this.Kyt.scan(params, query)
+    return await this.Kyt.scan(params, query)
   }
 
   getById = async (id: string) => {
-    return this.Kyt.get({ id: id }, { index: "gs1", follow: true });
+    return await this.Kyt.get({ id: id }, { index: "gs1", follow: true });
   };
 
 
   list = async (accountId: string, query: any) => {
     let key = {};
     if (accountId) key = { pk: `account#${accountId}` };
-    return this.Kyt.find(key, { index: "gs1", follow: true }, query);
+    return await this.Kyt.find(key, { index: "gs1", follow: true }, query);
   };
 
   patchById = async (id: string, data: any) => {
@@ -93,7 +106,7 @@ export class Kyts {
       data.id = id;
       const currentDate = new Date();
       data.dateLastUpdated = currentDate.getTime();
-      return this.Kyt.update(data);
+      return await this.Kyt.update(data);
     } catch (err) {
       throw new Error(`Error during update kyt ${err}`);
     }
@@ -102,7 +115,7 @@ export class Kyts {
   removeById = async (id: string) => {
     let kyt = await this.Kyt.get({ id: id }, { index: "gs1", follow: true });
     if (!kyt) throw new Error(`Kyt not found`);
-    return this.Kyt.remove({ sk: `kyt#${id}`, pk: `account#${kyt.accountId}` });
+    return await this.Kyt.remove({ sk: `kyt#${id}`, pk: `account#${kyt.accountId}` });
   };
 
 }

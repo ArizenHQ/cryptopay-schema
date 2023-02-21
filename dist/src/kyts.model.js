@@ -46,33 +46,54 @@ var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var Kyts = /** @class */ (function () {
     function Kyts(secretsString) {
         var _this = this;
-        this.insert = function (accountId, data) { return __awaiter(_this, void 0, void 0, function () {
-            var account, error_1;
+        this.insert = function (projectId, data) { return __awaiter(_this, void 0, void 0, function () {
+            var project, kyt, param, error_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.Account.get({ id: data.accountId })];
+                        _b.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 1:
-                        account = _b.sent();
-                        this.table.setContext({ accountId: data.accountId });
-                        data.accountId = accountId;
-                        return [2 /*return*/, this.Kyt.create(data).then(function (kyt) { return __awaiter(_this, void 0, void 0, function () {
-                                return __generator(this, function (_b) {
-                                    return [2 /*return*/, kyt];
-                                });
-                            }); })];
+                        project = _b.sent();
+                        this.table.setContext({ accountId: project.accountId });
+                        data.accountId = project.accountId;
+                        data.projectId = projectId;
+                        return [4 /*yield*/, this.Kyt.get({ address: data.address }, { index: "gs2", follow: true })];
                     case 2:
+                        kyt = _b.sent();
+                        console.log("kyt", kyt);
+                        param = { add: { calls: 1 } };
+                        if (kyt) {
+                            data.id = kyt.id;
+                            return [2 /*return*/, this.Kyt.update(data, param).then(function (_kyt) { return __awaiter(_this, void 0, void 0, function () {
+                                    return __generator(this, function (_b) {
+                                        return [2 /*return*/, _kyt];
+                                    });
+                                }); })];
+                        }
+                        else {
+                            return [2 /*return*/, this.Kyt.create(data).then(function (_kyt) { return __awaiter(_this, void 0, void 0, function () {
+                                    return __generator(this, function (_b) {
+                                        return [2 /*return*/, _kyt];
+                                    });
+                                }); })];
+                        }
+                        return [3 /*break*/, 4];
+                    case 3:
                         error_1 = _b.sent();
-                        throw new Error("Error during add new kyt ".concat(error_1));
-                    case 3: return [2 /*return*/];
+                        console.error(error_1);
+                        throw new Error("Error during add or update new kyt ".concat(error_1));
+                    case 4: return [2 /*return*/];
                 }
             });
         }); };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Kyt.get({ id: id }, { index: "gs2", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Kyt.get({ id: id }, { index: "gs2", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.findPublicById = function (id) { return __awaiter(_this, void 0, void 0, function () {
@@ -88,21 +109,31 @@ var Kyts = /** @class */ (function () {
         }); };
         this.scan = function (params, query) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Kyt.scan(params, query)];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Kyt.scan(params, query)];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.getById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
-                return [2 /*return*/, this.Kyt.get({ id: id }, { index: "gs1", follow: true })];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Kyt.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {
             var key;
             return __generator(this, function (_b) {
-                key = {};
-                if (accountId)
-                    key = { pk: "account#".concat(accountId) };
-                return [2 /*return*/, this.Kyt.find(key, { index: "gs1", follow: true }, query)];
+                switch (_b.label) {
+                    case 0:
+                        key = {};
+                        if (accountId)
+                            key = { pk: "account#".concat(accountId) };
+                        return [4 /*yield*/, this.Kyt.find(key, { index: "gs1", follow: true }, query)];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
@@ -110,7 +141,7 @@ var Kyts = /** @class */ (function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
+                        _b.trys.push([0, 3, , 4]);
                         return [4 /*yield*/, this.Kyt.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
                         kyt = _b.sent();
@@ -120,11 +151,12 @@ var Kyts = /** @class */ (function () {
                         data.id = id;
                         currentDate = new Date();
                         data.dateLastUpdated = currentDate.getTime();
-                        return [2 /*return*/, this.Kyt.update(data)];
-                    case 2:
+                        return [4 /*yield*/, this.Kyt.update(data)];
+                    case 2: return [2 /*return*/, _b.sent()];
+                    case 3:
                         err_1 = _b.sent();
                         throw new Error("Error during update kyt ".concat(err_1));
-                    case 3: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
                 }
             });
         }); };
@@ -137,7 +169,8 @@ var Kyts = /** @class */ (function () {
                         kyt = _b.sent();
                         if (!kyt)
                             throw new Error("Kyt not found");
-                        return [2 /*return*/, this.Kyt.remove({ sk: "kyt#".concat(id), pk: "account#".concat(kyt.accountId) })];
+                        return [4 /*yield*/, this.Kyt.remove({ sk: "kyt#".concat(id), pk: "account#".concat(kyt.accountId) })];
+                    case 2: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };
