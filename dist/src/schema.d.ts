@@ -261,10 +261,12 @@ declare const Schema: {
             readonly orderId: {
                 readonly type: StringConstructor;
                 readonly value: "${id}";
+                readonly hidden: false;
             };
             readonly OrderId: {
                 readonly type: StringConstructor;
                 readonly value: "${id}";
+                readonly hidden: false;
             };
             readonly accountId: {
                 readonly type: StringConstructor;
