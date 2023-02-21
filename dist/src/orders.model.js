@@ -43,74 +43,65 @@ var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
-var projects_model_1 = require("./projects.model");
-var accounts_model_1 = require("./accounts.model");
 var Orders = /** @class */ (function () {
     function Orders(secretsString) {
         var _this = this;
         this.insert = function (accountId, order) { return __awaiter(_this, void 0, void 0, function () {
-            var accounts, account_1, projects, error_1;
+            var project, account, error_1;
             var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
-                        _b.trys.push([0, 4, , 5]);
-                        accounts = accounts_model_1.Accounts.init();
-                        return [4 /*yield*/, this.Account.get({ id: order.accountId })];
-                    case 1:
-                        account_1 = _b.sent();
-                        this.table.setContext({ accountId: order.accountId });
-                        order.accountId = accountId;
+                        _c.trys.push([0, 5, , 6]);
                         if (order.projectCode && !order.codeProject) {
                             order.codeProject = order.projectCode;
                         }
-                        projects = projects_model_1.Projects.init();
-                        return [4 /*yield*/, projects];
-                    case 2: return [4 /*yield*/, (_b.sent()).findByCodeProject(order.codeProject).then(function (_project) {
-                            var _b, _c, _d, _e, _f;
-                            if (Object.keys(_project).length === 0) {
-                                order.codeProject = _project.codeProject;
-                                order.applicationInfo = {
-                                    externalPlatform: {
-                                        integrator: account_1.name,
-                                        name: _project.name,
-                                    },
-                                    merchantApplication: {
-                                        name: _project.name,
-                                    }
-                                };
-                                if (Object.keys(order.urlsRedirect).length === 0) {
-                                    order.urlsRedirect = {
-                                        urlRedirectSuccess: (_b = _project.parameters) === null || _b === void 0 ? void 0 : _b.urlRedirectSuccess,
-                                        urlRedirectPending: (_c = _project.parameters) === null || _c === void 0 ? void 0 : _c.urlRedirectPending,
-                                        urlRedirectFailed: (_d = _project.parameters) === null || _d === void 0 ? void 0 : _d.urlRedirectFailed,
-                                        urlRedirectError: (_e = _project.parameters) === null || _e === void 0 ? void 0 : _e.urlRedirectError
-                                    };
-                                }
-                                if (!order.webhookUrl)
-                                    order.webhookUrl = (_f = _project.parameters) === null || _f === void 0 ? void 0 : _f.webhookUrl;
+                        return [4 /*yield*/, this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true })];
+                    case 1:
+                        project = _c.sent();
+                        if (!(Object.keys(project).length > 0)) return [3 /*break*/, 3];
+                        if (accountId !== project.accountId)
+                            throw new Error("accountId and project do not match. Please check all information or contact administrator");
+                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(accountId) })];
+                    case 2:
+                        account = _c.sent();
+                        this.table.setContext({ accountId: accountId });
+                        order.accountId = accountId;
+                        order.codeProject = project.codeProject;
+                        order.applicationInfo = {
+                            externalPlatform: {
+                                integrator: account.name,
+                                name: project.name,
+                            },
+                            merchantApplication: {
+                                name: project.name,
                             }
-                            else {
-                                throw new Error("New project found! Please check your codeProject or API Key");
-                            }
-                        })];
-                    case 3:
-                        _b.sent();
-                        return [2 /*return*/, this.Order.create(order).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
-                                return __generator(this, function (_b) {
-                                    delete order.notificationFromAdyen;
-                                    delete order.session;
-                                    delete order.applicationInfo;
-                                    delete order.audit;
-                                    delete order.countryCode;
-                                    delete order.typeOrder;
-                                    return [2 /*return*/, order];
-                                });
-                            }); })];
-                    case 4:
-                        error_1 = _b.sent();
+                        };
+                        if (!order.urlsRedirect) {
+                            order.urlsRedirect = project.parameters;
+                        }
+                        if (!order.webhookUrl)
+                            order.webhookUrl = (_b = project.parameters) === null || _b === void 0 ? void 0 : _b.webhookUrl;
+                        if (order.currency)
+                            order.currency = order.currency.toUpperCase();
+                        return [3 /*break*/, 4];
+                    case 3: throw new Error("Project not found! Please check your codeProject or API Key");
+                    case 4: return [2 /*return*/, this.Order.create(order).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_b) {
+                                delete order.notificationFromAdyen;
+                                delete order.session;
+                                delete order.applicationInfo;
+                                delete order.audit;
+                                delete order.countryCode;
+                                delete order.typeOrder;
+                                return [2 /*return*/, order];
+                            });
+                        }); })];
+                    case 5:
+                        error_1 = _c.sent();
                         throw new Error("Error during add new order ".concat(error_1));
-                    case 5: return [2 /*return*/];
+                    case 6: return [2 /*return*/];
                 }
             });
         }); };
