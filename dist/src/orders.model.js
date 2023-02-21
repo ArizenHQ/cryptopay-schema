@@ -88,7 +88,6 @@ var Orders = /** @class */ (function () {
                             })];
                     case 2:
                         _b.sent();
-                        console.log("Order to create", order);
                         return [2 /*return*/, this.Order.create(order).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_b) {
                                     delete order.notificationFromAdyen;

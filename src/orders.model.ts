@@ -78,7 +78,6 @@ export class Orders {
           if (!order.webhookUrl) order.webhookUrl = _project.parameters?.webhookUrl
         }
       })
-      console.log("Order to create", order)
       return this.Order.create(order).then(async (order: any) => {
         delete order.notificationFromAdyen;
         delete order.session;
