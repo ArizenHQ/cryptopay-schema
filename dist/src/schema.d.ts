@@ -569,6 +569,14 @@ declare const Schema: {
             readonly rating: {
                 readonly type: StringConstructor;
             };
+            readonly accountId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly projectId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "kyt#";
