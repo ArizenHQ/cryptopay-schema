@@ -43,16 +43,17 @@ var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
+var projects_model_1 = require("./projects.model");
 var Orders = /** @class */ (function () {
     function Orders(secretsString) {
         var _this = this;
         this.insert = function (accountId, order) { return __awaiter(_this, void 0, void 0, function () {
-            var account_1, error_1;
+            var account_1, projects, error_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 3, , 4]);
+                        _b.trys.push([0, 4, , 5]);
                         return [4 /*yield*/, this.Account.get({ id: order.accountId })];
                     case 1:
                         account_1 = _b.sent();
@@ -61,32 +62,37 @@ var Orders = /** @class */ (function () {
                         if (order.projectCode && !order.codeProject) {
                             order.codeProject = order.projectCode;
                         }
-                        return [4 /*yield*/, this.Project.get({ codeProject: order.codeProject }, { index: "gs2", follow: true }).then(function (_project) {
-                                var _b, _c, _d, _e, _f;
-                                if (Object.keys(_project).length === 0) {
-                                    order.codeProject = _project.codeProject;
-                                    order.applicationInfo = {
-                                        externalPlatform: {
-                                            integrator: account_1.name,
-                                            name: _project.name,
-                                        },
-                                        merchantApplication: {
-                                            name: _project.name,
-                                        }
-                                    };
-                                    if (Object.keys(order.urlsRedirect).length === 0) {
-                                        order.urlsRedirect = {
-                                            urlRedirectSuccess: (_b = _project.parameters) === null || _b === void 0 ? void 0 : _b.urlRedirectSuccess,
-                                            urlRedirectPending: (_c = _project.parameters) === null || _c === void 0 ? void 0 : _c.urlRedirectPending,
-                                            urlRedirectFailed: (_d = _project.parameters) === null || _d === void 0 ? void 0 : _d.urlRedirectFailed,
-                                            urlRedirectError: (_e = _project.parameters) === null || _e === void 0 ? void 0 : _e.urlRedirectError
-                                        };
+                        projects = projects_model_1.Projects.init();
+                        return [4 /*yield*/, projects];
+                    case 2: return [4 /*yield*/, (_b.sent()).findByCodeProject(order.codeProject).then(function (_project) {
+                            var _b, _c, _d, _e, _f;
+                            if (Object.keys(_project).length === 0) {
+                                order.codeProject = _project.codeProject;
+                                order.applicationInfo = {
+                                    externalPlatform: {
+                                        integrator: account_1.name,
+                                        name: _project.name,
+                                    },
+                                    merchantApplication: {
+                                        name: _project.name,
                                     }
-                                    if (!order.webhookUrl)
-                                        order.webhookUrl = (_f = _project.parameters) === null || _f === void 0 ? void 0 : _f.webhookUrl;
+                                };
+                                if (Object.keys(order.urlsRedirect).length === 0) {
+                                    order.urlsRedirect = {
+                                        urlRedirectSuccess: (_b = _project.parameters) === null || _b === void 0 ? void 0 : _b.urlRedirectSuccess,
+                                        urlRedirectPending: (_c = _project.parameters) === null || _c === void 0 ? void 0 : _c.urlRedirectPending,
+                                        urlRedirectFailed: (_d = _project.parameters) === null || _d === void 0 ? void 0 : _d.urlRedirectFailed,
+                                        urlRedirectError: (_e = _project.parameters) === null || _e === void 0 ? void 0 : _e.urlRedirectError
+                                    };
                                 }
-                            })];
-                    case 2:
+                                if (!order.webhookUrl)
+                                    order.webhookUrl = (_f = _project.parameters) === null || _f === void 0 ? void 0 : _f.webhookUrl;
+                            }
+                            else {
+                                throw new Error("New project found! Please check your codeProject or API Key");
+                            }
+                        })];
+                    case 3:
                         _b.sent();
                         return [2 /*return*/, this.Order.create(order).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_b) {
@@ -99,10 +105,10 @@ var Orders = /** @class */ (function () {
                                     return [2 /*return*/, order];
                                 });
                             }); })];
-                    case 3:
+                    case 4:
                         error_1 = _b.sent();
                         throw new Error("Error during add new order ".concat(error_1));
-                    case 4: return [2 /*return*/];
+                    case 5: return [2 /*return*/];
                 }
             });
         }); };

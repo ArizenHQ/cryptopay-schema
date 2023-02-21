@@ -4,6 +4,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
+import { Projects } from "./projects.model";
 
 export class Orders {
   Crypto: any;
@@ -55,7 +56,9 @@ export class Orders {
       this.table.setContext({ accountId: order.accountId });
       order.accountId = accountId;
       if (order.projectCode && !order.codeProject) { order.codeProject = order.projectCode }
-      await this.Project.get({codeProject: order.codeProject}, { index: "gs2", follow: true }).then((_project: any)=>{
+
+      const projects = Projects.init()
+      await (await projects).findByCodeProject(order.codeProject).then((_project: any) =>{
         if(Object.keys(_project).length === 0) {
           order.codeProject = _project.codeProject;
           order.applicationInfo = {
@@ -76,6 +79,8 @@ export class Orders {
             }
           }
           if (!order.webhookUrl) order.webhookUrl = _project.parameters?.webhookUrl
+        } else {
+          throw new Error(`New project found! Please check your codeProject or API Key`);
         }
       })
       return this.Order.create(order).then(async (order: any) => {
