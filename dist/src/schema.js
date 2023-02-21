@@ -203,6 +203,7 @@ var Schema = {
             userIdChaina: { type: String },
             datetime: { type: String },
             rating: { type: String },
+            calls: { type: Number, default: 0 },
             accountId: { type: String, required: true },
             projectId: { type: String, required: true },
             gs1pk: { type: String, value: 'kyt#' },
