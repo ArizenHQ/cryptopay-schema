@@ -101,6 +101,23 @@ var Projects = /** @class */ (function () {
                 }
             });
         }); };
+        this.findByCodeProject = function (codeProject) { return __awaiter(_this, void 0, void 0, function () {
+            var project;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Project.get({ codeProject: codeProject }, { index: "gs1", follow: true })];
+                    case 1:
+                        project = _b.sent();
+                        delete project.hmacPassword;
+                        delete project.apiKey;
+                        delete project.accountId;
+                        delete project.status;
+                        delete project.created;
+                        delete project.updated;
+                        return [2 /*return*/, project];
+                }
+            });
+        }); };
         this.findByApiKey = function (apiKey) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 return [2 /*return*/, this.Project.get({ apiKey: apiKey }, { index: "gs3", follow: true })];

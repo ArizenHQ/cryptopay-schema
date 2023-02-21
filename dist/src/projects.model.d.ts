@@ -14,6 +14,7 @@ export declare class Projects {
     insert: (data: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;
+    findByCodeProject: (codeProject: string) => Promise<any>;
     findByApiKey: (apiKey: string) => Promise<any>;
     getById: (id: string) => Promise<any>;
     list: (accountId: string, query: any) => Promise<any>;
