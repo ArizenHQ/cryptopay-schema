@@ -111,7 +111,7 @@ var Payments = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var payment, currentDate, err_1;
+            var payment, err_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -123,8 +123,6 @@ var Payments = /** @class */ (function () {
                             throw new Error("no order fund for id: ".concat(id));
                         this.table.setContext({ accountId: payment.accountId });
                         data.id = id;
-                        currentDate = new Date();
-                        data.dateLastUpdated = currentDate.getTime();
                         return [2 /*return*/, this.Payment.update(data)];
                     case 2:
                         err_1 = _b.sent();

@@ -139,8 +139,6 @@ const Schema = {
           lastname: { type: String },
         }
       },
-      dateCreated: { type: Number, default: () => new Date().getTime() },
-      dateLastUpdated: { type: Number, default: () => new Date().getTime() },
       internalRef: { type: String, required: true },
       paymentId: { type: String },
       codeProject: { type: String, required: true },
@@ -176,8 +174,6 @@ const Schema = {
       pk: { type: String, value: 'account#${accountId}' },
       sk: { type: String, value: 'payment#${id}' },
       id: { type: String, generate: 'uuid', validate: Match.uuid },
-      dateCreated: { type: Number, default: () => new Date().getTime() },
-      dateLastUpdated: { type: Number, default: () => new Date().getTime() },
       address: {type: String, validate: Match.cryptoAddress},
       dateTime: {type: Number},
       txId: {type: String},
@@ -221,6 +217,8 @@ const Schema = {
   params: {
     isoDates: true,
     timestamps: true,
+    createdField: "dateCreated",
+    updatedField: "dateLastUpdated"
   },
 } as const
 

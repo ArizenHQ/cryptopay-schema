@@ -52,13 +52,10 @@ export class Orders {
   insert = async (accountId: string, order: any) => {
     try {
       const account = await this.Account.get({ id: order.accountId });
-
       this.table.setContext({ accountId: order.accountId });
       order.accountId = accountId;
-
       if (order.projectCode && !order.codeProject) { order.codeProject = order.projectCode }
-
-      await this.Project.get({codeProject: order.codeProject}, { index: "gs1", follow: true }).then((_project: any)=>{
+      await this.Project.get({codeProject: order.codeProject}, { index: "gs2", follow: true }).then((_project: any)=>{
         if(Object.keys(_project).length === 0) {
           order.codeProject = _project.codeProject;
           order.applicationInfo = {
@@ -69,10 +66,7 @@ export class Orders {
             merchantApplication: {
               name: _project.name,
             }
-            
-            
           }
-    
           if (Object.keys(order.urlsRedirect).length === 0) {
             order.urlsRedirect = {
               urlRedirectSuccess: _project.parameters?.urlRedirectSuccess,
@@ -84,7 +78,7 @@ export class Orders {
           if (!order.webhookUrl) order.webhookUrl = _project.parameters?.webhookUrl
         }
       })
-
+      console.log("Order to create", order)
       return this.Order.create(order).then(async (order: any) => {
         delete order.notificationFromAdyen;
         delete order.session;
@@ -92,8 +86,6 @@ export class Orders {
         delete order.audit;
         delete order.countryCode;
         delete order.typeOrder;
-
-
         return order;
       })
     } catch (error) {
@@ -130,8 +122,6 @@ export class Orders {
       if (!order) throw new Error(`no order fund for id: ${id}`)
       this.table.setContext({ accountId: order.accountId });
       data.id = id;
-      const currentDate = new Date();
-      data.dateLastUpdated = currentDate.getTime();
       return this.Order.update(data);
     } catch (err) {
       throw new Error(`Error during update order ${err}`);

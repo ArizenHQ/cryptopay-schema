@@ -73,7 +73,7 @@ var Users = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var user, currentDate;
+            var user;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs4", follow: true })];
@@ -81,8 +81,6 @@ var Users = /** @class */ (function () {
                         user = _b.sent();
                         this.table.setContext({ accountId: user.accountId });
                         data.id = id;
-                        currentDate = new Date();
-                        data.dateLastUpdated = currentDate.getTime();
                         return [2 /*return*/, this.User.update(data)];
                 }
             });

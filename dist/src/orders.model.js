@@ -61,7 +61,7 @@ var Orders = /** @class */ (function () {
                         if (order.projectCode && !order.codeProject) {
                             order.codeProject = order.projectCode;
                         }
-                        return [4 /*yield*/, this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true }).then(function (_project) {
+                        return [4 /*yield*/, this.Project.get({ codeProject: order.codeProject }, { index: "gs2", follow: true }).then(function (_project) {
                                 var _b, _c, _d, _e, _f;
                                 if (Object.keys(_project).length === 0) {
                                     order.codeProject = _project.codeProject;
@@ -88,6 +88,7 @@ var Orders = /** @class */ (function () {
                             })];
                     case 2:
                         _b.sent();
+                        console.log("Order to create", order);
                         return [2 /*return*/, this.Order.create(order).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_b) {
                                     delete order.notificationFromAdyen;
@@ -142,7 +143,7 @@ var Orders = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var order, currentDate, err_1;
+            var order, err_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -154,8 +155,6 @@ var Orders = /** @class */ (function () {
                             throw new Error("no order fund for id: ".concat(id));
                         this.table.setContext({ accountId: order.accountId });
                         data.id = id;
-                        currentDate = new Date();
-                        data.dateLastUpdated = currentDate.getTime();
                         return [2 /*return*/, this.Order.update(data)];
                     case 2:
                         err_1 = _b.sent();

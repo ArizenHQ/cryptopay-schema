@@ -73,8 +73,6 @@ export class Users {
     let user = await this.Project.get({ id: id }, { index: "gs4", follow: true });
     this.table.setContext({ accountId: user.accountId });
     data.id = id;
-    const currentDate = new Date();
-    data.dateLastUpdated = currentDate.getTime();
     return this.User.update(data);
   };
 

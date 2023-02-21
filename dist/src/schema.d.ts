@@ -350,14 +350,6 @@ declare const Schema: {
                     };
                 };
             };
-            readonly dateCreated: {
-                readonly type: NumberConstructor;
-                readonly default: () => number;
-            };
-            readonly dateLastUpdated: {
-                readonly type: NumberConstructor;
-                readonly default: () => number;
-            };
             readonly internalRef: {
                 readonly type: StringConstructor;
                 readonly required: true;
@@ -465,14 +457,6 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly generate: "uuid";
                 readonly validate: RegExp;
-            };
-            readonly dateCreated: {
-                readonly type: NumberConstructor;
-                readonly default: () => number;
-            };
-            readonly dateLastUpdated: {
-                readonly type: NumberConstructor;
-                readonly default: () => number;
             };
             readonly address: {
                 readonly type: StringConstructor;
@@ -608,6 +592,8 @@ declare const Schema: {
     readonly params: {
         readonly isoDates: true;
         readonly timestamps: true;
+        readonly createdField: "dateCreated";
+        readonly updatedField: "dateLastUpdated";
     };
 };
 export default Schema;

@@ -121,7 +121,7 @@ var Projects = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var project, currentDate;
+            var project;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
@@ -129,8 +129,6 @@ var Projects = /** @class */ (function () {
                         project = _b.sent();
                         this.table.setContext({ accountId: project.accountId });
                         data.id = id;
-                        currentDate = new Date();
-                        data.dateLastUpdated = currentDate.getTime();
                         this.createApiKey(data);
                         return [2 /*return*/, this.Project.update(data)];
                 }

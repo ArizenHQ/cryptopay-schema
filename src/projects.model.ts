@@ -106,8 +106,6 @@ export class Projects {
     let project = await this.Project.get({ id: id }, { index: "gs2", follow: true });
     this.table.setContext({ accountId: project.accountId });
     data.id = id;
-    const currentDate = new Date();
-    data.dateLastUpdated = currentDate.getTime();
     this.createApiKey(data);
     return this.Project.update(data);
   };
