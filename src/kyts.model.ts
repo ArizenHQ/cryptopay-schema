@@ -48,7 +48,7 @@ export class Kyts {
   }
 
 
-  insert = async (projectId: string, data: any) => {
+  insert = async (projectId: string, data: any, incrementCount: boolean) => {
     try {
       const project = await this.Project.get({ id: projectId }, { index: "gs2", follow: true });
       this.table.setContext({ accountId: project.accountId });
@@ -56,10 +56,12 @@ export class Kyts {
       data.projectId = projectId;
 
       const kyt = await this.Kyt.get({ address: data.address }, { index: "gs2", follow: true })
+      let param = {}
+      if(incrementCount) param = { add: { calls: 1 } };
 
       if (kyt) {
         data.id = kyt.id
-        return this.Kyt.update(data, { add: { calls: 1 } }).then(async (_kyt: any) => {
+        return this.Kyt.update(data, param).then(async (_kyt: any) => {
           return _kyt;
         })
       } else {

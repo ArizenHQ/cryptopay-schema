@@ -46,7 +46,7 @@ var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var Kyts = /** @class */ (function () {
     function Kyts(secretsString) {
         var _this = this;
-        this.insert = function (projectId, data) { return __awaiter(_this, void 0, void 0, function () {
+        this.insert = function (projectId, data, incrementCount) { return __awaiter(_this, void 0, void 0, function () {
             var project, kyt, param, error_1;
             var _this = this;
             return __generator(this, function (_b) {
@@ -62,7 +62,9 @@ var Kyts = /** @class */ (function () {
                         return [4 /*yield*/, this.Kyt.get({ address: data.address }, { index: "gs2", follow: true })];
                     case 2:
                         kyt = _b.sent();
-                        param = { add: { calls: 1 } };
+                        param = {};
+                        if (incrementCount)
+                            param = { add: { calls: 1 } };
                         if (kyt) {
                             data.id = kyt.id;
                             return [2 /*return*/, this.Kyt.update(data, param).then(function (_kyt) { return __awaiter(_this, void 0, void 0, function () {
