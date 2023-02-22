@@ -62,7 +62,6 @@ var Kyts = /** @class */ (function () {
                         return [4 /*yield*/, this.Kyt.get({ address: data.address }, { index: "gs2", follow: true })];
                     case 2:
                         kyt = _b.sent();
-                        console.log("kyt", kyt);
                         param = { add: { calls: 1 } };
                         if (kyt) {
                             data.id = kyt.id;
