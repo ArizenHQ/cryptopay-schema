@@ -56,11 +56,10 @@ export class Kyts {
       data.projectId = projectId;
 
       const kyt = await this.Kyt.get({ address: data.address }, { index: "gs2", follow: true })
-      let param = { add: { calls: 1 } };
 
       if (kyt) {
         data.id = kyt.id
-        return this.Kyt.update(data, param).then(async (_kyt: any) => {
+        return this.Kyt.update(data, { add: { calls: 1 } }).then(async (_kyt: any) => {
           return _kyt;
         })
       } else {
