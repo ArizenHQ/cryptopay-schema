@@ -83,6 +83,7 @@ export class Orders {
         if (!order.webhookUrl) order.webhookUrl = project.parameters?.webhookUrl
        
         if(order.currency) order.currency = order.currency.toUpperCase()
+        if(order.customerAddress) order.customerAddress = order.customerAddress.toLowerCase()
 
       } else {
         throw new Error(`Project not found! Please check your codeProject or API Key`);

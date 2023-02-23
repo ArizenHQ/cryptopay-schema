@@ -374,6 +374,7 @@ declare const Schema: {
             };
             readonly statusOrder: {
                 readonly type: StringConstructor;
+                readonly default: "CREATED";
             };
             readonly success: {
                 readonly type: BooleanConstructor;

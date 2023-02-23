@@ -85,6 +85,8 @@ var Orders = /** @class */ (function () {
                             order.webhookUrl = (_b = project.parameters) === null || _b === void 0 ? void 0 : _b.webhookUrl;
                         if (order.currency)
                             order.currency = order.currency.toUpperCase();
+                        if (order.customerAddress)
+                            order.customerAddress = order.customerAddress.toLowerCase();
                         return [3 /*break*/, 4];
                     case 3: throw new Error("Project not found! Please check your codeProject or API Key");
                     case 4: return [4 /*yield*/, this.Order.create(order).then(function (order) { return __awaiter(_this, void 0, void 0, function () {

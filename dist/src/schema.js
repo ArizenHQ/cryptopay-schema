@@ -141,7 +141,7 @@ var Schema = {
             eventCode: { type: String },
             eventDate: { type: String },
             statusDetail: { type: String },
-            statusOrder: { type: String },
+            statusOrder: { type: String, default: 'CREATED' },
             success: { type: Boolean },
             tokenId: { type: Number },
             tx_date: { type: String },
