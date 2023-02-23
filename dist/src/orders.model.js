@@ -95,6 +95,7 @@ var Orders = /** @class */ (function () {
                                 delete order.session;
                                 delete order.applicationInfo;
                                 delete order.audit;
+                                delete order.statusOrder;
                                 delete order.countryCode;
                                 delete order.typeOrder;
                                 return [2 /*return*/, order];

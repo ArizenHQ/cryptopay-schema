@@ -93,6 +93,7 @@ export class Orders {
         delete order.session;
         delete order.applicationInfo;
         delete order.audit;
+        delete order.statusOrder;
         delete order.countryCode;
         delete order.typeOrder;
         return order;
