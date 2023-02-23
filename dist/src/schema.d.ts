@@ -318,8 +318,8 @@ declare const Schema: {
                 };
             };
             readonly audit: {
-                readonly type: ObjectConstructor;
-                readonly default: {};
+                readonly type: ArrayConstructor;
+                readonly default: readonly [];
             };
             readonly countryCode: {
                 readonly type: StringConstructor;

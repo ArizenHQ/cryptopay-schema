@@ -123,8 +123,8 @@ const Schema = {
         }
       },
       audit: {
-        type: Object,
-        default: {}
+        type: Array,
+        default: []
       },
       countryCode: { type: String },
       currency: { type: String, enum: ["ETH", "MATIC", "EUR"] },
