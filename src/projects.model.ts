@@ -89,15 +89,18 @@ export class Projects {
     return project;
   };
 
-  findByCodeProject = async (codeProject: string) => {
+  findByCodeProject = async (codeProject: string, showHiddenFields = false) => {
     let project = await this.Project.get({ codeProject: codeProject }, { index: "gs1", follow: true });
-    delete project.hmacPassword;
-    delete project.apiKey;
-    delete project.status;
-    delete project.created;
-    delete project.updated;
+    if (showHiddenFields === false) {
+      delete project.hmacPassword;
+      delete project.apiKey;
+      delete project.status;
+      delete project.created;
+      delete project.updated;
+    }
     return project;
   };
+
 
   findByApiKey = async (apiKey: string) => {
     return await this.Project.get({ apiKey: apiKey }, { index: "gs3", follow: true });
