@@ -53,10 +53,10 @@ var Payments = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, this.Account.get({ id: data.accountId })];
+                        return [4 /*yield*/, this.Account.get({ id: accountId })];
                     case 1:
                         account = _b.sent();
-                        this.table.setContext({ accountId: data.accountId });
+                        this.table.setContext({ accountId: accountId });
                         data.accountId = accountId;
                         return [4 /*yield*/, this.Payment.create(data).then(function (payment) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_b) {
