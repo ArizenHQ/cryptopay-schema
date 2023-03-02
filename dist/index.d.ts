@@ -4,3 +4,4 @@ export { Projects } from './src/projects.model';
 export { Orders } from './src/orders.model';
 export { Payments } from './src/payments.model';
 export { Kyts } from './src/kyts.model';
+export { GasStations } from './src/gasStations.model';

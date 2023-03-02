@@ -163,7 +163,7 @@ declare const Schema: {
             readonly typeProject: {
                 readonly type: StringConstructor;
                 readonly required: true;
-                readonly enum: readonly ["cardPayment", "cryptoPayment"];
+                readonly enum: readonly ["cardPayment", "cryptoPayment", "gasStation"];
             };
             readonly apiKey: {
                 readonly type: StringConstructor;
@@ -219,7 +219,23 @@ declare const Schema: {
                     };
                     readonly blockchain: {
                         readonly type: StringConstructor;
-                        readonly enum: readonly ["ethereum", "polygon"];
+                        readonly enum: readonly ["ethereum", "polygon", "tezos"];
+                    };
+                    readonly coinhouseCustomerId: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly gasStation: {
+                        readonly type: ObjectConstructor;
+                        readonly default: {};
+                        readonly schema: {
+                            readonly currency: {
+                                readonly type: StringConstructor;
+                                readonly enum: readonly ["ETH", "MATIC", "XTZ"];
+                            };
+                            readonly limitPer24H: {
+                                readonly type: NumberConstructor;
+                            };
+                        };
                     };
                 };
             };
@@ -601,6 +617,99 @@ declare const Schema: {
             readonly gs4sk: {
                 readonly type: StringConstructor;
                 readonly value: "kyt#${address}#${asset}#${type}#${network}#${userIdChaina}";
+            };
+        };
+        readonly GasStation: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "account#${accountId}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStation#${id}";
+            };
+            readonly id: {
+                readonly type: StringConstructor;
+                readonly generate: "uuid";
+                readonly validate: RegExp;
+            };
+            readonly accountId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly projectId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly address: {
+                readonly type: StringConstructor;
+            };
+            readonly currency: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["ETH", "MATIC", "XTZ"];
+            };
+            readonly network: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["mainnet", "munbai", "goerli"];
+            };
+            readonly blockchain: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["ethereum", "polygon", "tezos"];
+            };
+            readonly tx_date: {
+                readonly type: StringConstructor;
+            };
+            readonly tx_hash: {
+                readonly type: StringConstructor;
+            };
+            readonly statusOrder: {
+                readonly type: StringConstructor;
+                readonly default: "CREATED";
+            };
+            readonly success: {
+                readonly type: BooleanConstructor;
+            };
+            readonly paymentId: {
+                readonly type: StringConstructor;
+            };
+            readonly codeProject: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly internalRef: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly webhookUrl: {
+                readonly type: StringConstructor;
+                readonly validate: RegExp;
+            };
+            readonly amount: {
+                readonly type: NumberConstructor;
+                readonly required: true;
+            };
+            readonly fees: {
+                readonly type: NumberConstructor;
+            };
+            readonly gs1pk: {
+                readonly type: StringConstructor;
+                readonly value: "getStation#";
+            };
+            readonly gs1sk: {
+                readonly type: StringConstructor;
+                readonly value: "getStation#${id}";
+            };
+            readonly gs2sk: {
+                readonly type: StringConstructor;
+                readonly value: "getStation#${codeProject}";
+            };
+            readonly gs3sk: {
+                readonly type: StringConstructor;
+                readonly value: "order#${statusOrder}";
+            };
+            readonly gs4sk: {
+                readonly type: StringConstructor;
+                readonly value: "order#${id}#${codeProject}#${statusOrder}#${success}#${paymentId}#${tx_hash}";
             };
         };
     };

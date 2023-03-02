@@ -63,7 +63,7 @@ const Schema = {
 
       status: { type: String, required: true, default: 'active', enum: ['active', 'inactive'] },
       codeProject: { type: String, required: true, unique: true },
-      typeProject: { type: String, required: true, enum: ['cardPayment', 'cryptoPayment'] },
+      typeProject: { type: String, required: true, enum: ['cardPayment', 'cryptoPayment', 'gasStation'] },
       apiKey: { type: String, default: () => createHash("sha256").update(Math.random().toString()).digest("hex") },
       apiKeyId: { type: String },
       hmacPassword: { type: String, default: () => randomString(), crypt: true },
@@ -80,7 +80,16 @@ const Schema = {
           smartContractAddress: { type: String, validate: Match.cryptoAddress },
           walletAddress: { type: String, validate: Match.cryptoAddress },
           network: { type: String, enum: ["mainnet", "munbai", "goerli"] },
-          blockchain: { type: String, enum: ["ethereum", "polygon"] },
+          blockchain: { type: String, enum: ["ethereum", "polygon", "tezos"] },
+          coinhouseCustomerId: {type: String},
+          gasStation: {
+            type: Object,
+            default: {},
+            schema: {
+              currency: { type: String, enum: ["ETH", "MATIC", "XTZ"] },
+              limitPer24H: {type: Number}
+            }
+          }
         },
       },
       gs1pk: { type: String, value: 'project#' },
@@ -215,6 +224,32 @@ const Schema = {
       gs2sk: { type: String, value: 'kyt#${address}' },
       gs3sk: { type: String, value: 'kyt#${type}' },
       gs4sk: { type: String, value: 'kyt#${address}#${asset}#${type}#${network}#${userIdChaina}' },
+    },
+    GasStation: {
+      pk: { type: String, value: 'account#${accountId}' },
+      sk: { type: String, value: 'gasStation#${id}' },
+      id: { type: String, generate: 'uuid', validate: Match.uuid },
+      accountId: { type: String, required: true },
+      projectId: { type: String, required: true },
+      address: {type: String},
+      currency: { type: String, enum: ["ETH", "MATIC", "XTZ"] },
+      network: { type: String, enum: ["mainnet", "munbai", "goerli"] },
+      blockchain: { type: String, enum: ["ethereum", "polygon", "tezos"] },
+      tx_date: { type: String },
+      tx_hash: { type: String },
+      statusOrder: { type: String, default: 'CREATED' },
+      success: { type: Boolean },
+      paymentId: { type: String },
+      codeProject: { type: String, required: true },
+      internalRef: { type: String, required: true },
+      webhookUrl: { type: String, validate: Match.url },
+      amount: {type: Number,  required: true },
+      fees: {type: Number},
+      gs1pk: { type: String, value: 'getStation#' },
+      gs1sk: { type: String, value: 'getStation#${id}' },
+      gs2sk: { type: String, value: 'getStation#${codeProject}' },
+      gs3sk: { type: String, value: 'order#${statusOrder}' },
+      gs4sk: { type: String, value: 'order#${id}#${codeProject}#${statusOrder}#${success}#${paymentId}#${tx_hash}' },
     }
   } as const,
   params: {
