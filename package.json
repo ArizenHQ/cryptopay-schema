@@ -1,6 +1,6 @@
 {
   "name": "cryptopay-schema",
-  "version": "0.0.103",
+  "version": "0.0.104",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -16,7 +16,6 @@
   "dependencies": {
     "@aws-sdk/client-api-gateway": "^3.267.0",
     "aws-sdk": "^2.1311.0",
-    "crypto": "^1.0.1",
     "dynamodb-onetable": "^2.5.1"
   },
   "devDependencies": {
