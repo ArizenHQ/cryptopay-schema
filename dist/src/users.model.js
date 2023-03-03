@@ -43,15 +43,19 @@ var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
+var crypto_1 = require("crypto");
 var Users = /** @class */ (function () {
     function Users(secretsString) {
         var _this = this;
+        this.generateApiKey = function () {
+            return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex");
+        };
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         this.table.setContext({ accountId: data.accountId });
-                        return [4 /*yield*/, this.User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel })];
+                        return [4 /*yield*/, this.User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel, apiKey: this.generateApiKey() })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });

@@ -4,6 +4,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
+import { createHash } from 'crypto'
 
 export class Users {
 
@@ -47,10 +48,12 @@ export class Users {
     const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration")
     return new Users(secretsString)
   }
-
+  generateApiKey = () => {
+    return createHash("sha256").update(Math.random().toString()).digest("hex");
+  }
   insert = async (data: any) => {
     this.table.setContext({ accountId: data.accountId });
-    return await this.User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel });
+    return await this.User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel, apiKey: this.generateApiKey() });
   };
 
   findById = async (id: string) => {

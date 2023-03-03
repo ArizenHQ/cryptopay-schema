@@ -44,9 +44,16 @@ var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient(
 var schema_1 = require("./schema");
 var ApiGatewayCryptoPayment_js_1 = require("./utils/ApiGatewayCryptoPayment.js");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
+var crypto_1 = require("crypto");
 var Projects = /** @class */ (function () {
     function Projects(secretsString) {
         var _this = this;
+        this.randomString = function () {
+            return (0, crypto_1.randomBytes)(5).toString("hex");
+        };
+        this.generateApiKey = function () {
+            return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex");
+        };
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
             var account_1, error_1;
             var _this = this;
@@ -66,6 +73,8 @@ var Projects = /** @class */ (function () {
                                 description: data.description,
                                 status: data.status,
                                 parameters: data.parameters,
+                                apiKey: this.generateApiKey(),
+                                hmacPassword: this.randomString()
                             }).then(function (project) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_b) {
                                     switch (_b.label) {

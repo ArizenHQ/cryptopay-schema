@@ -5,6 +5,7 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from "./schema";
 import { importApiKey, removeApiKey, configureUsagePlanKey } from "./utils/ApiGatewayCryptoPayment.js";
 import retrieveSecrets from "./utils/retrieveSecrets";
+import { randomBytes, createHash } from 'crypto'
 
 
 
@@ -51,7 +52,12 @@ export class Projects {
     return new Projects(secretsString)
   }
 
-
+  randomString = () => {
+    return randomBytes(5).toString("hex");
+  }
+  generateApiKey = () => {
+    return createHash("sha256").update(Math.random().toString()).digest("hex");
+  }
   insert = async (data: any) => {
     try {
       const account = await this.Account.get({ id: data.accountId });
@@ -64,6 +70,8 @@ export class Projects {
         description: data.description,
         status: data.status,
         parameters: data.parameters,
+        apiKey: this.generateApiKey(),
+        hmacPassword: this.randomString()  
       }).then(async (project: any) => {
         await this.createApiKey({ accountName: account.name, project: project });
         return project;

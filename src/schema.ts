@@ -1,5 +1,3 @@
-import { randomBytes, createHash } from 'crypto'
-
 const Match = {
   uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
   email:
@@ -12,10 +10,6 @@ const Match = {
   url: /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/,
   permissionLevel: /^(1|4|16|128|2048)$/
 };
-
-const randomString = () => {
-  return randomBytes(5).toString("hex");
-}
 
 const Schema = {
   format: 'onetable:1.1.0',
@@ -47,7 +41,7 @@ const Schema = {
       password: { type: String, required: true, crypt: true },
       status: { type: String, required: true, default: "active", enum: ["active", "inactive"] },
       permissionLevel: { type: Number, required: true, validate: Match.permissionLevel },
-      apiKey: { type: String, default: () => createHash("sha256").update(Math.random().toString()).digest("hex") },
+      apiKey: { type: String, hidden: true},
       gs1pk: { type: String, value: 'user#' },
       gs1sk: { type: String, value: 'user#${email}#${id}' },
       gs2sk: { type: String, value: 'user#${status}#${id}' },
@@ -64,9 +58,9 @@ const Schema = {
       status: { type: String, required: true, default: 'active', enum: ['active', 'inactive'] },
       codeProject: { type: String, required: true, unique: true },
       typeProject: { type: String, required: true, enum: ['cardPayment', 'cryptoPayment', 'gasStation'] },
-      apiKey: { type: String, default: () => createHash("sha256").update(Math.random().toString()).digest("hex") },
+      apiKey: { type: String},
       apiKeyId: { type: String },
-      hmacPassword: { type: String, default: () => randomString(), crypt: true },
+      hmacPassword: { type: String, crypt: true },
       description: { type: String, required: false },
       parameters: {
         type: Object,

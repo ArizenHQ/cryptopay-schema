@@ -104,7 +104,7 @@ declare const Schema: {
             };
             readonly apiKey: {
                 readonly type: StringConstructor;
-                readonly default: () => string;
+                readonly hidden: true;
             };
             readonly gs1pk: {
                 readonly type: StringConstructor;
@@ -167,14 +167,12 @@ declare const Schema: {
             };
             readonly apiKey: {
                 readonly type: StringConstructor;
-                readonly default: () => string;
             };
             readonly apiKeyId: {
                 readonly type: StringConstructor;
             };
             readonly hmacPassword: {
                 readonly type: StringConstructor;
-                readonly default: () => string;
                 readonly crypt: true;
             };
             readonly description: {

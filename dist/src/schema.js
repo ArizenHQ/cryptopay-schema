@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var crypto_1 = require("crypto");
 var Match = {
     uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
     email: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -11,9 +10,6 @@ var Match = {
     phone: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/,
     url: /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/,
     permissionLevel: /^(1|4|16|128|2048)$/
-};
-var randomString = function () {
-    return (0, crypto_1.randomBytes)(5).toString("hex");
 };
 var Schema = {
     format: 'onetable:1.1.0',
@@ -44,7 +40,7 @@ var Schema = {
             password: { type: String, required: true, crypt: true },
             status: { type: String, required: true, default: "active", enum: ["active", "inactive"] },
             permissionLevel: { type: Number, required: true, validate: Match.permissionLevel },
-            apiKey: { type: String, default: function () { return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex"); } },
+            apiKey: { type: String, hidden: true },
             gs1pk: { type: String, value: 'user#' },
             gs1sk: { type: String, value: 'user#${email}#${id}' },
             gs2sk: { type: String, value: 'user#${status}#${id}' },
@@ -60,9 +56,9 @@ var Schema = {
             status: { type: String, required: true, default: 'active', enum: ['active', 'inactive'] },
             codeProject: { type: String, required: true, unique: true },
             typeProject: { type: String, required: true, enum: ['cardPayment', 'cryptoPayment', 'gasStation'] },
-            apiKey: { type: String, default: function () { return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex"); } },
+            apiKey: { type: String },
             apiKeyId: { type: String },
-            hmacPassword: { type: String, default: function () { return randomString(); }, crypt: true },
+            hmacPassword: { type: String, crypt: true },
             description: { type: String, required: false },
             parameters: {
                 type: Object,

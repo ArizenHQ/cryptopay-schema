@@ -11,6 +11,8 @@ export declare class Projects {
     secretsString: any;
     private constructor();
     static init: () => Promise<Projects>;
+    randomString: () => string;
+    generateApiKey: () => string;
     insert: (data: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;
