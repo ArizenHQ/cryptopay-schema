@@ -12,7 +12,7 @@ export declare class GasStations {
     secretsString: any;
     private constructor();
     static init: () => Promise<GasStations>;
-    insert: (gasStation: any) => Promise<any>;
+    insert: (gasStation: any, projectId: String) => Promise<any>;
     isGasStationAvailable: <Boolean_1>(accountId: string, projectId: string, amount: Number) => Promise<boolean>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;

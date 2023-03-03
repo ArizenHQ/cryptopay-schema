@@ -46,14 +46,14 @@ var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var GasStations = /** @class */ (function () {
     function GasStations(secretsString) {
         var _this = this;
-        this.insert = function (gasStation) { return __awaiter(_this, void 0, void 0, function () {
+        this.insert = function (gasStation, projectId) { return __awaiter(_this, void 0, void 0, function () {
             var project, error_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 6, , 7]);
-                        return [4 /*yield*/, this.Project.get({ codeProject: gasStation.codeProject }, { index: "gs1", follow: true })];
+                        return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();
                         if (!(Object.keys(project).length > 0)) return [3 /*break*/, 3];
@@ -94,7 +94,6 @@ var GasStations = /** @class */ (function () {
                         _b.trys.push([0, 3, , 4]);
                         dateYeasterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
                         dateISOYesterday = new Date(dateYeasterday).toISOString();
-                        console.log(dateISOYesterday);
                         return [4 /*yield*/, this.list(accountId, projectId, { where: '${dateCreated} >= {' + dateISOYesterday + '}' })];
                     case 1:
                         listGasStationForToday = _b.sent();

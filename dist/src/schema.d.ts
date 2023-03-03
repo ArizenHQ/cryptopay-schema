@@ -670,10 +670,6 @@ declare const Schema: {
             readonly paymentId: {
                 readonly type: StringConstructor;
             };
-            readonly codeProject: {
-                readonly type: StringConstructor;
-                readonly required: true;
-            };
             readonly internalRef: {
                 readonly type: StringConstructor;
                 readonly required: true;

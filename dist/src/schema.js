@@ -232,7 +232,6 @@ var Schema = {
             statusOrder: { type: String, default: 'CREATED' },
             success: { type: Boolean },
             paymentId: { type: String },
-            codeProject: { type: String, required: true },
             internalRef: { type: String, required: true },
             webhookUrl: { type: String, validate: Match.url },
             amount: { type: Number, required: true },

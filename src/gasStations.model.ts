@@ -59,9 +59,9 @@ export class GasStations {
   }
 
 
-  insert = async (gasStation: any) => {
+  insert = async (gasStation: any, projectId: String) => {
     try {
-      const project = await this.Project.get({ codeProject: gasStation.codeProject }, { index: "gs1", follow: true })
+      const project = await this.Project.get({ id: projectId }, { index: "gs2", follow: true })
       if (Object.keys(project).length > 0) {
         if(project.typeProject !== "gasStation") throw new Error('That project is not configured for type gasStation. Please choose another one, create a new one or chnage this one for this kind of project. Be careful, if you change the project type, all your other instance could be impacted')
 
@@ -89,7 +89,6 @@ export class GasStations {
     try {
       const dateYeasterday: Date = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
       const dateISOYesterday: String = new Date(dateYeasterday).toISOString()
-      console.log(dateISOYesterday)
       const listGasStationForToday:any = await this.list(accountId, projectId, {where : '${dateCreated} >= {'+dateISOYesterday+'}'})
       let sum: Number = amount
       listGasStationForToday.map((gas: any) => {
