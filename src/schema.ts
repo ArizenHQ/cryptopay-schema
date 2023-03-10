@@ -72,8 +72,8 @@ const Schema = {
           urlRedirectError: { type: String, validate: Match.url },
           webhookUrl: { type: String, validate: Match.url },
           smartContractAddress: { type: String, validate: Match.cryptoAddress },
-          walletAddress: { type: String, validate: Match.cryptoAddress },
-          network: { type: String, enum: ["mainnet", "munbai", "goerli"] },
+          walletAddress: { type: String},
+          network: { type: String, enum: ["mainnet", "munbai", "goerli", "ghost"] },
           blockchain: { type: String, enum: ["ethereum", "polygon", "tezos"] },
           coinhouseCustomerId: {type: String},
           gasStation: {
@@ -81,7 +81,7 @@ const Schema = {
             default: {},
             schema: {
               currency: { type: String, enum: ["ETH", "MATIC", "XTZ"] },
-              limitPer24H: {type: Number}
+              limitPer24H: {type: Number},
             }
           }
         },
