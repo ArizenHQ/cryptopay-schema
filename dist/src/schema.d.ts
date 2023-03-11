@@ -209,11 +209,10 @@ declare const Schema: {
                     };
                     readonly walletAddress: {
                         readonly type: StringConstructor;
-                        readonly validate: RegExp;
                     };
                     readonly network: {
                         readonly type: StringConstructor;
-                        readonly enum: readonly ["mainnet", "munbai", "goerli"];
+                        readonly enum: readonly ["mainnet", "munbai", "goerli", "ghost"];
                     };
                     readonly blockchain: {
                         readonly type: StringConstructor;
