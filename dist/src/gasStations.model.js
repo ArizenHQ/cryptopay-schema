@@ -168,37 +168,37 @@ var GasStations = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var order, err_1;
+            var gasStation, err_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
+                        return [4 /*yield*/, this.GasStation.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
-                        order = _b.sent();
-                        if (!order)
-                            throw new Error("no order fund for id: ".concat(id));
-                        this.table.setContext({ accountId: order.accountId });
+                        gasStation = _b.sent();
+                        if (!gasStation)
+                            throw new Error("no gasStation fund for id: ".concat(id));
+                        this.table.setContext({ accountId: gasStation.accountId });
                         data.id = id;
-                        return [4 /*yield*/, this.Order.update(data)];
+                        return [4 /*yield*/, this.GasStation.update(data)];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();
-                        throw new Error("Error during update order ".concat(err_1));
+                        throw new Error("Error during update gasStation ".concat(err_1));
                     case 4: return [2 /*return*/];
                 }
             });
         }); };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            var order;
+            var gasStation;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
+                    case 0: return [4 /*yield*/, this.GasStation.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
-                        order = _b.sent();
-                        if (!order)
-                            throw new Error("Order not found");
-                        return [4 /*yield*/, this.Order.remove({ sk: "order#".concat(id), pk: "account#".concat(order.accountId) })];
+                        gasStation = _b.sent();
+                        if (!gasStation)
+                            throw new Error("gasStation not found");
+                        return [4 /*yield*/, this.Order.remove({ sk: "gasStation#".concat(id), pk: "account#".concat(gasStation.accountId) })];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
             });

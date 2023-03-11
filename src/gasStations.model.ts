@@ -129,20 +129,20 @@ export class GasStations {
 
   patchById = async (id: string, data: any) => {
     try {
-      let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
-      if (!order) throw new Error(`no order fund for id: ${id}`)
-      this.table.setContext({ accountId: order.accountId });
+      let gasStation = await this.GasStation.get({ id: id }, { index: "gs1", follow: true });
+      if (!gasStation) throw new Error(`no gasStation fund for id: ${id}`)
+      this.table.setContext({ accountId: gasStation.accountId });
       data.id = id;
-      return await this.Order.update(data);
+      return await this.GasStation.update(data);
     } catch (err) {
-      throw new Error(`Error during update order ${err}`);
+      throw new Error(`Error during update gasStation ${err}`);
     }
   };
 
   removeById = async (id: string) => {
-    let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
-    if (!order) throw new Error(`Order not found`);
-    return await this.Order.remove({ sk: `order#${id}`, pk: `account#${order.accountId}` });
+    let gasStation = await this.GasStation.get({ id: id }, { index: "gs1", follow: true });
+    if (!gasStation) throw new Error(`gasStation not found`);
+    return await this.Order.remove({ sk: `gasStation#${id}`, pk: `account#${gasStation.accountId}` });
   };
 
 }
