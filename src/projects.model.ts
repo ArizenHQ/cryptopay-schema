@@ -114,7 +114,7 @@ export class Projects {
     return await this.Project.get({ apiKey: apiKey }, { index: "gs3", follow: true });
   };
   getById = async (id: string) => {
-    return await this.Project.get({ id: id }, { index: "gs1", follow: true });
+    return await this.Project.get({ id: id }, { index: "gs2", follow: true });
   };
 
   list = async (accountId: string, query: any) => {
