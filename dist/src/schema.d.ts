@@ -476,7 +476,6 @@ declare const Schema: {
             };
             readonly address: {
                 readonly type: StringConstructor;
-                readonly validate: RegExp;
             };
             readonly dateTime: {
                 readonly type: NumberConstructor;

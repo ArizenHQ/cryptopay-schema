@@ -177,7 +177,7 @@ const Schema = {
       pk: { type: String, value: 'account#${accountId}' },
       sk: { type: String, value: 'payment#${id}' },
       id: { type: String, generate: 'uuid', validate: Match.uuid },
-      address: {type: String, validate: Match.cryptoAddress},
+      address: {type: String},
       dateTime: {type: Number},
       txId: {type: String},
       amount: { type: Number },
