@@ -179,6 +179,10 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly required: false;
             };
+            readonly autorizedByCNHS: {
+                readonly type: BooleanConstructor;
+                readonly default: false;
+            };
             readonly parameters: {
                 readonly type: ObjectConstructor;
                 readonly default: {};

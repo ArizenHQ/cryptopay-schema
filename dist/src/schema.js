@@ -60,6 +60,7 @@ var Schema = {
             apiKeyId: { type: String },
             hmacPassword: { type: String, crypt: true },
             description: { type: String, required: false },
+            autorizedByCNHS: { type: Boolean, default: false },
             parameters: {
                 type: Object,
                 default: {},
