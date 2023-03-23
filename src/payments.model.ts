@@ -108,7 +108,6 @@ export class Payments {
 
   getCountPaymentByTxId = async (txId: string) => {
     let payments = await this.scan({txId: txId}, {})
-    console.log(payments)
     return payments.length
   }
 
