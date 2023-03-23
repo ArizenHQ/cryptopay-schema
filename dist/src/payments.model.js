@@ -169,7 +169,8 @@ var Payments = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.scan({ txId: txId }, {})];
                     case 1:
                         payments = _b.sent();
-                        return [2 /*return*/, payments.count];
+                        console.log(payments);
+                        return [2 /*return*/, payments.length];
                 }
             });
         }); };
