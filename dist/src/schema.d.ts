@@ -214,6 +214,12 @@ declare const Schema: {
                     readonly walletAddress: {
                         readonly type: StringConstructor;
                     };
+                    readonly methodSmartContract: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly abiSmartContract: {
+                        readonly type: StringConstructor;
+                    };
                     readonly network: {
                         readonly type: StringConstructor;
                         readonly enum: readonly ["mainnet", "munbai", "goerli", "ghost"];

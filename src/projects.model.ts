@@ -1,11 +1,11 @@
 import { Dynamo } from "dynamodb-onetable/Dynamo";
 import { Model, Table } from "dynamodb-onetable";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
 import Schema from "./schema";
 import { importApiKey, removeApiKey, configureUsagePlanKey } from "./utils/ApiGatewayCryptoPayment.js";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { randomBytes, createHash } from 'crypto'
+const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
 
 
 
@@ -62,6 +62,8 @@ export class Projects {
     try {
       const account = await this.Account.get({ id: data.accountId });
       this.table.setContext({ accountId: data.accountId });
+      const controlData = this.checkData(data);
+      if(controlData !== true) return controlData;
       return this.Project.create({
         name: data.name,
         accountId: data.accountId,
@@ -127,6 +129,8 @@ export class Projects {
     let project = await this.Project.get({ id: id }, { index: "gs2", follow: true });
     this.table.setContext({ accountId: project.accountId });
     data.id = id;
+    const controlData = this.checkData(data);
+    if(controlData !== true) return controlData;
     this.createApiKey(data);
     return this.Project.update(data);
   };
@@ -152,6 +156,21 @@ export class Projects {
           console.error(error);
           throw new Error(`Error during import key ${error}`);
         });
+    }
+  };
+
+  checkData = (data: any) => {
+    try {
+      if(data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
+        if (data.parameters.hasOwnProperty('methodSmartContract') || data.parameters.hasOwnProperty('abiSmartContract')) {
+        throw new Error("Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project");
+        }
+      }
+      if(data.typeProject === "cardPayment" && (!data.parameters.methodSmartContract || !data.parameters.abiSmartContract)) throw new Error("Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi");
+      if(data.typeProject === "cardPayment" && data.parameters.methodSmartContract && data.parameters.abiSmartContract && !JSON.parse(data.parameters.abiSmartContract)) throw new Error("Invalid abi for this smart contract");
+      return true;
+    } catch (e) {
+      return e
     }
   };
 

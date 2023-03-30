@@ -40,11 +40,11 @@ exports.Projects = void 0;
 var Dynamo_1 = require("dynamodb-onetable/Dynamo");
 var dynamodb_onetable_1 = require("dynamodb-onetable");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
 var schema_1 = require("./schema");
 var ApiGatewayCryptoPayment_js_1 = require("./utils/ApiGatewayCryptoPayment.js");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var crypto_1 = require("crypto");
+var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
 var Projects = /** @class */ (function () {
     function Projects(secretsString) {
         var _this = this;
@@ -55,7 +55,7 @@ var Projects = /** @class */ (function () {
             return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex");
         };
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
-            var account_1, error_1;
+            var account_1, controlData, error_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -65,6 +65,9 @@ var Projects = /** @class */ (function () {
                     case 1:
                         account_1 = _b.sent();
                         this.table.setContext({ accountId: data.accountId });
+                        controlData = this.checkData(data);
+                        if (controlData !== true)
+                            return [2 /*return*/, controlData];
                         return [2 /*return*/, this.Project.create({
                                 name: data.name,
                                 accountId: data.accountId,
@@ -164,7 +167,7 @@ var Projects = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var project;
+            var project, controlData;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
@@ -172,6 +175,9 @@ var Projects = /** @class */ (function () {
                         project = _b.sent();
                         this.table.setContext({ accountId: project.accountId });
                         data.id = id;
+                        controlData = this.checkData(data);
+                        if (controlData !== true)
+                            return [2 /*return*/, controlData];
                         this.createApiKey(data);
                         return [2 /*return*/, this.Project.update(data)];
                 }
@@ -229,6 +235,23 @@ var Projects = /** @class */ (function () {
                 }
             });
         }); };
+        this.checkData = function (data) {
+            try {
+                if (data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
+                    if (data.parameters.hasOwnProperty('methodSmartContract') || data.parameters.hasOwnProperty('abiSmartContract')) {
+                        throw new Error("Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project");
+                    }
+                }
+                if (data.typeProject === "cardPayment" && (!data.parameters.methodSmartContract || !data.parameters.abiSmartContract))
+                    throw new Error("Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi");
+                if (data.typeProject === "cardPayment" && data.parameters.methodSmartContract && data.parameters.abiSmartContract && !JSON.parse(data.parameters.abiSmartContract))
+                    throw new Error("Invalid abi for this smart contract");
+                return true;
+            }
+            catch (e) {
+                return e;
+            }
+        };
         this.secretsString = secretsString;
         this.Crypto = {
             primary: {
