@@ -23,6 +23,6 @@ export declare class Projects {
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;
     createApiKey: (obj: any) => Promise<void>;
-    checkData: (data: any) => unknown;
+    checkData: (data: any) => boolean;
 }
 export default Projects;
