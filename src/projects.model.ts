@@ -165,7 +165,6 @@ export class Projects {
   };
 
   checkData = (data: any) => {
-    console.log(data.parameters.hasOwnProperty('walletAddress'));
     try {
       if (data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
         if (data.parameters.methodSmartContract || data.parameters.abiSmartContract) {
