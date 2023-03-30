@@ -55,7 +55,7 @@ var Projects = /** @class */ (function () {
             return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex");
         };
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
-            var account_1, controlData, error_1;
+            var account_1, isValid, error_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -65,32 +65,36 @@ var Projects = /** @class */ (function () {
                     case 1:
                         account_1 = _b.sent();
                         this.table.setContext({ accountId: data.accountId });
-                        controlData = this.checkData(data);
-                        if (controlData !== true)
-                            return [2 /*return*/, controlData];
-                        return [2 /*return*/, this.Project.create({
-                                name: data.name,
-                                accountId: data.accountId,
-                                codeProject: data.codeProject,
-                                typeProject: data.typeProject,
-                                description: data.description,
-                                status: data.status,
-                                parameters: data.parameters,
-                                apiKey: this.generateApiKey(),
-                                hmacPassword: this.randomString()
-                            }).then(function (project) { return __awaiter(_this, void 0, void 0, function () {
-                                return __generator(this, function (_b) {
-                                    switch (_b.label) {
-                                        case 0: return [4 /*yield*/, this.createApiKey({ accountName: account_1.name, project: project })];
-                                        case 1:
-                                            _b.sent();
-                                            return [2 /*return*/, project];
-                                    }
-                                });
-                            }); })];
+                        isValid = this.checkData(data);
+                        if (isValid === true) {
+                            return [2 /*return*/, this.Project.create({
+                                    name: data.name,
+                                    accountId: data.accountId,
+                                    codeProject: data.codeProject,
+                                    typeProject: data.typeProject,
+                                    description: data.description,
+                                    status: data.status,
+                                    parameters: data.parameters,
+                                    apiKey: this.generateApiKey(),
+                                    hmacPassword: this.randomString()
+                                }).then(function (project) { return __awaiter(_this, void 0, void 0, function () {
+                                    return __generator(this, function (_b) {
+                                        switch (_b.label) {
+                                            case 0: return [4 /*yield*/, this.createApiKey({ accountName: account_1.name, project: project })];
+                                            case 1:
+                                                _b.sent();
+                                                return [2 /*return*/, project];
+                                        }
+                                    });
+                                }); })];
+                        }
+                        else {
+                            throw new Error("Invalid data provided: ".concat(isValid));
+                        }
+                        return [3 /*break*/, 3];
                     case 2:
                         error_1 = _b.sent();
-                        throw new Error("Error during add new project ".concat(error_1));
+                        throw error_1;
                     case 3: return [2 /*return*/];
                 }
             });
@@ -236,20 +240,28 @@ var Projects = /** @class */ (function () {
             });
         }); };
         this.checkData = function (data) {
+            console.log(data.parameters.hasOwnProperty('walletAddress'));
             try {
                 if (data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
-                    if (data.parameters.hasOwnProperty('methodSmartContract') || data.parameters.hasOwnProperty('abiSmartContract')) {
+                    if (data.parameters.methodSmartContract || data.parameters.abiSmartContract) {
                         throw new Error("Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project");
                     }
                 }
-                if (data.typeProject === "cardPayment" && (!data.parameters.methodSmartContract || !data.parameters.abiSmartContract))
-                    throw new Error("Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi");
-                if (data.typeProject === "cardPayment" && data.parameters.methodSmartContract && data.parameters.abiSmartContract && !JSON.parse(data.parameters.abiSmartContract))
-                    throw new Error("Invalid abi for this smart contract");
+                if (data.typeProject === "cardPayment") {
+                    if (!data.parameters.walletAddress) {
+                        throw new Error("Missing parameters for this smart contract. You need to provide the wallet address");
+                    }
+                    else if ((data.parameters.methodSmartContract && !data.parameters.abiSmartContract) || (!data.parameters.methodSmartContract && data.parameters.abiSmartContract)) {
+                        throw new Error("Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi");
+                    }
+                    else if (data.parameters.abiSmartContract && !isJsonValid(data.parameters.abiSmartContract)) {
+                        throw new Error("Invalid abi for this smart contract");
+                    }
+                }
                 return true;
             }
             catch (e) {
-                return e;
+                throw e;
             }
         };
         this.secretsString = secretsString;
@@ -289,5 +301,14 @@ var Projects = /** @class */ (function () {
     return Projects;
 }());
 exports.Projects = Projects;
+var isJsonValid = function (json) {
+    try {
+        JSON.parse(json);
+    }
+    catch (e) {
+        return false;
+    }
+    return true;
+};
 exports.default = Projects;
 //# sourceMappingURL=projects.model.js.map

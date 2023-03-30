@@ -62,26 +62,31 @@ export class Projects {
     try {
       const account = await this.Account.get({ id: data.accountId });
       this.table.setContext({ accountId: data.accountId });
-      const controlData = this.checkData(data);
-      if(controlData !== true) return controlData;
-      return this.Project.create({
-        name: data.name,
-        accountId: data.accountId,
-        codeProject: data.codeProject,
-        typeProject: data.typeProject,
-        description: data.description,
-        status: data.status,
-        parameters: data.parameters,
-        apiKey: this.generateApiKey(),
-        hmacPassword: this.randomString()  
-      }).then(async (project: any) => {
-        await this.createApiKey({ accountName: account.name, project: project });
-        return project;
-      })
-    } catch (error) {
-      throw new Error(`Error during add new project ${error}`);
+      const isValid = this.checkData(data);
+  
+      if (isValid === true) {
+        return this.Project.create({
+          name: data.name,
+          accountId: data.accountId,
+          codeProject: data.codeProject,
+          typeProject: data.typeProject,
+          description: data.description,
+          status: data.status,
+          parameters: data.parameters,
+          apiKey: this.generateApiKey(),
+          hmacPassword: this.randomString()  
+        }).then(async (project: any) => {
+          await this.createApiKey({ accountName: account.name, project: project });
+          return project;
+        });
+      } else {
+        throw new Error(`Invalid data provided: ${isValid}`);
+      }
+    } catch (error:any) {
+      throw error;
     }
   };
+  
 
   findById = async (id: string) => {
     return await this.Project.get({ id: id }, { index: "gs2", follow: true });
@@ -160,19 +165,36 @@ export class Projects {
   };
 
   checkData = (data: any) => {
+    console.log(data.parameters.hasOwnProperty('walletAddress'));
     try {
-      if(data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
-        if (data.parameters.hasOwnProperty('methodSmartContract') || data.parameters.hasOwnProperty('abiSmartContract')) {
-        throw new Error("Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project");
+      if (data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
+        if (data.parameters.methodSmartContract || data.parameters.abiSmartContract) {
+          throw new Error("Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project");
         }
       }
-      if(data.typeProject === "cardPayment" && (!data.parameters.methodSmartContract || !data.parameters.abiSmartContract)) throw new Error("Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi");
-      if(data.typeProject === "cardPayment" && data.parameters.methodSmartContract && data.parameters.abiSmartContract && !JSON.parse(data.parameters.abiSmartContract)) throw new Error("Invalid abi for this smart contract");
+      if (data.typeProject === "cardPayment") {
+        if (!data.parameters.walletAddress) {
+          throw new Error("Missing parameters for this smart contract. You need to provide the wallet address");
+        } else if ((data.parameters.methodSmartContract && !data.parameters.abiSmartContract) || (!data.parameters.methodSmartContract && data.parameters.abiSmartContract) ) {
+          throw new Error("Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi");
+        } else if (data.parameters.abiSmartContract && !isJsonValid(data.parameters.abiSmartContract)) {
+          throw new Error("Invalid abi for this smart contract");
+        }
+      }
       return true;
-    } catch (e) {
-      return e
+    } catch (e: any) {
+      throw e;
     }
   };
-
 }
+
+const isJsonValid = (json: any) => {
+  try {
+    JSON.parse(json);
+  } catch (e) {
+    return false;
+  }
+  return true;
+};
+
 export default Projects
