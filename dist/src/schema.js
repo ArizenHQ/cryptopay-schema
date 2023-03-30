@@ -72,6 +72,8 @@ var Schema = {
                     webhookUrl: { type: String, validate: Match.url },
                     smartContractAddress: { type: String, validate: Match.cryptoAddress },
                     walletAddress: { type: String },
+                    methodSmartContract: { type: String },
+                    abiSmartContract: { type: String },
                     network: { type: String, enum: ["mainnet", "munbai", "goerli", "ghost"] },
                     blockchain: { type: String, enum: ["ethereum", "polygon", "tezos"] },
                     coinhouseCustomerId: { type: String },
