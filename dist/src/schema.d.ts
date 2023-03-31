@@ -214,10 +214,10 @@ declare const Schema: {
                     readonly walletAddress: {
                         readonly type: StringConstructor;
                     };
-                    readonly methodSmartContract: {
+                    readonly smartContractMethod: {
                         readonly type: StringConstructor;
                     };
-                    readonly abiSmartContract: {
+                    readonly smartContractAbi: {
                         readonly type: StringConstructor;
                     };
                     readonly network: {
