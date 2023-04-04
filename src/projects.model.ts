@@ -172,14 +172,14 @@ export class Projects {
         }
       }
       if (data.typeProject === "cryptoPayment" || data.typeProject === "cardPayment") {
-        if (!validateSttring(data.parameters.urlRedirectSuccess, Match.url) || !data.parameters.urlRedirectSuccess) {
-          throw new Error("Invalid url or missed for redirect success");
-        } else if (!validateSttring(data.parameters.urlRedirectError, Match.url) || !data.parameters.urlRedirectError) {
-          throw new Error("Invalid url or missed for redirect error");
-        } else if (!validateSttring(data.parameters.urlRedirectCancel, Match.url) || !data.parameters.urlRedirectCancel) {
-          throw new Error("Invalid url or missed for redirect cancel");
-        } else if (!validateSttring(data.parameters.urlRedirectPending, Match.url) || !data.parameters.urlRedirectPending) {
-          throw new Error("Invalid url or missed for redirect pending");
+        if (!validateString(data.parameters.urlRedirectSuccess, Match.url)) {
+          throw new Error("urlRedirectSuccess is invalid or missed");
+        } else if (!validateString(data.parameters.urlRedirectError, Match.url)) {
+          throw new Error("urlRedirectError is invalid or missed");
+        } else if (!validateString(data.parameters.urlRedirectCancel, Match.url)) {
+          throw new Error("urlRedirectCancel is invalid or missed");
+        } else if (!validateString(data.parameters.urlRedirectPending, Match.url)) {
+          throw new Error("urlRedirectPending is invalid or missed");
         }
       }
       if (data.typeProject === "cardPayment") {
@@ -198,7 +198,7 @@ export class Projects {
   };
 }
 
-const validateSttring = (data: string, match: any) => {
+const validateString = (data: string, match: any) => {
   const pattern = new RegExp(match);
   return pattern.test(data);
 }
