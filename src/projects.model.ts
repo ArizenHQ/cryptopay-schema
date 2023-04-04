@@ -176,8 +176,8 @@ export class Projects {
           throw new Error("urlRedirectSuccess is invalid or missed");
         } else if (!validateString(data.parameters.urlRedirectError, Match.url)) {
           throw new Error("urlRedirectError is invalid or missed");
-        } else if (!validateString(data.parameters.urlRedirectCancel, Match.url)) {
-          throw new Error("urlRedirectCancel is invalid or missed");
+        } else if (!validateString(data.parameters.urlRedirectFailed, Match.url)) {
+          throw new Error("urlRedirectFailed is invalid or missed");
         } else if (!validateString(data.parameters.urlRedirectPending, Match.url)) {
           throw new Error("urlRedirectPending is invalid or missed");
         }
