@@ -246,6 +246,20 @@ var Projects = /** @class */ (function () {
                         throw new Error("Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project");
                     }
                 }
+                if (data.typeProject === "cryptoPayment" || data.typeProject === "cardPayment") {
+                    if (!validateSttring(data.parameters.urlRedirectSuccess, Match.url) || !data.parameters.urlRedirectSuccess) {
+                        throw new Error("Invalid url or missed for redirect success");
+                    }
+                    else if (!validateSttring(data.parameters.urlRedirectError, Match.url) || !data.parameters.urlRedirectError) {
+                        throw new Error("Invalid url or missed for redirect error");
+                    }
+                    else if (!validateSttring(data.parameters.urlRedirectCancel, Match.url) || !data.parameters.urlRedirectCancel) {
+                        throw new Error("Invalid url or missed for redirect cancel");
+                    }
+                    else if (!validateSttring(data.parameters.urlRedirectPending, Match.url) || !data.parameters.urlRedirectPending) {
+                        throw new Error("Invalid url or missed for redirect pending");
+                    }
+                }
                 if (data.typeProject === "cardPayment") {
                     if (!data.parameters.walletAddress) {
                         throw new Error("Missing parameters for this smart contract. You need to provide the wallet address");
@@ -300,6 +314,10 @@ var Projects = /** @class */ (function () {
     return Projects;
 }());
 exports.Projects = Projects;
+var validateSttring = function (data, match) {
+    var pattern = new RegExp(match);
+    return pattern.test(data);
+};
 var isJsonValid = function (json) {
     try {
         JSON.parse(json);
@@ -308,6 +326,17 @@ var isJsonValid = function (json) {
         return false;
     }
     return true;
+};
+var Match = {
+    uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    email: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    name: /^[a-z0-9 ,.'-]+$/i,
+    address: /[a-z0-9 ,.-]+$/,
+    cryptoAddress: /^(0x)?[0-9a-f]{40}$/i,
+    zip: /^\d{5}(?:[-\s]\d{4})?$/,
+    phone: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/,
+    url: /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/,
+    permissionLevel: /^(1|4|16|128|2048)$/
 };
 exports.default = Projects;
 //# sourceMappingURL=projects.model.js.map

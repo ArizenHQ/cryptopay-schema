@@ -63,7 +63,7 @@ export class Projects {
       const account = await this.Account.get({ id: data.accountId });
       this.table.setContext({ accountId: data.accountId });
       const isValid = this.checkData(data);
-  
+
       if (isValid === true) {
         return this.Project.create({
           name: data.name,
@@ -74,7 +74,7 @@ export class Projects {
           status: data.status,
           parameters: data.parameters,
           apiKey: this.generateApiKey(),
-          hmacPassword: this.randomString()  
+          hmacPassword: this.randomString()
         }).then(async (project: any) => {
           await this.createApiKey({ accountName: account.name, project: project });
           return project;
@@ -82,11 +82,11 @@ export class Projects {
       } else {
         throw new Error(`Invalid data provided: ${isValid}`);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       throw error;
     }
   };
-  
+
 
   findById = async (id: string) => {
     return await this.Project.get({ id: id }, { index: "gs2", follow: true });
@@ -135,7 +135,7 @@ export class Projects {
     this.table.setContext({ accountId: project.accountId });
     data.id = id;
     const controlData = this.checkData(data);
-    if(controlData !== true) return controlData;
+    if (controlData !== true) return controlData;
     this.createApiKey(data);
     return this.Project.update(data);
   };
@@ -171,10 +171,21 @@ export class Projects {
           throw new Error("Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project");
         }
       }
+      if (data.typeProject === "cryptoPayment" || data.typeProject === "cardPayment") {
+        if (!validateSttring(data.parameters.urlRedirectSuccess, Match.url) || !data.parameters.urlRedirectSuccess) {
+          throw new Error("Invalid url or missed for redirect success");
+        } else if (!validateSttring(data.parameters.urlRedirectError, Match.url) || !data.parameters.urlRedirectError) {
+          throw new Error("Invalid url or missed for redirect error");
+        } else if (!validateSttring(data.parameters.urlRedirectCancel, Match.url) || !data.parameters.urlRedirectCancel) {
+          throw new Error("Invalid url or missed for redirect cancel");
+        } else if (!validateSttring(data.parameters.urlRedirectPending, Match.url) || !data.parameters.urlRedirectPending) {
+          throw new Error("Invalid url or missed for redirect pending");
+        }
+      }
       if (data.typeProject === "cardPayment") {
         if (!data.parameters.walletAddress) {
           throw new Error("Missing parameters for this smart contract. You need to provide the wallet address");
-        } else if ((data.parameters.methodSmartContract && !data.parameters.abiSmartContract) || (!data.parameters.methodSmartContract && data.parameters.abiSmartContract) ) {
+        } else if ((data.parameters.methodSmartContract && !data.parameters.abiSmartContract) || (!data.parameters.methodSmartContract && data.parameters.abiSmartContract)) {
           throw new Error("Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi");
         } else if (data.parameters.abiSmartContract && !isJsonValid(data.parameters.abiSmartContract)) {
           throw new Error("Invalid abi for this smart contract");
@@ -187,6 +198,12 @@ export class Projects {
   };
 }
 
+const validateSttring = (data: string, match: any) => {
+  const pattern = new RegExp(match);
+  return pattern.test(data);
+}
+
+
 const isJsonValid = (json: any) => {
   try {
     JSON.parse(json);
@@ -194,6 +211,19 @@ const isJsonValid = (json: any) => {
     return false;
   }
   return true;
+};
+
+const Match = {
+  uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+  email:
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+  name: /^[a-z0-9 ,.'-]+$/i,
+  address: /[a-z0-9 ,.-]+$/,
+  cryptoAddress: /^(0x)?[0-9a-f]{40}$/i,
+  zip: /^\d{5}(?:[-\s]\d{4})?$/,
+  phone: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/,
+  url: /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/,
+  permissionLevel: /^(1|4|16|128|2048)$/
 };
 
 export default Projects
