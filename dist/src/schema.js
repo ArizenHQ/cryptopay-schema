@@ -74,7 +74,7 @@ var Schema = {
                     walletAddress: { type: String },
                     smartContractMethod: { type: String },
                     smartContractAbi: { type: String },
-                    network: { type: String, enum: ["mainnet", "munbai", "goerli", "ghost"] },
+                    network: { type: String, enum: ["mainnet", "mumbai", "goerli", "ghost"] },
                     blockchain: { type: String, enum: ["ethereum", "polygon", "tezos"] },
                     coinhouseCustomerId: { type: String },
                     gasStation: {
@@ -228,7 +228,7 @@ var Schema = {
             projectId: { type: String, required: true },
             address: { type: String },
             currency: { type: String, enum: ["ETH", "MATIC", "XTZ"] },
-            network: { type: String, enum: ["mainnet", "munbai", "goerli"] },
+            network: { type: String, enum: ["mainnet", "mumbai", "goerli"] },
             blockchain: { type: String, enum: ["ethereum", "polygon", "tezos"] },
             tx_date: { type: String },
             tx_hash: { type: String },
