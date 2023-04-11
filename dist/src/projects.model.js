@@ -186,7 +186,7 @@ var Projects = /** @class */ (function () {
                         controlData = this.checkData(data);
                         if (controlData !== true)
                             return [2 /*return*/, controlData];
-                        this.createApiKey(data);
+                        //this.createApiKey(data);
                         return [2 /*return*/, this.Project.update(data)];
                 }
             });

@@ -137,7 +137,7 @@ export class Projects {
     data.id = id;
     const controlData = this.checkData(data);
     if (controlData !== true) return controlData;
-    this.createApiKey(data);
+    //this.createApiKey(data);
     return this.Project.update(data);
   };
 
