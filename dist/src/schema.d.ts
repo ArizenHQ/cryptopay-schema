@@ -183,6 +183,9 @@ declare const Schema: {
                 readonly type: BooleanConstructor;
                 readonly default: false;
             };
+            readonly userIdCNHS: {
+                readonly type: StringConstructor;
+            };
             readonly parameters: {
                 readonly type: ObjectConstructor;
                 readonly default: {};

@@ -61,6 +61,7 @@ var Schema = {
             hmacPassword: { type: String, crypt: true },
             description: { type: String, required: false },
             autorizedByCNHS: { type: Boolean, default: false },
+            userIdCNHS: { type: String },
             parameters: {
                 type: Object,
                 default: {},
