@@ -120,6 +120,8 @@ var Projects = /** @class */ (function () {
                         delete project.status;
                         delete project.created;
                         delete project.updated;
+                        if (project.userIdCNHS)
+                            delete project.userIdCNHS;
                         return [2 /*return*/, project];
                 }
             });
@@ -139,6 +141,8 @@ var Projects = /** @class */ (function () {
                                 delete project.status;
                                 delete project.created;
                                 delete project.updated;
+                                if (project.userIdCNHS)
+                                    delete project.userIdCNHS;
                             }
                             return [2 /*return*/, project];
                     }
@@ -240,6 +244,7 @@ var Projects = /** @class */ (function () {
             });
         }); };
         this.checkData = function (data) {
+            console.log("checkData", data);
             try {
                 if (data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
                     if (data.parameters.methodSmartContract || data.parameters.abiSmartContract) {

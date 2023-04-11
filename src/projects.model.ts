@@ -100,7 +100,7 @@ export class Projects {
     delete project.status;
     delete project.created;
     delete project.updated;
-
+    if(project.userIdCNHS) delete project.userIdCNHS;
     return project;
   };
 
@@ -112,6 +112,7 @@ export class Projects {
       delete project.status;
       delete project.created;
       delete project.updated;
+      if(project.userIdCNHS) delete project.userIdCNHS;
     }
     return project;
   };
@@ -165,6 +166,7 @@ export class Projects {
   };
 
   checkData = (data: any) => {
+    console.log("checkData", data)
     try {
       if (data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
         if (data.parameters.methodSmartContract || data.parameters.abiSmartContract) {
