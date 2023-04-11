@@ -132,7 +132,7 @@ export class Orders {
       if (!order) throw new Error(`no order fund for id: ${id}`)
       this.table.setContext({ accountId: order.accountId });
       data.id = id;
-      return await this.Order.update(data);
+      return await this.Order.update(data, {return: 'get'});
     } catch (err) {
       throw new Error(`Error during update order ${err}`);
     }

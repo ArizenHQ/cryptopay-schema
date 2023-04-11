@@ -166,7 +166,6 @@ export class Projects {
   };
 
   checkData = (data: any) => {
-    console.log("checkData", data)
     try {
       if (data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
         if (data.parameters.methodSmartContract || data.parameters.abiSmartContract) {

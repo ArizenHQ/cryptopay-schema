@@ -170,7 +170,7 @@ var Orders = /** @class */ (function () {
                             throw new Error("no order fund for id: ".concat(id));
                         this.table.setContext({ accountId: order.accountId });
                         data.id = id;
-                        return [4 /*yield*/, this.Order.update(data)];
+                        return [4 /*yield*/, this.Order.update(data, { return: 'get' })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();

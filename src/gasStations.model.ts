@@ -133,7 +133,7 @@ export class GasStations {
       if (!gasStation) throw new Error(`no gasStation fund for id: ${id}`)
       this.table.setContext({ accountId: gasStation.accountId });
       data.id = id;
-      return await this.GasStation.update(data);
+      return await this.GasStation.update(data, {return: 'get'});
     } catch (err) {
       throw new Error(`Error during update gasStation ${err}`);
     }

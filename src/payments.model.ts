@@ -94,7 +94,7 @@ export class Payments {
       if (!payment) throw new Error(`no order fund for id: ${id}`)
       this.table.setContext({ accountId: payment.accountId });
       data.id = id;
-      return await this.Payment.update(data);
+      return await this.Payment.update(data, {return: 'get'});
     } catch (err) {
       throw new Error(`Error during update order ${err}`);
     }

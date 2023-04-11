@@ -72,7 +72,7 @@ export class Accounts {
 
   patchById = async (id: string, data: any) => {
     let account = this.Account.find({ id: id });
-    return await account.update(data)
+    return await account.update(data, {return: 'get'})
   }
 
   removeById = async (id: string) => {

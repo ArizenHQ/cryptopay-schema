@@ -107,7 +107,7 @@ export class Kyts {
       data.id = id;
       const currentDate = new Date();
       data.dateLastUpdated = currentDate.getTime();
-      return await this.Kyt.update(data);
+      return await this.Kyt.update(data, {return: 'get'});
     } catch (err) {
       throw new Error(`Error during update kyt ${err}`);
     }

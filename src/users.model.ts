@@ -76,7 +76,7 @@ export class Users {
     let user = await this.Project.get({ id: id }, { index: "gs4", follow: true });
     this.table.setContext({ accountId: user.accountId });
     data.id = id;
-    return await this.User.update(data);
+    return await this.User.update(data, {return: 'get'});
   };
 
   list = async (accountId: string, query: any) => {

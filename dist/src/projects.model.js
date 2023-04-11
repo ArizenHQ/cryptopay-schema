@@ -251,7 +251,6 @@ var Projects = /** @class */ (function () {
             });
         }); };
         this.checkData = function (data) {
-            console.log("checkData", data);
             try {
                 if (data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
                     if (data.parameters.methodSmartContract || data.parameters.abiSmartContract) {

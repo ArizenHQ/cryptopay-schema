@@ -101,7 +101,7 @@ var Users = /** @class */ (function () {
                         user = _b.sent();
                         this.table.setContext({ accountId: user.accountId });
                         data.id = id;
-                        return [4 /*yield*/, this.User.update(data)];
+                        return [4 /*yield*/, this.User.update(data, { return: 'get' })];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
             });

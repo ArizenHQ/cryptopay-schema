@@ -152,7 +152,7 @@ var Kyts = /** @class */ (function () {
                         data.id = id;
                         currentDate = new Date();
                         data.dateLastUpdated = currentDate.getTime();
-                        return [4 /*yield*/, this.Kyt.update(data)];
+                        return [4 /*yield*/, this.Kyt.update(data, { return: 'get' })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();

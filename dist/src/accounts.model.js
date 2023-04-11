@@ -94,7 +94,7 @@ var Accounts = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         account = this.Account.find({ id: id });
-                        return [4 /*yield*/, account.update(data)];
+                        return [4 /*yield*/, account.update(data, { return: 'get' })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
