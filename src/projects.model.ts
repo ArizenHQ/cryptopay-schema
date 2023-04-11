@@ -128,7 +128,7 @@ export class Projects {
   list = async (accountId: string, query: any) => {
     let key = {};
     if (accountId) key = { pk: `account#${accountId}` };
-    return this.Project.find(key, { index: "gs1", follow: true }, query);
+    return await this.Project.find(key, { index: "gs1", follow: true }, query);
   };
 
   patchById = async (id: string, data: any) => {
@@ -138,14 +138,14 @@ export class Projects {
     const controlData = this.checkData(data);
     if (controlData !== true) return controlData;
     //this.createApiKey(data);
-    return this.Project.update(data);
+    return await this.Project.update(data);
   };
 
   removeById = async (id: string) => {
     let project = await this.Project.get({ id: id }, { index: "gs2", follow: true });
     if (!project) throw new Error(`Project not found`);
     if (project.typeProject === "cryptoPayment") await removeApiKey(project.apiKeyId);
-    return this.Project.remove({ sk: `project#${id}`, pk: `account#${project.accountId}` });
+    return await this.Project.remove({ sk: `project#${id}`, pk: `account#${project.accountId}` });
   };
 
   createApiKey = async (obj: any) => {

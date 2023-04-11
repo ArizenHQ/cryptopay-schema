@@ -168,10 +168,14 @@ var Projects = /** @class */ (function () {
         this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {
             var key;
             return __generator(this, function (_b) {
-                key = {};
-                if (accountId)
-                    key = { pk: "account#".concat(accountId) };
-                return [2 /*return*/, this.Project.find(key, { index: "gs1", follow: true }, query)];
+                switch (_b.label) {
+                    case 0:
+                        key = {};
+                        if (accountId)
+                            key = { pk: "account#".concat(accountId) };
+                        return [4 /*yield*/, this.Project.find(key, { index: "gs1", follow: true }, query)];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
@@ -186,8 +190,10 @@ var Projects = /** @class */ (function () {
                         controlData = this.checkData(data);
                         if (controlData !== true)
                             return [2 /*return*/, controlData];
-                        //this.createApiKey(data);
-                        return [2 /*return*/, this.Project.update(data)];
+                        return [4 /*yield*/, this.Project.update(data)];
+                    case 2: 
+                    //this.createApiKey(data);
+                    return [2 /*return*/, _b.sent()];
                 }
             });
         }); };
@@ -205,7 +211,8 @@ var Projects = /** @class */ (function () {
                     case 2:
                         _b.sent();
                         _b.label = 3;
-                    case 3: return [2 /*return*/, this.Project.remove({ sk: "project#".concat(id), pk: "account#".concat(project.accountId) })];
+                    case 3: return [4 /*yield*/, this.Project.remove({ sk: "project#".concat(id), pk: "account#".concat(project.accountId) })];
+                    case 4: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };
