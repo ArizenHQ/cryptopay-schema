@@ -190,7 +190,7 @@ var Projects = /** @class */ (function () {
                         controlData = this.checkData(data);
                         if (controlData !== true)
                             return [2 /*return*/, controlData];
-                        return [4 /*yield*/, this.Project.update(data)];
+                        return [4 /*yield*/, this.Project.update(data, { return: 'get' })];
                     case 2: 
                     //this.createApiKey(data);
                     return [2 /*return*/, _b.sent()];

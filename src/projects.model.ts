@@ -138,7 +138,7 @@ export class Projects {
     const controlData = this.checkData(data);
     if (controlData !== true) return controlData;
     //this.createApiKey(data);
-    return await this.Project.update(data);
+    return await this.Project.update(data, {return: 'get'});
   };
 
   removeById = async (id: string) => {
