@@ -167,6 +167,7 @@ export class Projects {
 
   checkData = (data: any) => {
     try {
+      if(!data.paramaeters) throw new Error("Parameters missed for this project. Please add according the project creation documentation");
       if (data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
         if (data.parameters.methodSmartContract || data.parameters.abiSmartContract) {
           throw new Error("Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project");
@@ -184,7 +185,7 @@ export class Projects {
         }
       }
       if (data.typeProject === "cardPayment") {
-        if (!data.parameters.walletAddress) {
+        if (!data.parameters?.walletAddress) {
           throw new Error("Missing parameters for this smart contract. You need to provide the wallet address");
         } else if ((data.parameters.methodSmartContract && !data.parameters.abiSmartContract) || (!data.parameters.methodSmartContract && data.parameters.abiSmartContract)) {
           throw new Error("Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi");

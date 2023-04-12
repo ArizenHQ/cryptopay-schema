@@ -251,7 +251,10 @@ var Projects = /** @class */ (function () {
             });
         }); };
         this.checkData = function (data) {
+            var _b;
             try {
+                if (!data.paramaeters)
+                    throw new Error("Parameters missed for this project. Please add according the project creation documentation");
                 if (data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
                     if (data.parameters.methodSmartContract || data.parameters.abiSmartContract) {
                         throw new Error("Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project");
@@ -272,7 +275,7 @@ var Projects = /** @class */ (function () {
                     }
                 }
                 if (data.typeProject === "cardPayment") {
-                    if (!data.parameters.walletAddress) {
+                    if (!((_b = data.parameters) === null || _b === void 0 ? void 0 : _b.walletAddress)) {
                         throw new Error("Missing parameters for this smart contract. You need to provide the wallet address");
                     }
                     else if ((data.parameters.methodSmartContract && !data.parameters.abiSmartContract) || (!data.parameters.methodSmartContract && data.parameters.abiSmartContract)) {
