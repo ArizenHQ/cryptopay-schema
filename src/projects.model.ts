@@ -61,7 +61,6 @@ export class Projects {
   insert = async (data: any) => {
     try {
       const account = await this.Account.get({ id: data.accountId });
-      console.log("account", account)
       if(!account) throw new Error("Account not found")
       this.table.setContext({ accountId: data.accountId });
       const isValid = this.checkData(data);
