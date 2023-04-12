@@ -167,29 +167,28 @@ export class Projects {
 
   checkData = (data: any) => {
     try {
-      if(!data.paramaeters) throw new Error("Parameters missed for this project. Please add according the project creation documentation");
       if (data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
-        if (data.parameters.methodSmartContract || data.parameters.abiSmartContract) {
+        if (data.parameters?.methodSmartContract || data.parameters?.abiSmartContract) {
           throw new Error("Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project");
         }
       }
       if (data.typeProject === "cryptoPayment" || data.typeProject === "cardPayment") {
-        if (!validateString(data.parameters.urlRedirectSuccess, Match.url)) {
+        if (data.parameters?.urlRedirectSuccess && !validateString(data.parameters?.urlRedirectSuccess, Match.url)) {
           throw new Error("urlRedirectSuccess is invalid or missed");
-        } else if (!validateString(data.parameters.urlRedirectError, Match.url)) {
+        } else if (data.parameters?.urlRedirectError && !validateString(data.parameters?.urlRedirectError, Match.url)) {
           throw new Error("urlRedirectError is invalid or missed");
-        } else if (!validateString(data.parameters.urlRedirectFailed, Match.url)) {
+        } else if (data.parameters?.urlRedirectFailed && !validateString(data.parameters?.urlRedirectFailed, Match.url)) {
           throw new Error("urlRedirectFailed is invalid or missed");
-        } else if (!validateString(data.parameters.urlRedirectPending, Match.url)) {
+        } else if (data.parameters?.urlRedirectPending && !validateString(data.parameters?.urlRedirectPending, Match.url)) {
           throw new Error("urlRedirectPending is invalid or missed");
         }
       }
       if (data.typeProject === "cardPayment") {
         if (!data.parameters?.walletAddress) {
           throw new Error("Missing parameters for this smart contract. You need to provide the wallet address");
-        } else if ((data.parameters.methodSmartContract && !data.parameters.abiSmartContract) || (!data.parameters.methodSmartContract && data.parameters.abiSmartContract)) {
+        } else if ((data.parameters?.methodSmartContract && !data.parameters?.abiSmartContract) || (!data.parameters?.methodSmartContract && data.parameters?.abiSmartContract)) {
           throw new Error("Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi");
-        } else if (data.parameters.abiSmartContract && !isJsonValid(data.parameters.abiSmartContract)) {
+        } else if (data.parameters?.abiSmartContract && !isJsonValid(data.parameters?.abiSmartContract)) {
           throw new Error("Invalid abi for this smart contract");
         }
       }
