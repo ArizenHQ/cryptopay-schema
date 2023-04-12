@@ -64,6 +64,9 @@ var Projects = /** @class */ (function () {
                         return [4 /*yield*/, this.Account.get({ id: data.accountId })];
                     case 1:
                         account_1 = _b.sent();
+                        console.log("account", account_1);
+                        if (!account_1)
+                            throw new Error("Account not found");
                         this.table.setContext({ accountId: data.accountId });
                         isValid = this.checkData(data);
                         if (isValid === true) {
