@@ -183,6 +183,10 @@ declare const Schema: {
                 readonly type: BooleanConstructor;
                 readonly default: false;
             };
+            readonly autoConvert: {
+                readonly type: BooleanConstructor;
+                readonly default: false;
+            };
             readonly userIdCNHS: {
                 readonly type: StringConstructor;
             };
@@ -452,6 +456,11 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly validate: RegExp;
             };
+            readonly autoConvert: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["disabled, enabled, pending, done"];
+                readonly default: "disabled";
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "order#";
@@ -471,6 +480,77 @@ declare const Schema: {
             readonly gs4sk: {
                 readonly type: StringConstructor;
                 readonly value: "order#${id}#${typeOrder}#${codeProject}#${success}#${tx_hash}";
+            };
+        };
+        readonly Conversion: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "account#${accountId}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "conversion#${id}";
+            };
+            readonly id: {
+                readonly type: StringConstructor;
+                readonly generate: "uuid";
+                readonly validate: RegExp;
+            };
+            readonly accountId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly projectId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly orderId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly quoteId: {
+                readonly type: StringConstructor;
+            };
+            readonly depositId: {
+                readonly type: StringConstructor;
+            };
+            readonly quote: {
+                readonly type: NumberConstructor;
+            };
+            readonly quoteCurrency: {
+                readonly type: StringConstructor;
+            };
+            readonly base: {
+                readonly type: NumberConstructor;
+            };
+            readonly baseCurrency: {
+                readonly type: StringConstructor;
+            };
+            readonly fees: {
+                readonly type: NumberConstructor;
+            };
+            readonly dateConversion: {
+                readonly type: StringConstructor;
+            };
+            readonly gs1pk: {
+                readonly type: StringConstructor;
+                readonly value: "conversion#";
+            };
+            readonly gs1sk: {
+                readonly type: StringConstructor;
+                readonly value: "conversion#${id}";
+            };
+            readonly gs2sk: {
+                readonly type: StringConstructor;
+                readonly value: "conversion#${orderId}";
+            };
+            readonly gs3sk: {
+                readonly type: StringConstructor;
+                readonly value: "conversion#${quoteCurrency}";
+            };
+            readonly gs4sk: {
+                readonly type: StringConstructor;
+                readonly value: "conversion#${baseCurrency}";
             };
         };
         readonly Payment: {

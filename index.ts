@@ -5,3 +5,4 @@ export {Orders}         from './src/orders.model';
 export {Payments}       from './src/payments.model';
 export {Kyts}           from './src/kyts.model';
 export {GasStations}    from './src/gasStations.model';
+export {Conversions}    from './src/conversions.model';
