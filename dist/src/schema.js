@@ -170,7 +170,7 @@ var Schema = {
             },
             walletAddress: { type: String, validate: Match.cryptoAddress },
             webhookUrl: { type: String, validate: Match.url },
-            autoConvert: { type: String, enum: ["disabled, enabled, pending, done"], default: "disabled" },
+            autoConvert: { type: String, enum: ["disabled", "enabled", "pending", "done"], default: "disabled", required: true },
             gs1pk: { type: String, value: 'order#' },
             gs1sk: { type: String, value: 'order#${id}' },
             gs2sk: { type: String, value: 'order#${typeOrder}#${codeProject}' },

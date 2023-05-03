@@ -458,8 +458,9 @@ declare const Schema: {
             };
             readonly autoConvert: {
                 readonly type: StringConstructor;
-                readonly enum: readonly ["disabled, enabled, pending, done"];
+                readonly enum: readonly ["disabled", "enabled", "pending", "done"];
                 readonly default: "disabled";
+                readonly required: true;
             };
             readonly gs1pk: {
                 readonly type: StringConstructor;

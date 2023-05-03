@@ -69,7 +69,7 @@ var Orders = /** @class */ (function () {
                         this.table.setContext({ accountId: accountId });
                         order.accountId = accountId;
                         order.codeProject = project.codeProject;
-                        //order.autoConvert = (project.autoConvert) ? "enabled" : "disabled";
+                        order.autoConvert = (project.autoConvert) ? "enabled" : "disabled";
                         order.applicationInfo = {
                             externalPlatform: {
                                 integrator: account.name,
