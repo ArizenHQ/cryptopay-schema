@@ -80,7 +80,6 @@ const Schema = {
           smartContractAbi: { type: String },
           network: { type: String, enum: ["mainnet", "mumbai", "goerli", "ghost"] },
           blockchain: { type: String, enum: ["ethereum", "polygon", "tezos"] },
-          coinhouseCustomerId: {type: String},
           gasStation: {
             type: Object,
             default: {},

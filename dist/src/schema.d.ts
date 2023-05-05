@@ -235,9 +235,6 @@ declare const Schema: {
                         readonly type: StringConstructor;
                         readonly enum: readonly ["ethereum", "polygon", "tezos"];
                     };
-                    readonly coinhouseCustomerId: {
-                        readonly type: StringConstructor;
-                    };
                     readonly gasStation: {
                         readonly type: ObjectConstructor;
                         readonly default: {};

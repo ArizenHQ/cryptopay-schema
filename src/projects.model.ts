@@ -72,6 +72,7 @@ export class Projects {
           codeProject: data.codeProject,
           typeProject: data.typeProject,
           description: data.description,
+          userIdCNHS: data.userIdCNHS || null,
           status: data.status,
           parameters: data.parameters,
           apiKey: this.generateApiKey(),
