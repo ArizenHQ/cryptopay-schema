@@ -386,6 +386,9 @@ declare const Schema: {
             readonly paymentId: {
                 readonly type: StringConstructor;
             };
+            readonly conversionId: {
+                readonly type: StringConstructor;
+            };
             readonly codeProject: {
                 readonly type: StringConstructor;
                 readonly required: true;
@@ -498,7 +501,7 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly required: true;
             };
-            readonly projectId: {
+            readonly codeProject: {
                 readonly type: StringConstructor;
                 readonly required: true;
             };
@@ -529,6 +532,12 @@ declare const Schema: {
             };
             readonly dateConversion: {
                 readonly type: StringConstructor;
+            };
+            readonly status: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["pending", "done", "failed"];
+                readonly default: "pending";
+                readonly required: true;
             };
             readonly gs1pk: {
                 readonly type: StringConstructor;
