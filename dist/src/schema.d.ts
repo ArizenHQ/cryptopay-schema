@@ -229,7 +229,7 @@ declare const Schema: {
                     };
                     readonly network: {
                         readonly type: StringConstructor;
-                        readonly enum: readonly ["mainnet", "mumbai", "goerli", "ghost"];
+                        readonly enum: readonly ["mainnet", "mumbai", "goerli", "ghost", "sepolia"];
                     };
                     readonly blockchain: {
                         readonly type: StringConstructor;
@@ -746,7 +746,7 @@ declare const Schema: {
             };
             readonly network: {
                 readonly type: StringConstructor;
-                readonly enum: readonly ["mainnet", "mumbai", "goerli"];
+                readonly enum: readonly ["mainnet", "mumbai", "goerli", "ghost", "sepolia"];
             };
             readonly blockchain: {
                 readonly type: StringConstructor;
