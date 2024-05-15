@@ -6,6 +6,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.json",
+    "release": "release-it",
     "test": "jest"
   },
   "repository": {
@@ -17,7 +18,8 @@
   "dependencies": {
     "@aws-sdk/client-api-gateway": "^3.267.0",
     "aws-sdk": "^2.1311.0",
-    "dynamodb-onetable": "^2.5.1"
+    "dynamodb-onetable": "^2.5.1",
+    "release-it": "^17.2.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
