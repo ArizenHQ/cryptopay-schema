@@ -322,6 +322,10 @@ const Schema = {
       internalRef: { type: String, required: true },
       webhookUrl: { type: String, validate: Match.url },
       amount: { type: Number, required: true },
+      audit: {
+        type: Array,
+        default: [],
+      },
       fees: { type: Number },
       gs1pk: { type: String, value: "getStation#" },
       gs1sk: { type: String, value: "getStation#${id}" },
@@ -330,7 +334,7 @@ const Schema = {
       gs4sk: {
         type: String,
         value:
-          "order#${id}#${codeProject}#${statusOrder}#${success}#${paymentId}#${tx_hash}",
+          "getStation#${id}#${codeProject}#${statusOrder}#${success}#${paymentId}#${tx_hash}",
       },
     },
   } as const,

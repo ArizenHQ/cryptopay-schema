@@ -780,6 +780,10 @@ declare const Schema: {
                 readonly type: NumberConstructor;
                 readonly required: true;
             };
+            readonly audit: {
+                readonly type: ArrayConstructor;
+                readonly default: readonly [];
+            };
             readonly fees: {
                 readonly type: NumberConstructor;
             };
@@ -801,7 +805,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "order#${id}#${codeProject}#${statusOrder}#${success}#${paymentId}#${tx_hash}";
+                readonly value: "getStation#${id}#${codeProject}#${statusOrder}#${success}#${paymentId}#${tx_hash}";
             };
         };
     };
