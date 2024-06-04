@@ -2,12 +2,16 @@ import { Dynamo } from "dynamodb-onetable/Dynamo";
 import { Model, Table } from "dynamodb-onetable";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import Schema from "./schema";
-import { importApiKey, removeApiKey, configureUsagePlanKey } from "./utils/ApiGatewayCryptoPayment.js";
+import {
+  importApiKey,
+  removeApiKey,
+  configureUsagePlanKey,
+} from "./utils/ApiGatewayCryptoPayment.js";
 import retrieveSecrets from "./utils/retrieveSecrets";
-import { randomBytes, createHash } from 'crypto'
-const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
-
-
+import { randomBytes, createHash } from "crypto";
+const client = new Dynamo({
+  client: new DynamoDBClient({ region: "eu-west-1" }),
+});
 
 export class Projects {
   Crypto: any;
@@ -20,8 +24,7 @@ export class Projects {
   Kyt: any;
   secretsString: any;
   private constructor(secretsString: any) {
-
-    this.secretsString = secretsString
+    this.secretsString = secretsString;
 
     this.Crypto = {
       primary: {
@@ -44,24 +47,25 @@ export class Projects {
     this.Order = this.table.getModel("Order");
     this.Payment = this.table.getModel("Payment");
     this.Kyt = this.table.getModel("Kyt");
-
   }
 
   static init = async () => {
-    const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration")
-    return new Projects(secretsString)
-  }
+    const secretsString = await retrieveSecrets(
+      "/coinhouse-solution/CardPayment-configuration"
+    );
+    return new Projects(secretsString);
+  };
 
   randomString = () => {
     return randomBytes(5).toString("hex");
-  }
+  };
   generateApiKey = () => {
     return createHash("sha256").update(Math.random().toString()).digest("hex");
-  }
+  };
   insert = async (data: any) => {
     try {
       const account = await this.Account.get({ id: data.accountId });
-      if(!account) throw new Error("Account not found")
+      if (!account) throw new Error("Account not found");
       this.table.setContext({ accountId: data.accountId });
       const isValid = this.checkData(data);
 
@@ -76,9 +80,12 @@ export class Projects {
           status: data.status,
           parameters: data.parameters,
           apiKey: this.generateApiKey(),
-          hmacPassword: this.randomString()
+          hmacPassword: this.randomString(),
         }).then(async (project: any) => {
-          await this.createApiKey({ accountName: account.name, project: project });
+          await this.createApiKey({
+            accountName: account.name,
+            project: project,
+          });
           return project;
         });
       } else {
@@ -89,39 +96,46 @@ export class Projects {
     }
   };
 
-
   findById = async (id: string) => {
     return await this.Project.get({ id: id }, { index: "gs2", follow: true });
   };
 
   findPublicById = async (id: string) => {
-    let project = await this.Project.get({ id: id }, { index: "gs2", follow: true });
+    let project = await this.Project.get(
+      { id: id },
+      { index: "gs2", follow: true }
+    );
     delete project.hmacPassword;
     delete project.apiKey;
     delete project.accountId;
     delete project.status;
     delete project.created;
     delete project.updated;
-    if(project.userIdCNHS) delete project.userIdCNHS;
+    if (project.userIdCNHS) delete project.userIdCNHS;
     return project;
   };
 
   findByCodeProject = async (codeProject: string, showHiddenFields = false) => {
-    let project = await this.Project.get({ codeProject: codeProject }, { index: "gs1", follow: true });
+    let project = await this.Project.get(
+      { codeProject: codeProject },
+      { index: "gs1", follow: true }
+    );
     if (showHiddenFields === false) {
       delete project.hmacPassword;
       delete project.apiKey;
       delete project.status;
       delete project.created;
       delete project.updated;
-      if(project.userIdCNHS) delete project.userIdCNHS;
+      if (project.userIdCNHS) delete project.userIdCNHS;
     }
     return project;
   };
 
-
   findByApiKey = async (apiKey: string) => {
-    return await this.Project.get({ apiKey: apiKey }, { index: "gs3", follow: true });
+    return await this.Project.get(
+      { apiKey: apiKey },
+      { index: "gs3", follow: true }
+    );
   };
   getById = async (id: string) => {
     return await this.Project.get({ id: id }, { index: "gs2", follow: true });
@@ -134,24 +148,37 @@ export class Projects {
   };
 
   patchById = async (id: string, data: any) => {
-    let project = await this.Project.get({ id: id }, { index: "gs2", follow: true });
+    let project = await this.Project.get(
+      { id: id },
+      { index: "gs2", follow: true }
+    );
     this.table.setContext({ accountId: project.accountId });
     data.id = id;
     const controlData = this.checkData(data);
     if (controlData !== true) return controlData;
     //this.createApiKey(data);
-    return await this.Project.update(data, {return: 'get'});
+    return await this.Project.update(data, { return: "get" });
   };
 
   removeById = async (id: string) => {
-    let project = await this.Project.get({ id: id }, { index: "gs2", follow: true });
+    let project = await this.Project.get(
+      { id: id },
+      { index: "gs2", follow: true }
+    );
     if (!project) throw new Error(`Project not found`);
-    if (project.typeProject === "cryptoPayment") await removeApiKey(project.apiKeyId);
-    return await this.Project.remove({ sk: `project#${id}`, pk: `account#${project.accountId}` });
+    if (project.typeProject === "cryptoPayment")
+      await removeApiKey(project.apiKeyId);
+    return await this.Project.remove({
+      sk: `project#${id}`,
+      pk: `account#${project.accountId}`,
+    });
   };
 
   createApiKey = async (obj: any) => {
-    if (obj.project.typeProject === "cryptoPayment") {
+    if (
+      obj.project.typeProject === "cryptoPayment" ||
+      obj.project.typeProject === "gasStation"
+    ) {
       await importApiKey(obj)
         .then(async (keyId: any) => {
           await configureUsagePlanKey(keyId).catch((error) => {
@@ -169,28 +196,63 @@ export class Projects {
 
   checkData = (data: any) => {
     try {
-      if (data.typeProject === "cryptoPayment" || data.typeProject === "gasStation") {
-        if (data.parameters?.methodSmartContract || data.parameters?.abiSmartContract) {
-          throw new Error("Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project");
+      if (
+        data.typeProject === "cryptoPayment" ||
+        data.typeProject === "gasStation"
+      ) {
+        if (
+          data.parameters?.methodSmartContract ||
+          data.parameters?.abiSmartContract
+        ) {
+          throw new Error(
+            "Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project"
+          );
         }
       }
-      if (data.typeProject === "cryptoPayment" || data.typeProject === "cardPayment") {
-        if (data.parameters?.urlRedirectSuccess && !validateString(data.parameters?.urlRedirectSuccess, Match.url)) {
+      if (
+        data.typeProject === "cryptoPayment" ||
+        data.typeProject === "cardPayment"
+      ) {
+        if (
+          data.parameters?.urlRedirectSuccess &&
+          !validateString(data.parameters?.urlRedirectSuccess, Match.url)
+        ) {
           throw new Error("urlRedirectSuccess is invalid or missed");
-        } else if (data.parameters?.urlRedirectError && !validateString(data.parameters?.urlRedirectError, Match.url)) {
+        } else if (
+          data.parameters?.urlRedirectError &&
+          !validateString(data.parameters?.urlRedirectError, Match.url)
+        ) {
           throw new Error("urlRedirectError is invalid or missed");
-        } else if (data.parameters?.urlRedirectFailed && !validateString(data.parameters?.urlRedirectFailed, Match.url)) {
+        } else if (
+          data.parameters?.urlRedirectFailed &&
+          !validateString(data.parameters?.urlRedirectFailed, Match.url)
+        ) {
           throw new Error("urlRedirectFailed is invalid or missed");
-        } else if (data.parameters?.urlRedirectPending && !validateString(data.parameters?.urlRedirectPending, Match.url)) {
+        } else if (
+          data.parameters?.urlRedirectPending &&
+          !validateString(data.parameters?.urlRedirectPending, Match.url)
+        ) {
           throw new Error("urlRedirectPending is invalid or missed");
         }
       }
       if (data.typeProject === "cardPayment") {
         if (!data.parameters?.walletAddress) {
-          throw new Error("Missing parameters for this smart contract. You need to provide the wallet address");
-        } else if ((data.parameters?.methodSmartContract && !data.parameters?.abiSmartContract) || (!data.parameters?.methodSmartContract && data.parameters?.abiSmartContract)) {
-          throw new Error("Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi");
-        } else if (data.parameters?.abiSmartContract && !isJsonValid(data.parameters?.abiSmartContract)) {
+          throw new Error(
+            "Missing parameters for this smart contract. You need to provide the wallet address"
+          );
+        } else if (
+          (data.parameters?.methodSmartContract &&
+            !data.parameters?.abiSmartContract) ||
+          (!data.parameters?.methodSmartContract &&
+            data.parameters?.abiSmartContract)
+        ) {
+          throw new Error(
+            "Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi"
+          );
+        } else if (
+          data.parameters?.abiSmartContract &&
+          !isJsonValid(data.parameters?.abiSmartContract)
+        ) {
           throw new Error("Invalid abi for this smart contract");
         }
       }
@@ -204,8 +266,7 @@ export class Projects {
 const validateString = (data: string, match: any) => {
   const pattern = new RegExp(match);
   return pattern.test(data);
-}
-
+};
 
 const isJsonValid = (json: any) => {
   try {
@@ -226,7 +287,7 @@ const Match = {
   zip: /^\d{5}(?:[-\s]\d{4})?$/,
   phone: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/,
   url: /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/,
-  permissionLevel: /^(1|4|16|128|2048)$/
+  permissionLevel: /^(1|4|16|128|2048)$/,
 };
 
-export default Projects
+export default Projects;

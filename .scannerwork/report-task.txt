@@ -1,0 +1,6 @@
+projectKey=ArizenHQ_cryptopay-schema
+serverUrl=https://sonarqube.cobalt.fr
+serverVersion=10.5.1.90531
+dashboardUrl=https://sonarqube.cobalt.fr/dashboard?id=ArizenHQ_cryptopay-schema
+ceTaskId=a0e71191-3f28-4384-a4d5-047215ebd001
+ceTaskUrl=https://sonarqube.cobalt.fr/api/ce/task?id=a0e71191-3f28-4384-a4d5-047215ebd001
