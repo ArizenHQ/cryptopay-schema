@@ -40,7 +40,9 @@ exports.GasStations = void 0;
 var Dynamo_1 = require("dynamodb-onetable/Dynamo");
 var dynamodb_onetable_1 = require("dynamodb-onetable");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
+var client = new Dynamo_1.Dynamo({
+    client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }),
+});
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var GasStations = /** @class */ (function () {
@@ -58,23 +60,25 @@ var GasStations = /** @class */ (function () {
                         project = _b.sent();
                         if (!(Object.keys(project).length > 0)) return [3 /*break*/, 3];
                         if (project.typeProject !== "gasStation")
-                            throw new Error('That project is not configured for type gasStation. Please choose another one, create a new one or chnage this one for this kind of project. Be careful, if you change the project type, all your other instance could be impacted');
+                            throw new Error("That project is not configured for type gasStation. Please choose another one, create a new one or chnage this one for this kind of project. Be careful, if you change the project type, all your other instance could be impacted");
                         this.table.setContext({ accountId: project.accountId });
                         gasStation.accountId = project.accountId;
                         gasStation.codeProject = project.codeProject;
                         gasStation.projectId = project.id;
-                        if (!project.parameters.gasStation.currency || !project.parameters.gasStation.limitPer24H)
-                            throw new Error('That project is not fine configured. Please update your project with paramaeters for project type gasStation');
+                        if (!project.parameters.gasStation.currency ||
+                            !project.parameters.gasStation.limitPer24H)
+                            throw new Error("That project is not fine configured. Please update your project with paramaeters for project type gasStation");
                         if (!gasStation.amount || gasStation.amount === 0)
-                            throw new Error('Amount propertie is incorrect. Please enter a value > 0');
+                            throw new Error("Amount propertie is incorrect. Please enter a value > 0");
                         return [4 /*yield*/, this.isGasStationAvailable(project.accountId, project.id, gasStation.amount)];
                     case 2:
                         if (!(_b.sent()))
-                            throw new Error('The daily purchase limit has been exceeded. Please change amount');
+                            throw new Error("The daily purchase limit has been exceeded. Please change amount");
                         return [3 /*break*/, 4];
                     case 3: throw new Error("Project not found! Please check your codeProject or API Key");
                     case 4: return [4 /*yield*/, this.GasStation.create(gasStation).then(function (gasStation) { return __awaiter(_this, void 0, void 0, function () {
                             return __generator(this, function (_b) {
+                                delete gasStation.audit;
                                 return [2 /*return*/, gasStation];
                             });
                         }); })];
@@ -92,9 +96,9 @@ var GasStations = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
-                        dateYeasterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
+                        dateYeasterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
                         dateISOYesterday = new Date(dateYeasterday).toISOString();
-                        return [4 /*yield*/, this.list(accountId, projectId, { where: '${dateCreated} >= {' + dateISOYesterday + '}' })];
+                        return [4 /*yield*/, this.list(accountId, projectId, { where: "${dateCreated} >= {" + dateISOYesterday + "}" })];
                     case 1:
                         listGasStationForToday = _b.sent();
                         sum_1 = amount;
@@ -180,7 +184,7 @@ var GasStations = /** @class */ (function () {
                             throw new Error("no gasStation fund for id: ".concat(id));
                         this.table.setContext({ accountId: gasStation.accountId });
                         data.id = id;
-                        return [4 /*yield*/, this.GasStation.update(data, { return: 'get' })];
+                        return [4 /*yield*/, this.GasStation.update(data, { return: "get" })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();
@@ -198,7 +202,10 @@ var GasStations = /** @class */ (function () {
                         gasStation = _b.sent();
                         if (!gasStation)
                             throw new Error("gasStation not found");
-                        return [4 /*yield*/, this.Order.remove({ sk: "gasStation#".concat(id), pk: "account#".concat(gasStation.accountId) })];
+                        return [4 /*yield*/, this.Order.remove({
+                                sk: "gasStation#".concat(id),
+                                pk: "account#".concat(gasStation.accountId),
+                            })];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
             });
