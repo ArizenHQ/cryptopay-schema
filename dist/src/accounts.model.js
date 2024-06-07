@@ -40,7 +40,9 @@ exports.Accounts = void 0;
 var Dynamo_1 = require("dynamodb-onetable/Dynamo");
 var dynamodb_onetable_1 = require("dynamodb-onetable");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
+var client = new Dynamo_1.Dynamo({
+    client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }),
+});
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var Accounts = /** @class */ (function () {
@@ -75,7 +77,9 @@ var Accounts = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         this.table.setContext({ id: id });
-                        return [4 /*yield*/, this.table.fetch(['Account', 'User', 'Project'], { pk: "account#".concat(id) })];
+                        return [4 /*yield*/, this.table.fetch(["Account", "User", "Project"], {
+                                pk: "account#".concat(id),
+                            })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
@@ -94,7 +98,7 @@ var Accounts = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         account = this.Account.find({ id: id });
-                        return [4 /*yield*/, account.update(data, { return: 'get' })];
+                        return [4 /*yield*/, account.update(data, { return: "get" })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });

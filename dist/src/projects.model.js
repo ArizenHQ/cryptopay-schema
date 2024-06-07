@@ -264,6 +264,7 @@ var Projects = /** @class */ (function () {
         }); };
         this.checkData = function (data) {
             var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
+            console.log("Projects ~ data:", data);
             try {
                 if (data.typeProject === "cryptoPayment" ||
                     data.typeProject === "gasStation") {

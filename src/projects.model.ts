@@ -195,6 +195,7 @@ export class Projects {
   };
 
   checkData = (data: any) => {
+    console.log("Projects ~ data:", data);
     try {
       if (
         data.typeProject === "cryptoPayment" ||

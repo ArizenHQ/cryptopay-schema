@@ -1,8 +1,10 @@
-import { Dynamo } from 'dynamodb-onetable/Dynamo'
-import { Table } from 'dynamodb-onetable'
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
-import Schema from './schema';
+import { Dynamo } from "dynamodb-onetable/Dynamo";
+import { Table } from "dynamodb-onetable";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+const client = new Dynamo({
+  client: new DynamoDBClient({ region: "eu-west-1" }),
+});
+import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 
 export class Accounts {
@@ -13,12 +15,11 @@ export class Accounts {
   Account: any;
   Order: any;
   Payment: any;
-  Kyt: any;  
+  Kyt: any;
   secretsString: any;
- 
-  private constructor(secretsString: any) {
 
-    this.secretsString = secretsString
+  private constructor(secretsString: any) {
+    this.secretsString = secretsString;
 
     this.Crypto = {
       primary: {
@@ -41,44 +42,45 @@ export class Accounts {
     this.Order = this.table.getModel("Order");
     this.Payment = this.table.getModel("Payment");
     this.Kyt = this.table.getModel("Kyt");
-
   }
 
   static init = async () => {
-    const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration")
-    return new Accounts(secretsString)
-  }
+    const secretsString = await retrieveSecrets(
+      "/coinhouse-solution/CardPayment-configuration"
+    );
+    return new Accounts(secretsString);
+  };
 
   insert = async (data: any) => {
-    return await this.Account.create({ name: data.name })
-  }
+    return await this.Account.create({ name: data.name });
+  };
 
   findById = async (id: string) => {
     return await this.Account.get({ pk: `account#${id}` });
-  }
+  };
   getAccount = async (id: string) => {
     return await this.Account.get({ pk: `account#${id}` });
-  }
+  };
 
   getFullAccount = async (id: string) => {
-    this.table.setContext({ id: id })
-    return await this.table.fetch(['Account', 'User', 'Project'], { pk: `account#${id}` });
-  }
-
+    this.table.setContext({ id: id });
+    return await this.table.fetch(["Account", "User", "Project"], {
+      pk: `account#${id}`,
+    });
+  };
 
   list = async (query: any) => {
-    return await this.Account.scan({}, query)
-  }
+    return await this.Account.scan({}, query);
+  };
 
   patchById = async (id: string, data: any) => {
     let account = this.Account.find({ id: id });
-    return await account.update(data, {return: 'get'})
-  }
+    return await account.update(data, { return: "get" });
+  };
 
   removeById = async (id: string) => {
-    return await this.Account.remove({ id: id })
-  }
-
+    return await this.Account.remove({ id: id });
+  };
 }
 
-export default Accounts
+export default Accounts;

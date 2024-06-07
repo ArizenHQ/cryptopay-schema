@@ -1,4 +1,4 @@
-import { Table } from 'dynamodb-onetable';
+import { Table } from "dynamodb-onetable";
 export declare class Accounts {
     Crypto: any;
     table: Table;
