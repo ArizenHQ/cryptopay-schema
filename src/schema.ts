@@ -119,7 +119,7 @@ const Schema = {
             type: Object,
             default: {},
             schema: {
-              currency: { type: String, enum: ["ETH", "MATIC", "XTZ"] },
+              currency: { type: String, enum: ["ETH", "POL", "MATIC", "XTZ"] },
               limitPer24H: { type: Number },
             },
           },
@@ -169,7 +169,7 @@ const Schema = {
         default: [],
       },
       countryCode: { type: String },
-      currency: { type: String, enum: ["ETH", "MATIC", "EUR"] },
+      currency: { type: String, enum: ["ETH", "POL", "MATIC", "EUR"] },
       customerAddress: { type: String, validate: Match.cryptoAddress },
       publicAddressDest: { type: String, validate: Match.cryptoAddress },
       customer: {
@@ -308,7 +308,7 @@ const Schema = {
       accountId: { type: String, required: true },
       projectId: { type: String, required: true },
       address: { type: String },
-      currency: { type: String, enum: ["ETH", "MATIC", "XTZ"] },
+      currency: { type: String, enum: ["ETH", "POL", "MATIC", "XTZ"] },
       network: {
         type: String,
         enum: ["mainnet", "mumbai", "goerli", "ghost", "sepolia"],
