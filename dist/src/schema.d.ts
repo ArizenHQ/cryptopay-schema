@@ -241,7 +241,7 @@ declare const Schema: {
                         readonly schema: {
                             readonly currency: {
                                 readonly type: StringConstructor;
-                                readonly enum: readonly ["ETH", "MATIC", "XTZ"];
+                                readonly enum: readonly ["ETH", "POL", "MATIC", "XTZ"];
                             };
                             readonly limitPer24H: {
                                 readonly type: NumberConstructor;
@@ -353,7 +353,7 @@ declare const Schema: {
             };
             readonly currency: {
                 readonly type: StringConstructor;
-                readonly enum: readonly ["ETH", "MATIC", "EUR"];
+                readonly enum: readonly ["ETH", "POL", "MATIC", "EUR"];
             };
             readonly customerAddress: {
                 readonly type: StringConstructor;
@@ -742,7 +742,7 @@ declare const Schema: {
             };
             readonly currency: {
                 readonly type: StringConstructor;
-                readonly enum: readonly ["ETH", "MATIC", "XTZ"];
+                readonly enum: readonly ["ETH", "POL", "MATIC", "XTZ"];
             };
             readonly network: {
                 readonly type: StringConstructor;
