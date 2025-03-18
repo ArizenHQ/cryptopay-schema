@@ -1,8 +1,10 @@
 import { Dynamo } from "dynamodb-onetable/Dynamo";
 import { Table } from "dynamodb-onetable";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
-import Schema from './schema'
+const client = new Dynamo({
+  client: new DynamoDBClient({ region: "eu-west-1" }),
+});
+import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { Projects } from "./projects.model";
 import { Accounts } from "./accounts.model";
@@ -18,8 +20,7 @@ export class Orders {
   Kyt: any;
   secretsString: any;
   private constructor(secretsString: any) {
-
-    this.secretsString = secretsString
+    this.secretsString = secretsString;
 
     this.Crypto = {
       primary: {
@@ -42,63 +43,84 @@ export class Orders {
     this.Order = this.table.getModel("Order");
     this.Payment = this.table.getModel("Payment");
     this.Kyt = this.table.getModel("Kyt");
-
   }
 
   static init = async () => {
-    const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration")
-    return new Orders(secretsString)
-  }
-
+    const secretsString = await retrieveSecrets(
+      "/coinhouse-solution/CardPayment-configuration"
+    );
+    return new Orders(secretsString);
+  };
 
   insert = async (accountId: string, order: any) => {
     try {
-      if (order.projectCode && !order.codeProject) { order.codeProject = order.projectCode }
+      // Normaliser le code du projet
+      order.codeProject = order.projectCode || order.codeProject;
 
-      const project = await this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true })
+      // Récupérer les informations du projet
+      const project = await this.Project.get(
+        { codeProject: order.codeProject },
+        { index: "gs1", follow: true }
+      );
 
-      if (Object.keys(project).length > 0) {
-        
-        if (accountId !== project.accountId) throw new Error(`accountId and project do not match. Please check all information or contact administrator`);
-        const account = await this.Account.get({ pk: `account#${accountId}` });
+      if (!Object.keys(project).length) {
+        throw new Error(`Project not found! Please check your codeProject or API Key`);
+      }
 
-        this.table.setContext({ accountId: accountId });
-        order.accountId = accountId;
-        order.codeProject = project.codeProject;
-        order.autoConvert = (project.autoConvert) ? "enabled" : "disabled";
+      // Vérifier que le compte correspond au projet
+      if (accountId !== project.accountId) {
+        throw new Error(
+          `accountId and project do not match. Please check all information or contact administrator`
+        );
+      }
 
-        order.applicationInfo = {
+      // Récupérer les informations du compte
+      const account = await this.Account.get({ pk: `account#${accountId}` });
+
+      // Configurer le contexte et les propriétés de base de l'ordre
+      this.table.setContext({ accountId });
+      
+      // Construire l'objet order avec les propriétés requises
+      const orderData = {
+        ...order,
+        accountId,
+        codeProject: project.codeProject,
+        autoConvert: project.autoConvert ? "enabled" : "disabled",
+        urlsRedirect: order.urlsRedirect || project.parameters,
+        webhookUrl: order.webhookUrl || project.parameters?.webhookUrl,
+        currency: order.currency?.toUpperCase(),
+        customerAddress: order.customerAddress?.toLowerCase(),
+        applicationInfo: {
           externalPlatform: {
             integrator: account.name,
             name: project.name,
           },
           merchantApplication: {
             name: project.name,
-          }
+          },
         }
+      };
 
-        if (!order.urlsRedirect) {
-          order.urlsRedirect =  project.parameters
-        }
-        
-        if (!order.webhookUrl) order.webhookUrl = project.parameters?.webhookUrl
-       
-        if(order.currency) order.currency = order.currency.toUpperCase()
-        if(order.customerAddress) order.customerAddress = order.customerAddress.toLowerCase()
-
-      } else {
-        throw new Error(`Project not found! Please check your codeProject or API Key`);
+      // Ajouter les paramètres de paiement physique si présents
+      if (Object.keys(project?.parameters?.physicalPayment || {}).length > 0) {
+        orderData.physicalPaymentParams = project.parameters.physicalPayment;
       }
-      return await this.Order.create(order).then(async (order: any) => {
-        delete order.notificationFromAdyen;
-        delete order.session;
-        delete order.applicationInfo;
-        delete order.audit;
-        delete order.statusOrder;
-        delete order.countryCode;
-        delete order.typeOrder;
+
+      // Créer l'ordre et retourner une version nettoyée
+      const createdOrder = await this.Order.create(orderData);
+      
+      // Liste des champs à supprimer de la réponse
+      const fieldsToRemove = [
+        'notificationFromAdyen', 'session', 'applicationInfo',
+        'audit', 'statusOrder', 'countryCode', 'typeOrder'
+      ];
+      
+      // Supprimer les champs non nécessaires
+      return fieldsToRemove.reduce((order, field) => {
+        delete order[field];
         return order;
-      })
+      }, createdOrder);
+      
     } catch (error) {
       throw new Error(`Error during add new order ${error}`);
     }
@@ -109,13 +131,16 @@ export class Orders {
   };
 
   findPublicById = async (id: string) => {
-    let order = await this.Order.get({ id: id }, { index: "gs2", follow: true });
+    let order = await this.Order.get(
+      { id: id },
+      { index: "gs2", follow: true }
+    );
     return order;
   };
 
   scan = async (params: any, query: any) => {
-    return await this.Order.scan(params, query)
-  }
+    return await this.Order.scan(params, query);
+  };
 
   getById = async (id: string) => {
     return await this.Order.get({ id: id }, { index: "gs1", follow: true });
@@ -129,21 +154,29 @@ export class Orders {
 
   patchById = async (id: string, data: any) => {
     try {
-      let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
-      if (!order) throw new Error(`no order fund for id: ${id}`)
+      let order = await this.Order.get(
+        { id: id },
+        { index: "gs1", follow: true }
+      );
+      if (!order) throw new Error(`no order fund for id: ${id}`);
       this.table.setContext({ accountId: order.accountId });
       data.id = id;
-      return await this.Order.update(data, {return: 'get'});
+      return await this.Order.update(data, { return: "get" });
     } catch (err) {
       throw new Error(`Error during update order ${err}`);
     }
   };
 
   removeById = async (id: string) => {
-    let order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
+    let order = await this.Order.get(
+      { id: id },
+      { index: "gs1", follow: true }
+    );
     if (!order) throw new Error(`Order not found`);
-    return await this.Order.remove({ sk: `order#${id}`, pk: `account#${order.accountId}` });
+    return await this.Order.remove({
+      sk: `order#${id}`,
+      pk: `account#${order.accountId}`,
+    });
   };
-
 }
-export default Orders
+export default Orders;

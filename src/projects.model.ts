@@ -156,7 +156,6 @@ export class Projects {
     data.id = id;
     const controlData = this.checkData(data);
     if (controlData !== true) return controlData;
-    //this.createApiKey(data);
     return await this.Project.update(data, { return: "get" });
   };
 
@@ -195,71 +194,71 @@ export class Projects {
   };
 
   checkData = (data: any) => {
-    try {
-      if (
-        data.typeProject === "cryptoPayment" ||
-        data.typeProject === "gasStation"
-      ) {
-        if (
-          data.parameters?.methodSmartContract ||
-          data.parameters?.abiSmartContract
-        ) {
-          throw new Error(
-            "Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project"
-          );
-        }
+    // Vérification du type de projet
+    const isCryptoPayment = data.typeProject === "cryptoPayment";
+    const isCardPayment = data.typeProject === "cardPayment";
+    const isGasStation = data.typeProject === "gasStation";
+    const params = data.parameters || {};
+
+    // Vérification des paramètres interdits pour certains types de projets
+    if (isCryptoPayment || isGasStation) {
+      if (params.methodSmartContract || params.abiSmartContract) {
+        throw new Error(
+          "Invalid parameters for this project. Do not use methodSmartContract, abiSmartContract for this type of project"
+        );
       }
-      if (
-        data.typeProject === "cryptoPayment" ||
-        data.typeProject === "cardPayment"
-      ) {
-        if (
-          data.parameters?.urlRedirectSuccess &&
-          !validateString(data.parameters?.urlRedirectSuccess, Match.url)
-        ) {
-          throw new Error("urlRedirectSuccess is invalid or missed");
-        } else if (
-          data.parameters?.urlRedirectError &&
-          !validateString(data.parameters?.urlRedirectError, Match.url)
-        ) {
-          throw new Error("urlRedirectError is invalid or missed");
-        } else if (
-          data.parameters?.urlRedirectFailed &&
-          !validateString(data.parameters?.urlRedirectFailed, Match.url)
-        ) {
-          throw new Error("urlRedirectFailed is invalid or missed");
-        } else if (
-          data.parameters?.urlRedirectPending &&
-          !validateString(data.parameters?.urlRedirectPending, Match.url)
-        ) {
-          throw new Error("urlRedirectPending is invalid or missed");
-        }
-      }
-      if (data.typeProject === "cardPayment") {
-        if (!data.parameters?.walletAddress) {
-          throw new Error(
-            "Missing parameters for this smart contract. You need to provide the wallet address"
-          );
-        } else if (
-          (data.parameters?.methodSmartContract &&
-            !data.parameters?.abiSmartContract) ||
-          (!data.parameters?.methodSmartContract &&
-            data.parameters?.abiSmartContract)
-        ) {
-          throw new Error(
-            "Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi"
-          );
-        } else if (
-          data.parameters?.abiSmartContract &&
-          !isJsonValid(data.parameters?.abiSmartContract)
-        ) {
-          throw new Error("Invalid abi for this smart contract");
-        }
-      }
-      return true;
-    } catch (e: any) {
-      throw e;
     }
+
+    // Vérification des URLs pour les projets cryptoPayment et cardPayment
+    if (isCryptoPayment || isCardPayment) {
+      const urlChecks = [
+        { field: 'urlRedirectSuccess', value: params.urlRedirectSuccess },
+        { field: 'urlRedirectError', value: params.urlRedirectError },
+        { field: 'urlRedirectFailed', value: params.urlRedirectFailed },
+        { field: 'urlRedirectPending', value: params.urlRedirectPending }
+      ];
+
+      for (const check of urlChecks) {
+        if (check.value && !validateString(check.value, Match.url)) {
+          throw new Error(`${check.field} is invalid or missed`);
+        }
+      }
+    }
+
+    // Vérifications spécifiques pour cardPayment
+    if (isCardPayment) {
+      if (!params.walletAddress) {
+        throw new Error(
+          "Missing parameters for this smart contract. You need to provide the wallet address"
+        );
+      }
+
+      const hasMethod = !!params.methodSmartContract;
+      const hasAbi = !!params.abiSmartContract;
+
+      if (hasMethod !== hasAbi) {
+        throw new Error(
+          "Missing parameters for this smart contract. If you use a custom method, you must provide the method and the abi"
+        );
+      }
+
+      if (hasAbi && !isJsonValid(params.abiSmartContract)) {
+        throw new Error("Invalid abi for this smart contract");
+      }
+    }
+
+    // Vérifications pour physicalPayment dans cryptoPayment
+    if (isCryptoPayment && params.physicalPayment && Object.keys(params.physicalPayment).length > 0) {
+      const requiredFields = ['logo', 'name', 'description', 'email'];
+      
+      for (const field of requiredFields) {
+        if (!params.physicalPayment[field]) {
+          throw new Error(`Missing ${field} for this physical payment`);
+        }
+      }
+    }
+
+    return true;
   };
 }
 
