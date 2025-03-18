@@ -101,6 +101,14 @@ const Schema = {
         type: Object,
         default: {},
         schema: {
+          physicalPayment: { type: Object, default: {}, schema: {
+            logo: { type: String },
+            name: { type: String },
+            description: { type: String },
+            address: { type: String },
+            phone: { type: String },
+            email: { type: String }
+          } },
           urlRedirectSuccess: { type: String, validate: Match.url },
           urlRedirectPending: { type: String, validate: Match.url },
           urlRedirectFailed: { type: String, validate: Match.url },
@@ -141,6 +149,14 @@ const Schema = {
       typeOrder: { type: String, required: true, enum: ["card", "crypto"] },
       amount: { type: Number, required: true },
       amountToClaim: { type: Number },
+      physicalPaymentParams: { type: Object, default: {}, schema: {
+        logo: { type: String },
+        name: { type: String },
+        description: { type: String },
+        address: { type: String },
+        phone: { type: String },
+        email: { type: String }
+      } },
       applicationInfo: {
         type: Object,
         default: {},
