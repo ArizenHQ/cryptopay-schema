@@ -107,7 +107,9 @@ const Schema = {
             description: { type: String },
             address: { type: String },
             phone: { type: String },
-            email: { type: String }
+            email: { type: String },
+            backgroundColor: { type: String },
+            fontColor: { type: String },
           } },
           urlRedirectSuccess: { type: String, validate: Match.url },
           urlRedirectPending: { type: String, validate: Match.url },
