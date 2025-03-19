@@ -92,7 +92,7 @@ var Orders = /** @class */ (function () {
                                     name: project.name,
                                 },
                             } });
-                        console.log(Object.keys(((_e = project === null || project === void 0 ? void 0 : project.parameters) === null || _e === void 0 ? void 0 : _e.physicalPayment) || {}).length > 0, project);
+                        console.log("ND keys", Object.keys(((_e = project === null || project === void 0 ? void 0 : project.parameters) === null || _e === void 0 ? void 0 : _e.physicalPayment) || {}).length > 0, "Project", project);
                         // Ajouter les paramètres de paiement physique si présents
                         if (Object.keys(((_f = project === null || project === void 0 ? void 0 : project.parameters) === null || _f === void 0 ? void 0 : _f.physicalPayment) || {}).length > 0) {
                             orderData.physicalPaymentParams = project.parameters.physicalPayment;
