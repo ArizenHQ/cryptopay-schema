@@ -61,16 +61,16 @@ var Orders = /** @class */ (function () {
         var _this = this;
         this.insert = function (accountId, order) { return __awaiter(_this, void 0, void 0, function () {
             var project, account, orderData, createdOrder, fieldsToRemove, error_1;
-            var _b, _c, _d, _e;
-            return __generator(this, function (_f) {
-                switch (_f.label) {
+            var _b, _c, _d, _e, _f;
+            return __generator(this, function (_g) {
+                switch (_g.label) {
                     case 0:
-                        _f.trys.push([0, 4, , 5]);
+                        _g.trys.push([0, 4, , 5]);
                         // Normaliser le code du projet
                         order.codeProject = order.projectCode || order.codeProject;
                         return [4 /*yield*/, this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true })];
                     case 1:
-                        project = _f.sent();
+                        project = _g.sent();
                         if (!Object.keys(project).length) {
                             throw new Error("Project not found! Please check your codeProject or API Key");
                         }
@@ -80,7 +80,7 @@ var Orders = /** @class */ (function () {
                         }
                         return [4 /*yield*/, this.Account.get({ pk: "account#".concat(accountId) })];
                     case 2:
-                        account = _f.sent();
+                        account = _g.sent();
                         // Configurer le contexte et les propriétés de base de l'ordre
                         this.table.setContext({ accountId: accountId });
                         orderData = __assign(__assign({}, order), { accountId: accountId, codeProject: project.codeProject, autoConvert: project.autoConvert ? "enabled" : "disabled", urlsRedirect: order.urlsRedirect || project.parameters, webhookUrl: order.webhookUrl || ((_b = project.parameters) === null || _b === void 0 ? void 0 : _b.webhookUrl), currency: (_c = order.currency) === null || _c === void 0 ? void 0 : _c.toUpperCase(), customerAddress: (_d = order.customerAddress) === null || _d === void 0 ? void 0 : _d.toLowerCase(), applicationInfo: {
@@ -92,13 +92,14 @@ var Orders = /** @class */ (function () {
                                     name: project.name,
                                 },
                             } });
+                        console.log(Object.keys(((_e = project === null || project === void 0 ? void 0 : project.parameters) === null || _e === void 0 ? void 0 : _e.physicalPayment) || {}).length > 0, project);
                         // Ajouter les paramètres de paiement physique si présents
-                        if (Object.keys(((_e = project === null || project === void 0 ? void 0 : project.parameters) === null || _e === void 0 ? void 0 : _e.physicalPayment) || {}).length > 0) {
+                        if (Object.keys(((_f = project === null || project === void 0 ? void 0 : project.parameters) === null || _f === void 0 ? void 0 : _f.physicalPayment) || {}).length > 0) {
                             orderData.physicalPaymentParams = project.parameters.physicalPayment;
                         }
                         return [4 /*yield*/, this.Order.create(orderData)];
                     case 3:
-                        createdOrder = _f.sent();
+                        createdOrder = _g.sent();
                         fieldsToRemove = [
                             'notificationFromAdyen', 'session', 'applicationInfo',
                             'audit', 'statusOrder', 'countryCode', 'typeOrder'
@@ -109,7 +110,7 @@ var Orders = /** @class */ (function () {
                                 return order;
                             }, createdOrder)];
                     case 4:
-                        error_1 = _f.sent();
+                        error_1 = _g.sent();
                         throw new Error("Error during add new order ".concat(error_1));
                     case 5: return [2 /*return*/];
                 }
