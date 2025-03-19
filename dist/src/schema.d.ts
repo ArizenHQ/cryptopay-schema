@@ -194,6 +194,30 @@ declare const Schema: {
                 readonly type: ObjectConstructor;
                 readonly default: {};
                 readonly schema: {
+                    readonly physicalPayment: {
+                        readonly type: ObjectConstructor;
+                        readonly default: {};
+                        readonly schema: {
+                            readonly logo: {
+                                readonly type: StringConstructor;
+                            };
+                            readonly name: {
+                                readonly type: StringConstructor;
+                            };
+                            readonly description: {
+                                readonly type: StringConstructor;
+                            };
+                            readonly address: {
+                                readonly type: StringConstructor;
+                            };
+                            readonly phone: {
+                                readonly type: StringConstructor;
+                            };
+                            readonly email: {
+                                readonly type: StringConstructor;
+                            };
+                        };
+                    };
                     readonly urlRedirectSuccess: {
                         readonly type: StringConstructor;
                         readonly validate: RegExp;
@@ -310,6 +334,30 @@ declare const Schema: {
             };
             readonly amountToClaim: {
                 readonly type: NumberConstructor;
+            };
+            readonly physicalPaymentParams: {
+                readonly type: ObjectConstructor;
+                readonly default: {};
+                readonly schema: {
+                    readonly logo: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly name: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly description: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly address: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly phone: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly email: {
+                        readonly type: StringConstructor;
+                    };
+                };
             };
             readonly applicationInfo: {
                 readonly type: ObjectConstructor;

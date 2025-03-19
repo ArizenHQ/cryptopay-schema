@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -40,73 +51,67 @@ exports.Orders = void 0;
 var Dynamo_1 = require("dynamodb-onetable/Dynamo");
 var dynamodb_onetable_1 = require("dynamodb-onetable");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
+var client = new Dynamo_1.Dynamo({
+    client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }),
+});
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var Orders = /** @class */ (function () {
     function Orders(secretsString) {
         var _this = this;
         this.insert = function (accountId, order) { return __awaiter(_this, void 0, void 0, function () {
-            var project, account, error_1;
-            var _this = this;
-            var _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var project, account, orderData, createdOrder, fieldsToRemove, error_1;
+            var _b, _c, _d, _e;
+            return __generator(this, function (_f) {
+                switch (_f.label) {
                     case 0:
-                        _c.trys.push([0, 6, , 7]);
-                        if (order.projectCode && !order.codeProject) {
-                            order.codeProject = order.projectCode;
-                        }
+                        _f.trys.push([0, 4, , 5]);
+                        // Normaliser le code du projet
+                        order.codeProject = order.projectCode || order.codeProject;
                         return [4 /*yield*/, this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true })];
                     case 1:
-                        project = _c.sent();
-                        if (!(Object.keys(project).length > 0)) return [3 /*break*/, 3];
-                        if (accountId !== project.accountId)
+                        project = _f.sent();
+                        if (!Object.keys(project).length) {
+                            throw new Error("Project not found! Please check your codeProject or API Key");
+                        }
+                        // Vérifier que le compte correspond au projet
+                        if (accountId !== project.accountId) {
                             throw new Error("accountId and project do not match. Please check all information or contact administrator");
+                        }
                         return [4 /*yield*/, this.Account.get({ pk: "account#".concat(accountId) })];
                     case 2:
-                        account = _c.sent();
+                        account = _f.sent();
+                        // Configurer le contexte et les propriétés de base de l'ordre
                         this.table.setContext({ accountId: accountId });
-                        order.accountId = accountId;
-                        order.codeProject = project.codeProject;
-                        order.autoConvert = (project.autoConvert) ? "enabled" : "disabled";
-                        order.applicationInfo = {
-                            externalPlatform: {
-                                integrator: account.name,
-                                name: project.name,
-                            },
-                            merchantApplication: {
-                                name: project.name,
-                            }
-                        };
-                        if (!order.urlsRedirect) {
-                            order.urlsRedirect = project.parameters;
+                        orderData = __assign(__assign({}, order), { accountId: accountId, codeProject: project.codeProject, autoConvert: project.autoConvert ? "enabled" : "disabled", urlsRedirect: order.urlsRedirect || project.parameters, webhookUrl: order.webhookUrl || ((_b = project.parameters) === null || _b === void 0 ? void 0 : _b.webhookUrl), currency: (_c = order.currency) === null || _c === void 0 ? void 0 : _c.toUpperCase(), customerAddress: (_d = order.customerAddress) === null || _d === void 0 ? void 0 : _d.toLowerCase(), applicationInfo: {
+                                externalPlatform: {
+                                    integrator: account.name,
+                                    name: project.name,
+                                },
+                                merchantApplication: {
+                                    name: project.name,
+                                },
+                            } });
+                        // Ajouter les paramètres de paiement physique si présents
+                        if (Object.keys(((_e = project === null || project === void 0 ? void 0 : project.parameters) === null || _e === void 0 ? void 0 : _e.physicalPayment) || {}).length > 0) {
+                            orderData.physicalPaymentParams = project.parameters.physicalPayment;
                         }
-                        if (!order.webhookUrl)
-                            order.webhookUrl = (_b = project.parameters) === null || _b === void 0 ? void 0 : _b.webhookUrl;
-                        if (order.currency)
-                            order.currency = order.currency.toUpperCase();
-                        if (order.customerAddress)
-                            order.customerAddress = order.customerAddress.toLowerCase();
-                        return [3 /*break*/, 4];
-                    case 3: throw new Error("Project not found! Please check your codeProject or API Key");
-                    case 4: return [4 /*yield*/, this.Order.create(order).then(function (order) { return __awaiter(_this, void 0, void 0, function () {
-                            return __generator(this, function (_b) {
-                                delete order.notificationFromAdyen;
-                                delete order.session;
-                                delete order.applicationInfo;
-                                delete order.audit;
-                                delete order.statusOrder;
-                                delete order.countryCode;
-                                delete order.typeOrder;
-                                return [2 /*return*/, order];
-                            });
-                        }); })];
-                    case 5: return [2 /*return*/, _c.sent()];
-                    case 6:
-                        error_1 = _c.sent();
+                        return [4 /*yield*/, this.Order.create(orderData)];
+                    case 3:
+                        createdOrder = _f.sent();
+                        fieldsToRemove = [
+                            'notificationFromAdyen', 'session', 'applicationInfo',
+                            'audit', 'statusOrder', 'countryCode', 'typeOrder'
+                        ];
+                        // Supprimer les champs non nécessaires
+                        return [2 /*return*/, fieldsToRemove.reduce(function (order, field) {
+                                delete order[field];
+                                return order;
+                            }, createdOrder)];
+                    case 4:
+                        error_1 = _f.sent();
                         throw new Error("Error during add new order ".concat(error_1));
-                    case 7: return [2 /*return*/];
+                    case 5: return [2 /*return*/];
                 }
             });
         }); };
@@ -171,7 +176,7 @@ var Orders = /** @class */ (function () {
                             throw new Error("no order fund for id: ".concat(id));
                         this.table.setContext({ accountId: order.accountId });
                         data.id = id;
-                        return [4 /*yield*/, this.Order.update(data, { return: 'get' })];
+                        return [4 /*yield*/, this.Order.update(data, { return: "get" })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();
@@ -189,7 +194,10 @@ var Orders = /** @class */ (function () {
                         order = _b.sent();
                         if (!order)
                             throw new Error("Order not found");
-                        return [4 /*yield*/, this.Order.remove({ sk: "order#".concat(id), pk: "account#".concat(order.accountId) })];
+                        return [4 /*yield*/, this.Order.remove({
+                                sk: "order#".concat(id),
+                                pk: "account#".concat(order.accountId),
+                            })];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
             });
