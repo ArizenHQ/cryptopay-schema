@@ -100,7 +100,7 @@ export class Orders {
           },
         }
       };
-
+      console.log(Object.keys(project?.parameters?.physicalPayment || {}).length > 0, project)
       // Ajouter les paramètres de paiement physique si présents
       if (Object.keys(project?.parameters?.physicalPayment || {}).length > 0) {
         orderData.physicalPaymentParams = project.parameters.physicalPayment;
