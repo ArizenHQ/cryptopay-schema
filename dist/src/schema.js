@@ -151,6 +151,7 @@ var Schema = {
             amountToClaim: { type: Number },
             physicalPaymentParams: { type: Object, default: {}, schema: {
                     logo: { type: String },
+                    logoInverse: { type: String },
                     name: { type: String },
                     description: { type: String },
                     address: { type: String },

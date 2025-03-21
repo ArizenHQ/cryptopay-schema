@@ -348,6 +348,9 @@ declare const Schema: {
                     readonly logo: {
                         readonly type: StringConstructor;
                     };
+                    readonly logoInverse: {
+                        readonly type: StringConstructor;
+                    };
                     readonly name: {
                         readonly type: StringConstructor;
                     };
