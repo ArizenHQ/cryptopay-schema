@@ -216,6 +216,12 @@ declare const Schema: {
                             readonly email: {
                                 readonly type: StringConstructor;
                             };
+                            readonly backgroundColor: {
+                                readonly type: StringConstructor;
+                            };
+                            readonly fontColor: {
+                                readonly type: StringConstructor;
+                            };
                         };
                     };
                     readonly urlRedirectSuccess: {
@@ -355,6 +361,12 @@ declare const Schema: {
                         readonly type: StringConstructor;
                     };
                     readonly email: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly backgroundColor: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly fontColor: {
                         readonly type: StringConstructor;
                     };
                 };
@@ -503,6 +515,9 @@ declare const Schema: {
             readonly webhookUrl: {
                 readonly type: StringConstructor;
                 readonly validate: RegExp;
+            };
+            readonly dateExpiration: {
+                readonly type: StringConstructor;
             };
             readonly autoConvert: {
                 readonly type: StringConstructor;

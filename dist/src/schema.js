@@ -105,7 +105,9 @@ var Schema = {
                             description: { type: String },
                             address: { type: String },
                             phone: { type: String },
-                            email: { type: String }
+                            email: { type: String },
+                            backgroundColor: { type: String },
+                            fontColor: { type: String },
                         } },
                     urlRedirectSuccess: { type: String, validate: Match.url },
                     urlRedirectPending: { type: String, validate: Match.url },
@@ -153,7 +155,9 @@ var Schema = {
                     description: { type: String },
                     address: { type: String },
                     phone: { type: String },
-                    email: { type: String }
+                    email: { type: String },
+                    backgroundColor: { type: String },
+                    fontColor: { type: String }
                 } },
             applicationInfo: {
                 type: Object,
@@ -221,6 +225,7 @@ var Schema = {
             },
             walletAddress: { type: String, validate: Match.cryptoAddress },
             webhookUrl: { type: String, validate: Match.url },
+            dateExpiration: { type: String },
             autoConvert: {
                 type: String,
                 enum: ["disabled", "enabled", "pending", "done"],
