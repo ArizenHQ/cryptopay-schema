@@ -101,6 +101,7 @@ var Schema = {
                 schema: {
                     physicalPayment: { type: Object, default: {}, schema: {
                             logo: { type: String },
+                            logoInverse: { type: String },
                             name: { type: String },
                             description: { type: String },
                             address: { type: String },
