@@ -151,6 +151,7 @@ const Schema = {
       accountId: { type: String, required: true },
       typeOrder: { type: String, required: true, enum: ["card", "crypto"] },
       amount: { type: Number, required: true },
+      euroAmount: { type: Number },
       amountToClaim: { type: Number },
       physicalPaymentParams: { type: Object, default: {}, schema: {
         logo: { type: String },
