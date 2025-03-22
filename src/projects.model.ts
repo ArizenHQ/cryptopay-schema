@@ -249,7 +249,7 @@ export class Projects {
 
     // Vérifications pour physicalPayment dans cryptoPayment
     if (isCryptoPayment && params.physicalPayment && Object.keys(params.physicalPayment).length > 0) {
-      const requiredFields = ['logo', 'name', 'description', 'email'];
+      const requiredFields = ['logo', 'name', 'description', 'email', 'logoInverse'];
       
       for (const field of requiredFields) {
         if (!params.physicalPayment[field]) {

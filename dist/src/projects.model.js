@@ -303,7 +303,7 @@ var Projects = /** @class */ (function () {
             }
             // Vérifications pour physicalPayment dans cryptoPayment
             if (isCryptoPayment && params.physicalPayment && Object.keys(params.physicalPayment).length > 0) {
-                var requiredFields = ['logo', 'name', 'description', 'email'];
+                var requiredFields = ['logo', 'name', 'description', 'email', 'logoInverse'];
                 for (var _b = 0, requiredFields_1 = requiredFields; _b < requiredFields_1.length; _b++) {
                     var field = requiredFields_1[_b];
                     if (!params.physicalPayment[field]) {
