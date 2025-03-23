@@ -8,6 +8,7 @@ import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { Projects } from "./projects.model";
 import { Accounts } from "./accounts.model";
+import { paginateModel } from './utils/paginateModel';
 
 export class Orders {
   Crypto: any;
@@ -137,18 +138,21 @@ export class Orders {
     return order;
   };
 
-  scan = async (params: any, query: any) => {
-    return await this.Order.scan(params, query);
+  scan = async (params: any = {}, query: any = {}) => {
+    return await paginateModel(this.Order, 'scan', params, query);
   };
 
   getById = async (id: string) => {
     return await this.Order.get({ id: id }, { index: "gs1", follow: true });
   };
 
-  list = async (accountId: string, query: any) => {
-    let key = {};
-    if (accountId) key = { pk: `account#${accountId}` };
-    return await this.Order.find(key, { index: "gs1", follow: true }, query);
+  list = async (accountId: string, query: any = {}) => {
+    const key: any = {};
+    if (accountId) key.pk = `account#${accountId}`;
+    return await paginateModel(this.Order, 'find', key, query, {
+      index: 'gs1',
+      follow: true,
+    });
   };
 
   patchById = async (id: string, data: any) => {

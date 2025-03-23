@@ -4,6 +4,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
+import { paginateModel } from './utils/paginateModel';
 
 export class Conversions {
   Crypto: any;
@@ -73,9 +74,9 @@ export class Conversions {
     return order;
   };
 
-  scan = async (params: any, query: any) => {
-    return await this.Conversion.scan(params, query)
-  }
+  scan = async (params: any = {}, query: any = {}) => {
+    return await paginateModel(this.Conversion, 'scan', params, query);
+  };
 
   getById = async (id: string) => {
     return await this.Conversion.get({ id: id }, { index: "gs1", follow: true });
@@ -85,10 +86,14 @@ export class Conversions {
     return await this.scan({orderId: orderId}, {})
   }
 
-  list = async (accountId: string, query: any) => {
-    let key = {};
-    if (accountId) key = { pk: `account#${accountId}` };
-    return await this.Conversion.find(key, { index: "gs1", follow: true }, query);
+  list = async (accountId: string, query: any = {}) => {
+    const key: any = {};
+    if (accountId) key.pk = `account#${accountId}`;
+  
+    return await paginateModel(this.Conversion, 'find', key, query, {
+      index: 'gs1',
+      follow: true,
+    });
   };
 
   patchById = async (id: string, data: any) => {

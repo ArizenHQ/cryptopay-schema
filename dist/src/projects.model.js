@@ -44,6 +44,7 @@ var schema_1 = require("./schema");
 var ApiGatewayCryptoPayment_js_1 = require("./utils/ApiGatewayCryptoPayment.js");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var crypto_1 = require("crypto");
+var paginateModel_1 = require("./utils/paginateModel");
 var client = new Dynamo_1.Dynamo({
     client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }),
 });
@@ -173,19 +174,25 @@ var Projects = /** @class */ (function () {
                 }
             });
         }); };
-        this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {
-            var key;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        key = {};
-                        if (accountId)
-                            key = { pk: "account#".concat(accountId) };
-                        return [4 /*yield*/, this.Project.find(key, { index: "gs1", follow: true }, query)];
-                    case 1: return [2 /*return*/, _b.sent()];
-                }
+        this.list = function (accountId, query) {
+            if (query === void 0) { query = {}; }
+            return __awaiter(_this, void 0, void 0, function () {
+                var key;
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0:
+                            key = {};
+                            if (accountId)
+                                key.pk = "account#".concat(accountId);
+                            return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Project, 'find', key, query, {
+                                    index: 'gs1',
+                                    follow: true,
+                                })];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
             });
-        }); };
+        };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
             var project, controlData;
             return __generator(this, function (_b) {

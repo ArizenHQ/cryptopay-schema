@@ -4,6 +4,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
+import { paginateModel } from './utils/paginateModel';
 
 export class Kyts {
   Crypto: any;
@@ -84,8 +85,8 @@ export class Kyts {
     return order;
   };
 
-  scan = async (params: any, query: any) => {
-    return await this.Kyt.scan(params, query)
+  scan = async (params: any = {}, query: any = {}) => {
+    return await paginateModel(this.Kyt, 'scan', params, query);
   }
 
   getById = async (id: string) => {
@@ -93,11 +94,16 @@ export class Kyts {
   };
 
 
-  list = async (accountId: string, query: any) => {
-    let key = {};
-    if (accountId) key = { pk: `account#${accountId}` };
-    return await this.Kyt.find(key, { index: "gs1", follow: true }, query);
+  list = async (accountId: string, query: any = {}) => {
+    const key: any = {};
+    if (accountId) key.pk = `account#${accountId}`;
+  
+    return await paginateModel(this.Kyt, 'find', key, query, {
+      index: 'gs1',
+      follow: true,
+    });
   };
+  
 
   patchById = async (id: string, data: any) => {
     try {

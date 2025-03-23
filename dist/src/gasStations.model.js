@@ -45,6 +45,7 @@ var client = new Dynamo_1.Dynamo({
 });
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
+var paginateModel_1 = require("./utils/paginateModel");
 var GasStations = /** @class */ (function () {
     function GasStations(secretsString) {
         var _this = this;
@@ -140,14 +141,18 @@ var GasStations = /** @class */ (function () {
                 }
             });
         }); };
-        this.scan = function (params, query) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.GasStation.scan(params, query)];
-                    case 1: return [2 /*return*/, _b.sent()];
-                }
+        this.scan = function (params, query) {
+            if (params === void 0) { params = {}; }
+            if (query === void 0) { query = {}; }
+            return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.GasStation, 'scan', params, query)];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
             });
-        }); };
+        };
         this.getById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -166,7 +171,7 @@ var GasStations = /** @class */ (function () {
                             key.pk = "account#".concat(accountId);
                         if (projectId)
                             key.projectId = projectId;
-                        return [4 /*yield*/, this.GasStation.find(key, query)];
+                        return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.GasStation, 'find', key, query)];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });

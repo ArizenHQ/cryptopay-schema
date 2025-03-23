@@ -56,6 +56,7 @@ var client = new Dynamo_1.Dynamo({
 });
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
+var paginateModel_1 = require("./utils/paginateModel");
 var Orders = /** @class */ (function () {
     function Orders(secretsString) {
         var _this = this;
@@ -134,14 +135,18 @@ var Orders = /** @class */ (function () {
                 }
             });
         }); };
-        this.scan = function (params, query) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Order.scan(params, query)];
-                    case 1: return [2 /*return*/, _b.sent()];
-                }
+        this.scan = function (params, query) {
+            if (params === void 0) { params = {}; }
+            if (query === void 0) { query = {}; }
+            return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Order, 'scan', params, query)];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
             });
-        }); };
+        };
         this.getById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -150,19 +155,25 @@ var Orders = /** @class */ (function () {
                 }
             });
         }); };
-        this.list = function (accountId, query) { return __awaiter(_this, void 0, void 0, function () {
-            var key;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        key = {};
-                        if (accountId)
-                            key = { pk: "account#".concat(accountId) };
-                        return [4 /*yield*/, this.Order.find(key, { index: "gs1", follow: true }, query)];
-                    case 1: return [2 /*return*/, _b.sent()];
-                }
+        this.list = function (accountId, query) {
+            if (query === void 0) { query = {}; }
+            return __awaiter(_this, void 0, void 0, function () {
+                var key;
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0:
+                            key = {};
+                            if (accountId)
+                                key.pk = "account#".concat(accountId);
+                            return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Order, 'find', key, query, {
+                                    index: 'gs1',
+                                    follow: true,
+                                })];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
             });
-        }); };
+        };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
             var order, err_1;
             return __generator(this, function (_b) {

@@ -14,10 +14,10 @@ export declare class Payments {
     insert: (accountId: string, data: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;
-    scan: (params: any, query: any) => Promise<any>;
+    scan: (params?: any, query?: any) => Promise<any>;
     getById: (id: string) => Promise<any>;
     getByOrderId: (orderId: string) => Promise<any>;
-    list: (accountId: string, query: any) => Promise<any>;
+    list: (accountId: string, query?: any) => Promise<any>;
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;
     getCountPaymentByTxId: (txId: string) => Promise<any>;

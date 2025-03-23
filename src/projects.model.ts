@@ -9,6 +9,8 @@ import {
 } from "./utils/ApiGatewayCryptoPayment.js";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { randomBytes, createHash } from "crypto";
+import { paginateModel } from './utils/paginateModel';
+
 const client = new Dynamo({
   client: new DynamoDBClient({ region: "eu-west-1" }),
 });
@@ -141,10 +143,13 @@ export class Projects {
     return await this.Project.get({ id: id }, { index: "gs2", follow: true });
   };
 
-  list = async (accountId: string, query: any) => {
-    let key = {};
-    if (accountId) key = { pk: `account#${accountId}` };
-    return await this.Project.find(key, { index: "gs1", follow: true }, query);
+  list = async (accountId: string, query: any = {}) => {
+    const key: any = {};
+    if (accountId) key.pk = `account#${accountId}`;
+    return await paginateModel(this.Project, 'find', key, query, {
+      index: 'gs1',
+      follow: true,
+    });
   };
 
   patchById = async (id: string, data: any) => {

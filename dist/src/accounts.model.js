@@ -45,6 +45,7 @@ var client = new Dynamo_1.Dynamo({
 });
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
+var paginateModel_1 = require("./utils/paginateModel");
 var Accounts = /** @class */ (function () {
     function Accounts(secretsString) {
         var _this = this;
@@ -84,14 +85,17 @@ var Accounts = /** @class */ (function () {
                 }
             });
         }); };
-        this.list = function (query) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Account.scan({}, query)];
-                    case 1: return [2 /*return*/, _b.sent()];
-                }
+        this.list = function (query) {
+            if (query === void 0) { query = {}; }
+            return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Account, 'scan', {}, query)];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
             });
-        }); };
+        };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
             var account;
             return __generator(this, function (_b) {

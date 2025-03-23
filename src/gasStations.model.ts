@@ -6,7 +6,7 @@ const client = new Dynamo({
 });
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
-
+import { paginateModel } from './utils/paginateModel';
 export class GasStations {
   Crypto: any;
   table: Table;
@@ -157,8 +157,8 @@ export class GasStations {
     return order;
   };
 
-  scan = async (params: any, query: any) => {
-    return await this.GasStation.scan(params, query);
+  scan = async (params: any = {}, query: any = {}) => {
+    return await paginateModel(this.GasStation, 'scan', params, query);
   };
 
   getById = async (id: string) => {
@@ -172,7 +172,7 @@ export class GasStations {
     const key: Key = {};
     if (accountId) key.pk = `account#${accountId}`;
     if (projectId) key.projectId = projectId;
-    return await this.GasStation.find(key, query);
+    return await paginateModel(this.GasStation, 'find', key, query);
   };
 
   patchById = async (id: string, data: any) => {
