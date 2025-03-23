@@ -63,7 +63,6 @@ function paginateModel(model, method, keyOrParams, query, options) {
                     return [4 /*yield*/, model[method](keyOrParams, __assign(__assign(__assign({}, options), query), { limit: limit, next: next }))];
                 case 1:
                     result_1 = _e.sent();
-                    console.log(result_1);
                     return [2 /*return*/, {
                             items: result_1.items,
                             limit: limit,
@@ -93,13 +92,15 @@ function paginateModel(model, method, keyOrParams, query, options) {
                 case 5:
                     i++;
                     return [3 /*break*/, 3];
-                case 6: return [2 /*return*/, {
-                        items: result_2.items,
-                        page: page,
-                        limit: limit,
-                        next: result_2.next,
-                        hasNextPage: !!result_2.next,
-                    }];
+                case 6:
+                    console.log(result_2);
+                    return [2 /*return*/, {
+                            items: result_2.items,
+                            page: page,
+                            limit: limit,
+                            next: result_2.next,
+                            hasNextPage: !!result_2.next,
+                        }];
                 case 7: return [4 /*yield*/, model[method](keyOrParams, __assign(__assign({}, options), query))];
                 case 8:
                     result = _e.sent();
