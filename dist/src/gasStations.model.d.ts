@@ -16,9 +16,9 @@ export declare class GasStations {
     isGasStationAvailable: <Boolean_1>(accountId: string, projectId: string, amount: Number) => Promise<boolean>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;
-    scan: (params?: any, query?: any) => Promise<any>;
+    scan: (params?: any, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     getById: (id: string) => Promise<any>;
-    list: (accountId: string, projectId: string, query: any) => Promise<any>;
+    list: (accountId: string, projectId: string, query: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;
 }

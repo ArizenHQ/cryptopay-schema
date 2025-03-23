@@ -49,42 +49,64 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.paginateModel = void 0;
 function paginateModel(model, method, keyOrParams, query, options) {
+    var _a;
     if (keyOrParams === void 0) { keyOrParams = {}; }
     if (query === void 0) { query = {}; }
     if (options === void 0) { options = {}; }
     return __awaiter(this, void 0, void 0, function () {
-        var _a, limit, _b, page, _c, next, result, nextToken, i;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
+        var _b, limit, _c, page, _d, next, result_1, result_2, nextToken, i, result, items;
+        return __generator(this, function (_e) {
+            switch (_e.label) {
                 case 0:
-                    _a = query.limit, limit = _a === void 0 ? null : _a, _b = query.page, page = _b === void 0 ? null : _b, _c = query.next, next = _c === void 0 ? null : _c;
+                    _b = query.limit, limit = _b === void 0 ? null : _b, _c = query.page, page = _c === void 0 ? null : _c, _d = query.next, next = _d === void 0 ? null : _d;
                     if (!next) return [3 /*break*/, 2];
                     return [4 /*yield*/, model[method](keyOrParams, __assign(__assign(__assign({}, options), query), { limit: limit, next: next }))];
-                case 1: return [2 /*return*/, _d.sent()];
+                case 1:
+                    result_1 = _e.sent();
+                    return [2 /*return*/, {
+                            items: result_1.items,
+                            limit: limit,
+                            next: result_1.next,
+                            hasNextPage: !!result_1.next,
+                        }];
                 case 2:
-                    if (!(page && limit)) return [3 /*break*/, 7];
-                    result = void 0;
+                    if (!(typeof page === 'number' && typeof limit === 'number')) return [3 /*break*/, 7];
                     nextToken = null;
                     i = 0;
-                    _d.label = 3;
+                    _e.label = 3;
                 case 3:
                     if (!(i <= page)) return [3 /*break*/, 6];
                     return [4 /*yield*/, model[method](keyOrParams, __assign(__assign(__assign({}, options), query), { limit: limit, next: nextToken || undefined }))];
                 case 4:
-                    result = _d.sent();
-                    nextToken = result.next;
+                    result_2 = _e.sent();
+                    nextToken = result_2.next;
                     if (!nextToken && i < page) {
-                        return [2 /*return*/, { items: [] }];
+                        return [2 /*return*/, {
+                                items: [],
+                                page: page,
+                                limit: limit,
+                                hasNextPage: false,
+                            }];
                     }
-                    _d.label = 5;
+                    _e.label = 5;
                 case 5:
                     i++;
                     return [3 /*break*/, 3];
-                case 6: return [2 /*return*/, result];
+                case 6: return [2 /*return*/, {
+                        items: result_2.items,
+                        page: page,
+                        limit: limit,
+                        next: result_2.next,
+                        hasNextPage: !!result_2.next,
+                    }];
                 case 7: return [4 /*yield*/, model[method](keyOrParams, __assign(__assign({}, options), query))];
-                case 8: 
-                // Appel standard sans pagination
-                return [2 /*return*/, _d.sent()];
+                case 8:
+                    result = _e.sent();
+                    items = (_a = result.items) !== null && _a !== void 0 ? _a : result;
+                    return [2 /*return*/, {
+                            items: items,
+                            hasNextPage: false,
+                        }];
             }
         });
     });

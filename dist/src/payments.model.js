@@ -175,12 +175,13 @@ var Payments = /** @class */ (function () {
         }); };
         this.getCountPaymentByTxId = function (txId) { return __awaiter(_this, void 0, void 0, function () {
             var payments;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0: return [4 /*yield*/, this.scan({ txId: txId }, {})];
                     case 1:
-                        payments = _b.sent();
-                        return [2 /*return*/, payments.length];
+                        payments = _c.sent();
+                        return [2 /*return*/, (_b = payments === null || payments === void 0 ? void 0 : payments.items) === null || _b === void 0 ? void 0 : _b.length];
                 }
             });
         }); };

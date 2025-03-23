@@ -14,9 +14,9 @@ export declare class Orders {
     insert: (accountId: string, order: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;
-    scan: (params?: any, query?: any) => Promise<any>;
+    scan: (params?: any, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     getById: (id: string) => Promise<any>;
-    list: (accountId: string, query?: any) => Promise<any>;
+    list: (accountId: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;
 }
