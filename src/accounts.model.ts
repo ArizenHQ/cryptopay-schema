@@ -6,6 +6,7 @@ const client = new Dynamo({
 });
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
+import { paginateModel } from './utils/paginateModel';
 
 export class Accounts {
   Crypto: any;
@@ -69,8 +70,8 @@ export class Accounts {
     });
   };
 
-  list = async (query: any) => {
-    return await this.Account.scan({}, query);
+  list = async (query: any = {}) => {
+    return await paginateModel(this.Account, 'scan', {}, query);
   };
 
   patchById = async (id: string, data: any) => {

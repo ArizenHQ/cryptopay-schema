@@ -4,8 +4,8 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
+import { paginateModel } from './utils/paginateModel';
 import { createHash } from 'crypto'
-
 export class Users {
 
   Crypto: any;
@@ -79,10 +79,13 @@ export class Users {
     return await this.User.update(data, {return: 'get'});
   };
 
-  list = async (accountId: string, query: any) => {
-    let key = {};
-    if (accountId) key = { pk: `account#${accountId}` };
-    return await this.User.find(key, { index: "gs1", follow: true }, query);
+  list = async (accountId: string, query: any = {}) => {
+    const key: any = {};
+    if (accountId) key.pk = `account#${accountId}`;
+    return await paginateModel(this.User, 'find', key, query, {
+      index: 'gs1',
+      follow: true,
+    });
   };
 
   removeById = async (id: string) => {

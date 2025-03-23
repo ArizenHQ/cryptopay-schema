@@ -19,7 +19,7 @@ export declare class Projects {
     findByCodeProject: (codeProject: string, showHiddenFields?: boolean) => Promise<any>;
     findByApiKey: (apiKey: string) => Promise<any>;
     getById: (id: string) => Promise<any>;
-    list: (accountId: string, query: any) => Promise<any>;
+    list: (accountId: string, query?: any) => Promise<any>;
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;
     createApiKey: (obj: any) => Promise<void>;
