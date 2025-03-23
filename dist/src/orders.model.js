@@ -20,8 +20,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -45,6 +45,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Orders = void 0;
@@ -135,10 +144,14 @@ var Orders = /** @class */ (function () {
                 }
             });
         }); };
-        this.scan = function (params, query) {
-            if (params === void 0) { params = {}; }
-            if (query === void 0) { query = {}; }
-            return __awaiter(_this, void 0, void 0, function () {
+        this.scan = function () {
+            var args_1 = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args_1[_i] = arguments[_i];
+            }
+            return __awaiter(_this, __spreadArray([], args_1, true), void 0, function (params, query) {
+                if (params === void 0) { params = {}; }
+                if (query === void 0) { query = {}; }
                 return __generator(this, function (_b) {
                     switch (_b.label) {
                         case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Order, 'scan', params, query)];
@@ -155,10 +168,14 @@ var Orders = /** @class */ (function () {
                 }
             });
         }); };
-        this.list = function (accountId, query) {
-            if (query === void 0) { query = {}; }
-            return __awaiter(_this, void 0, void 0, function () {
+        this.list = function (accountId_1) {
+            var args_1 = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args_1[_i - 1] = arguments[_i];
+            }
+            return __awaiter(_this, __spreadArray([accountId_1], args_1, true), void 0, function (accountId, query) {
                 var key;
+                if (query === void 0) { query = {}; }
                 return __generator(this, function (_b) {
                     switch (_b.label) {
                         case 0:
@@ -243,7 +260,7 @@ var Orders = /** @class */ (function () {
                 case 0: return [4 /*yield*/, (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
                 case 1:
                     secretsString = _b.sent();
-                    return [2 /*return*/, new Orders(secretsString)];
+                    return [2 /*return*/, new _a(secretsString)];
             }
         });
     }); };

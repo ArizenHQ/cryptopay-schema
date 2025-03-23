@@ -20,8 +20,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -47,26 +47,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.paginateModel = exports.decodeCursor = exports.encodeCursor = void 0;
+exports.encodeCursor = encodeCursor;
+exports.decodeCursor = decodeCursor;
+exports.paginateModel = paginateModel;
 function encodeCursor(cursor) {
     return Buffer.from(JSON.stringify(cursor)).toString('base64');
 }
-exports.encodeCursor = encodeCursor;
 function decodeCursor(encoded) {
     return JSON.parse(Buffer.from(encoded, 'base64').toString('utf-8'));
 }
-exports.decodeCursor = decodeCursor;
-function paginateModel(model, method, keyOrParams, query, options) {
-    var _a;
-    if (keyOrParams === void 0) { keyOrParams = {}; }
-    if (query === void 0) { query = {}; }
-    if (options === void 0) { options = {}; }
-    return __awaiter(this, void 0, void 0, function () {
-        var _b, limit, _c, page, _d, next, result_1, result_2, nextToken, i, result, items;
+function paginateModel(model_1, method_1) {
+    return __awaiter(this, arguments, void 0, function (model, method, keyOrParams, query, options) {
+        var _a, limit, _b, page, _c, next, result_1, result_2, nextToken, i, result, items;
+        var _d;
+        if (keyOrParams === void 0) { keyOrParams = {}; }
+        if (query === void 0) { query = {}; }
+        if (options === void 0) { options = {}; }
         return __generator(this, function (_e) {
             switch (_e.label) {
                 case 0:
-                    _b = query.limit, limit = _b === void 0 ? null : _b, _c = query.page, page = _c === void 0 ? null : _c, _d = query.next, next = _d === void 0 ? null : _d;
+                    _a = query.limit, limit = _a === void 0 ? null : _a, _b = query.page, page = _b === void 0 ? null : _b, _c = query.next, next = _c === void 0 ? null : _c;
                     // Decode base64 if next token is provided
                     if (next && typeof next === 'string') {
                         try {
@@ -119,7 +119,7 @@ function paginateModel(model, method, keyOrParams, query, options) {
                 case 7: return [4 /*yield*/, model[method](keyOrParams, __assign(__assign({}, options), query))];
                 case 8:
                     result = _e.sent();
-                    items = (_a = result.items) !== null && _a !== void 0 ? _a : result;
+                    items = (_d = result.items) !== null && _d !== void 0 ? _d : result;
                     return [2 /*return*/, {
                             items: items,
                             hasNextPage: false,
@@ -128,5 +128,4 @@ function paginateModel(model, method, keyOrParams, query, options) {
         });
     });
 }
-exports.paginateModel = paginateModel;
 //# sourceMappingURL=paginateModel.js.map
