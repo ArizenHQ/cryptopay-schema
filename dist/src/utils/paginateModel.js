@@ -64,7 +64,7 @@ function paginateModel(model, method, keyOrParams, query, options) {
                 case 1:
                     result_1 = _e.sent();
                     return [2 /*return*/, {
-                            items: result_1.items,
+                            items: result_1,
                             limit: limit,
                             next: result_1.next,
                             hasNextPage: !!result_1.next,
@@ -95,7 +95,7 @@ function paginateModel(model, method, keyOrParams, query, options) {
                 case 6:
                     console.log(result_2);
                     return [2 /*return*/, {
-                            items: result_2.items,
+                            items: result_2,
                             page: page,
                             limit: limit,
                             next: result_2.next,

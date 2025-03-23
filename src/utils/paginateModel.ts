@@ -27,7 +27,7 @@ export async function paginateModel(
     });
     
     return {
-      items: result.items,
+      items: result,
       limit,
       next: result.next,
       hasNextPage: !!result.next,
@@ -59,7 +59,7 @@ export async function paginateModel(
     }
     console.log(result)
     return {
-      items: result.items,
+      items: result,
       page,
       limit,
       next: result.next,
