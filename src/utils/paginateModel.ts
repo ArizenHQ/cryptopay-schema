@@ -8,6 +8,17 @@ export interface PaginatedResult<T = any> {
   hasNextPage: boolean;
 }
 
+function encodeCursor(cursor: any): string {
+  return Buffer.from(JSON.stringify(cursor)).toString('base64');
+}
+
+function decodeCursor(encoded: string): any {
+  return JSON.parse(Buffer.from(encoded, 'base64').toString('utf-8'));
+}
+
+
+export { encodeCursor, decodeCursor };
+
 export async function paginateModel(
   model: any,
   method: PaginateMethod,
@@ -15,7 +26,17 @@ export async function paginateModel(
   query: any = {},
   options: Record<string, any> = {}
 ): Promise<PaginatedResult> {
-  const { limit = null, page = null, next = null } = query;
+  let { limit = null, page = null, next = null } = query;
+
+
+  // Decode base64 if next token is provided
+  if (next && typeof next === 'string') {
+    try {
+      next = decodeCursor(next);
+    } catch (err) {
+      throw new Error('Invalid pagination cursor');
+    }
+  }
 
   // ✅ 1. Pagination moderne OneTable via `next`
   if (next) {
@@ -29,7 +50,7 @@ export async function paginateModel(
     return {
       items: result,
       limit,
-      next: result.next,
+      next: result.next ? encodeCursor(result.next) : undefined,
       hasNextPage: !!result.next,
     };
   }
@@ -57,12 +78,11 @@ export async function paginateModel(
         };
       }
     }
-    console.log(result)
     return {
       items: result,
       page,
       limit,
-      next: result.next,
+      next: result.next ? encodeCursor(result.next) : undefined,
       hasNextPage: !!result.next,
     };
   }
