@@ -63,6 +63,7 @@ function paginateModel(model, method, keyOrParams, query, options) {
                     return [4 /*yield*/, model[method](keyOrParams, __assign(__assign(__assign({}, options), query), { limit: limit, next: next }))];
                 case 1:
                     result_1 = _e.sent();
+                    console.log(result_1);
                     return [2 /*return*/, {
                             items: result_1.items,
                             limit: limit,
