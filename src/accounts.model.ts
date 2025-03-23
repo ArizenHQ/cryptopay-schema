@@ -6,7 +6,7 @@ const client = new Dynamo({
 });
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
-import { paginateModel } from './utils/paginateModel';
+import { paginateModel, PaginatedResult } from './utils/paginateModel';
 
 export class Accounts {
   Crypto: any;
