@@ -103,7 +103,10 @@ var Accounts = /** @class */ (function () {
                 if (query === void 0) { query = {}; }
                 return __generator(this, function (_b) {
                     switch (_b.label) {
-                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Account, 'find', {}, query)];
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Account, 'find', { gs1pk: 'account#' }, query, {
+                                index: 'gs1',
+                                follow: true,
+                            })];
                         case 1: return [2 /*return*/, _b.sent()];
                     }
                 });
