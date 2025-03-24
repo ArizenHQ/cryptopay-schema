@@ -17,6 +17,7 @@ export declare class Accounts {
     getAccount: (id: string) => Promise<any>;
     getFullAccount: (id: string) => Promise<import("dynamodb-onetable/dist/mjs/Table").EntityGroup>;
     list: (query?: any) => Promise<PaginatedResult<any>>;
+    scan: (query?: any) => Promise<PaginatedResult<any>>;
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;
 }

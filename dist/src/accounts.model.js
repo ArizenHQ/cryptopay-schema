@@ -103,6 +103,21 @@ var Accounts = /** @class */ (function () {
                 if (query === void 0) { query = {}; }
                 return __generator(this, function (_b) {
                     switch (_b.label) {
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Account, 'find', {}, query)];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
+            });
+        };
+        this.scan = function () {
+            var args_1 = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args_1[_i] = arguments[_i];
+            }
+            return __awaiter(_this, __spreadArray([], args_1, true), void 0, function (query) {
+                if (query === void 0) { query = {}; }
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
                         case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Account, 'scan', {}, query)];
                         case 1: return [2 /*return*/, _b.sent()];
                     }

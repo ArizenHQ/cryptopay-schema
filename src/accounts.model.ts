@@ -71,6 +71,10 @@ export class Accounts {
   };
 
   list = async (query: any = {}) => {
+    return await paginateModel(this.Account, 'find', {}, query);
+  };
+
+  scan = async (query: any = {}) => {
     return await paginateModel(this.Account, 'scan', {}, query);
   };
 

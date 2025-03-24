@@ -9,17 +9,17 @@ declare const Schema: {
         readonly gs1: {
             readonly hash: "gs1pk";
             readonly sort: "gs1sk";
-            readonly project: readonly ["gs1pk", "gs1sk"];
+            readonly project: "all";
         };
         readonly gs2: {
             readonly hash: "gs1pk";
             readonly sort: "gs2sk";
-            readonly project: readonly ["gs1pk", "gs2sk"];
+            readonly project: "all";
         };
         readonly gs3: {
             readonly hash: "gs1pk";
             readonly sort: "gs3sk";
-            readonly project: readonly ["gs1pk", "gs3sk"];
+            readonly project: "all";
         };
         readonly gs4: {
             readonly hash: "gs1pk";

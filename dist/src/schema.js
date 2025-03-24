@@ -16,9 +16,9 @@ var Schema = {
     version: "0.0.1",
     indexes: {
         primary: { hash: "pk", sort: "sk" },
-        gs1: { hash: "gs1pk", sort: "gs1sk", project: ["gs1pk", "gs1sk"] },
-        gs2: { hash: "gs1pk", sort: "gs2sk", project: ["gs1pk", "gs2sk"] },
-        gs3: { hash: "gs1pk", sort: "gs3sk", project: ["gs1pk", "gs3sk"] },
+        gs1: { hash: "gs1pk", sort: "gs1sk", project: "all" },
+        gs2: { hash: "gs1pk", sort: "gs2sk", project: "all" },
+        gs3: { hash: "gs1pk", sort: "gs3sk", project: "all" },
         gs4: { hash: "gs1pk", sort: "gs4sk", project: "all" },
     },
     models: {
