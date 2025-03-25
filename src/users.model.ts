@@ -73,9 +73,10 @@ export class Users {
   };
 
   patchById = async (id: string, data: any) => {
-    let user = await this.User.get({ id: id }, { index: "gs1", follow: true });
+    let user = await this.User.get({ id: id }, { index: "gs1", follow: true, decrypt: true });
     this.table.setContext({ accountId: user.accountId });
     data.id = id;
+    data.email = (user.email === data.email) ? user.email : data.email;
     return await this.User.update(data, {return: 'get'});
   };
 
@@ -89,7 +90,8 @@ export class Users {
   };
 
   removeById = async (id: string) => {
-    return await this.User.remove({ id: id }, { index: "gs4", follow: true });
+    let user = await this.User.get({ id: id }, { index: "gs1", follow: true, decrypt: true });
+    return await this.User.remove({ id: id, email: undefined }, { index: "gs4", follow: true });
   };
 
 }

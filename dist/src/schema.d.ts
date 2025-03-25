@@ -82,7 +82,7 @@ declare const Schema: {
             readonly email: {
                 readonly type: StringConstructor;
                 readonly required: true;
-                readonly crypt: true;
+                readonly validate: RegExp;
                 readonly unique: true;
             };
             readonly password: {

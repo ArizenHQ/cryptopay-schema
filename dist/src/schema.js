@@ -44,7 +44,7 @@ var Schema = {
             email: {
                 type: String,
                 required: true,
-                crypt: true,
+                validate: Match.email,
                 unique: true,
             },
             password: { type: String, required: true, crypt: true },

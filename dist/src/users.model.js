@@ -106,11 +106,12 @@ var Users = /** @class */ (function () {
             var user;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs1", follow: true })];
+                    case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs1", follow: true, decrypt: true })];
                     case 1:
                         user = _b.sent();
                         this.table.setContext({ accountId: user.accountId });
                         data.id = id;
+                        data.email = (user.email === data.email) ? user.email : data.email;
                         return [4 /*yield*/, this.User.update(data, { return: 'get' })];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
@@ -140,10 +141,14 @@ var Users = /** @class */ (function () {
             });
         };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
+            var user;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.User.remove({ id: id }, { index: "gs4", follow: true })];
-                    case 1: return [2 /*return*/, _b.sent()];
+                    case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs1", follow: true, decrypt: true })];
+                    case 1:
+                        user = _b.sent();
+                        return [4 /*yield*/, this.User.remove({ id: id, email: undefined }, { index: "gs4", follow: true })];
+                    case 2: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };
