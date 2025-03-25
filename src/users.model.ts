@@ -73,20 +73,10 @@ export class Users {
   };
 
   patchById = async (id: string, data: any) => {
-    // Récupère le user via l'id pour récupérer `accountId` et `email`
-    const user = await this.User.get({ id }, { index: "gs4", follow: true });
-    if (!user) throw new Error(`User with id ${id} not found`);
-  
-    // Set context avec l'account
+    let user = await this.User.get({ id: id }, { index: "gs4", follow: true });
     this.table.setContext({ accountId: user.accountId });
-  
-    // Fusionne les données nécessaires à l'update
-    return await this.User.update({
-      id: user.id,
-      accountId: user.accountId,
-      email: user.email,
-      ...data,
-    }, { return: 'get' });
+    data.id = id;
+    return await this.User.update(data, {return: 'get'});
   };
 
   list = async (accountId: string, query: any = {}) => {
