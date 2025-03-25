@@ -73,17 +73,10 @@ export class Users {
   };
 
   patchById = async (id: string, data: any) => {
-    const user = await this.User.get({ id }, { index: "gs4", follow: true, decrypt: true });
-    if (!user) throw new Error(`User not found with id: ${id}`);
-    console.log("Data to patch in model:", data);
-    console.log("User found:", user);
+    let user = await this.User.get({ id: id }, { index: "gs1", follow: true });
     this.table.setContext({ accountId: user.accountId });
-  
-    return await this.User.update({
-      id: user.id,
-      accountId: user.accountId,
-      ...data, 
-    }, { return: 'get' });
+    data.id = id;
+    return await this.User.update(data, {return: 'get'});
   };
 
   list = async (accountId: string, query: any = {}) => {
