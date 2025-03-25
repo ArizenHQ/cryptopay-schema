@@ -117,7 +117,7 @@ var Users = /** @class */ (function () {
             var user, updateData;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4", follow: true })];
+                    case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4", follow: true, decrypt: true })];
                     case 1:
                         user = _b.sent();
                         if (!user) {
