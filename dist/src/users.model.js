@@ -122,6 +122,8 @@ var Users = /** @class */ (function () {
                         user = _b.sent();
                         if (!user)
                             throw new Error("User not found with id: ".concat(id));
+                        console.log("Data to patch in model:", data);
+                        console.log("User found:", user);
                         this.table.setContext({ accountId: user.accountId });
                         return [4 /*yield*/, this.User.update(__assign({ id: user.id, accountId: user.accountId }, data), { return: 'get' })];
                     case 2: return [2 /*return*/, _b.sent()];
