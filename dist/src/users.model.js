@@ -114,18 +114,16 @@ var Users = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var user, updateData;
+            var user;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4", follow: true, decrypt: true })];
                     case 1:
                         user = _b.sent();
-                        if (!user) {
-                            throw new Error("User with id \"".concat(id, "\" not found"));
-                        }
+                        if (!user)
+                            throw new Error("User not found with id: ".concat(id));
                         this.table.setContext({ accountId: user.accountId });
-                        updateData = __assign({ id: user.id, accountId: user.accountId, email: user.email }, data);
-                        return [4 /*yield*/, this.User.update(updateData, { return: "get" })];
+                        return [4 /*yield*/, this.User.update(__assign({ id: user.id, accountId: user.accountId }, data), { return: 'get' })];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
             });
