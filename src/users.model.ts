@@ -73,10 +73,22 @@ export class Users {
   };
 
   patchById = async (id: string, data: any) => {
-    let user = await this.User.get({ id: id }, { index: "gs4", follow: true });
+    const user = await this.User.get({ id }, { index: "gs4", follow: true });
+  
+    if (!user) {
+      throw new Error(`User with id "${id}" not found`);
+    }
+  
     this.table.setContext({ accountId: user.accountId });
-    data.id = id;
-    return await this.User.update(data, {return: 'get'});
+  
+    const updateData = {
+      id: user.id,
+      accountId: user.accountId,
+      email: user.email, // ⚠️ Ce champ est nécessaire pour reconstituer la clé "sk"
+      ...data,
+    };
+  
+    return await this.User.update(updateData, { return: "get" });
   };
 
   list = async (accountId: string, query: any = {}) => {

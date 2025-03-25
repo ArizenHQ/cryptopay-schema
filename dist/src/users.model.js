@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -103,15 +114,18 @@ var Users = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var user;
+            var user, updateData;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4", follow: true })];
                     case 1:
                         user = _b.sent();
+                        if (!user) {
+                            throw new Error("User with id \"".concat(id, "\" not found"));
+                        }
                         this.table.setContext({ accountId: user.accountId });
-                        data.id = id;
-                        return [4 /*yield*/, this.User.update(data, { return: 'get' })];
+                        updateData = __assign({ id: user.id, accountId: user.accountId, email: user.email }, data);
+                        return [4 /*yield*/, this.User.update(updateData, { return: "get" })];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
             });
