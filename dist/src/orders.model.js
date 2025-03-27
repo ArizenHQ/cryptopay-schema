@@ -106,6 +106,8 @@ var Orders = /** @class */ (function () {
                         if (Object.keys(((_e = project === null || project === void 0 ? void 0 : project.parameters) === null || _e === void 0 ? void 0 : _e.physicalPayment) || {}).length > 0) {
                             orderData.physicalPaymentParams = project.parameters.physicalPayment;
                         }
+                        // Créer l'ordre et retourner une version nettoyée
+                        console.log("orderData", orderData);
                         return [4 /*yield*/, this.Order.create(orderData)];
                     case 3:
                         createdOrder = _f.sent();

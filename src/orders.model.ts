@@ -107,6 +107,7 @@ export class Orders {
       }
 
       // Créer l'ordre et retourner une version nettoyée
+      console.log("orderData", orderData);
       const createdOrder = await this.Order.create(orderData);
       
       // Liste des champs à supprimer de la réponse
