@@ -336,6 +336,10 @@ declare const Schema: {
                 readonly required: true;
                 readonly enum: readonly ["card", "crypto"];
             };
+            readonly currency: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["ETH", "POL", "MATIC", "EUR", "USDT", "USDC"];
+            };
             readonly amount: {
                 readonly type: NumberConstructor;
                 readonly required: true;
@@ -345,6 +349,9 @@ declare const Schema: {
             };
             readonly amountToClaim: {
                 readonly type: NumberConstructor;
+            };
+            readonly quoteId: {
+                readonly type: StringConstructor;
             };
             readonly physicalPaymentParams: {
                 readonly type: ObjectConstructor;
@@ -418,10 +425,6 @@ declare const Schema: {
             };
             readonly countryCode: {
                 readonly type: StringConstructor;
-            };
-            readonly currency: {
-                readonly type: StringConstructor;
-                readonly enum: readonly ["ETH", "POL", "MATIC", "EUR"];
             };
             readonly customerAddress: {
                 readonly type: StringConstructor;

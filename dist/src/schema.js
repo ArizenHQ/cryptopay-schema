@@ -147,9 +147,11 @@ var Schema = {
             OrderId: { type: String, value: "${id}", hidden: false },
             accountId: { type: String, required: true },
             typeOrder: { type: String, required: true, enum: ["card", "crypto"] },
+            currency: { type: String, enum: ["ETH", "POL", "MATIC", "EUR", "USDT", "USDC"] },
             amount: { type: Number, required: true },
             euroAmount: { type: Number },
             amountToClaim: { type: Number },
+            quoteId: { type: String },
             physicalPaymentParams: { type: Object, default: {}, schema: {
                     logo: { type: String },
                     logoInverse: { type: String },
@@ -189,7 +191,6 @@ var Schema = {
                 default: [],
             },
             countryCode: { type: String },
-            currency: { type: String, enum: ["ETH", "POL", "MATIC", "EUR"] },
             customerAddress: { type: String, validate: Match.cryptoAddress },
             publicAddressDest: { type: String, validate: Match.cryptoAddress },
             customer: {
