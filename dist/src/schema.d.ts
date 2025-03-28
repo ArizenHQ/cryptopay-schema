@@ -448,6 +448,9 @@ declare const Schema: {
                     readonly lastname: {
                         readonly type: StringConstructor;
                     };
+                    readonly company: {
+                        readonly type: StringConstructor;
+                    };
                 };
             };
             readonly internalRef: {

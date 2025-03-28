@@ -202,6 +202,7 @@ const Schema = {
           email: { type: String, validate: Match.email },
           firstname: { type: String },
           lastname: { type: String },
+          company: { type: String },
         },
       },
       internalRef: { type: String, required: true },
