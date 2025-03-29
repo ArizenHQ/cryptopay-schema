@@ -353,6 +353,9 @@ declare const Schema: {
             readonly quoteId: {
                 readonly type: StringConstructor;
             };
+            readonly dateQuote: {
+                readonly type: StringConstructor;
+            };
             readonly physicalPaymentParams: {
                 readonly type: ObjectConstructor;
                 readonly default: {};

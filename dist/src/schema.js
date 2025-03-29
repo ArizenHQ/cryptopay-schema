@@ -152,6 +152,7 @@ var Schema = {
             euroAmount: { type: Number },
             amountToClaim: { type: Number },
             quoteId: { type: String },
+            dateQuote: { type: String },
             physicalPaymentParams: { type: Object, default: {}, schema: {
                     logo: { type: String },
                     logoInverse: { type: String },
