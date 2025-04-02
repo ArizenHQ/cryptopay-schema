@@ -172,7 +172,10 @@ export class GasStations {
     const key: Key = {};
     if (accountId) key.pk = `account#${accountId}`;
     if (projectId) key.projectId = projectId;
-    return await paginateModel(this.GasStation, 'find', key, query);
+    return await paginateModel(this.GasStation, 'find', key, query, {
+      index: 'gs4',
+      follow: true,
+    });
   };
 
   patchById = async (id: string, data: any) => {

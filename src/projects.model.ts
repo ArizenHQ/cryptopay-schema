@@ -147,7 +147,7 @@ export class Projects {
     const key: any = {};
     if (accountId) key.pk = `account#${accountId}`;
     return await paginateModel(this.Project, 'find', key, query, {
-      index: 'gs1',
+      index: 'gs4',
       follow: true,
     });
   };

@@ -184,7 +184,10 @@ var GasStations = /** @class */ (function () {
                             key.pk = "account#".concat(accountId);
                         if (projectId)
                             key.projectId = projectId;
-                        return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.GasStation, 'find', key, query)];
+                        return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.GasStation, 'find', key, query, {
+                                index: 'gs4',
+                                follow: true,
+                            })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
