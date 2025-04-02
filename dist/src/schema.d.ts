@@ -300,7 +300,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "project#${name}#${id}#${codeProject}";
+                readonly value: "project#${dateCreated}";
             };
         };
         readonly Order: {
@@ -556,7 +556,7 @@ declare const Schema: {
             };
             readonly gs3sk: {
                 readonly type: StringConstructor;
-                readonly value: "order#${success}";
+                readonly value: "order#${dateCreated}";
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
@@ -633,11 +633,11 @@ declare const Schema: {
             };
             readonly gs3sk: {
                 readonly type: StringConstructor;
-                readonly value: "conversion#${quoteCurrency}";
+                readonly value: "conversion#${quoteId}";
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "conversion#${baseCurrency}";
+                readonly value: "conversion#${dateCreated}";
             };
         };
         readonly Payment: {
@@ -716,7 +716,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "payment#${id}#${orderId}#${address}#${txId}#${currency}";
+                readonly value: "payment#${dateCreated}";
             };
         };
         readonly Kyt: {
@@ -792,7 +792,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "kyt#${address}#${asset}#${type}#${network}#${userIdChaina}";
+                readonly value: "kyt#${dateCreated}";
             };
         };
         readonly GasStation: {
@@ -885,7 +885,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "getStation#${id}#${codeProject}#${statusOrder}#${success}#${paymentId}#${tx_hash}";
+                readonly value: "getStation#${dateCreated}";
             };
         };
     };

@@ -150,7 +150,7 @@ export class Orders {
     const key: any = {};
     if (accountId) key.pk = `account#${accountId}`;
     return await paginateModel(this.Order, 'find', key, query, {
-      index: 'gs1',
+      index: 'gs3',
       follow: true,
     });
   };

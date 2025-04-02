@@ -183,7 +183,7 @@ var Orders = /** @class */ (function () {
                             if (accountId)
                                 key.pk = "account#".concat(accountId);
                             return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Order, 'find', key, query, {
-                                    index: 'gs1',
+                                    index: 'gs3',
                                     follow: true,
                                 })];
                         case 1: return [2 /*return*/, _b.sent()];

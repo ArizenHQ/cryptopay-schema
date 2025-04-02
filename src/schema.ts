@@ -139,7 +139,7 @@ const Schema = {
       gs1sk: { type: String, value: "project#${codeProject}" },
       gs2sk: { type: String, value: "project#${id}" },
       gs3sk: { type: String, value: "project#${apiKey}" },
-      gs4sk: { type: String, value: "project#${name}#${id}#${codeProject}" },
+      gs4sk: { type: String, value: "project#${dateCreated}" },
     },
     Order: {
       pk: { type: String, value: "account#${accountId}" },
@@ -242,7 +242,7 @@ const Schema = {
       gs1pk: { type: String, value: "order#" },
       gs1sk: { type: String, value: "order#${id}" },
       gs2sk: { type: String, value: "order#${typeOrder}#${codeProject}" },
-      gs3sk: { type: String, value: "order#${success}" },
+      gs3sk: { type: String, value: "order#${dateCreated}" },
       gs4sk: {
         type: String,
         value: "order#${id}#${typeOrder}#${codeProject}#${success}#${tx_hash}",
@@ -272,8 +272,8 @@ const Schema = {
       gs1pk: { type: String, value: "conversion#" },
       gs1sk: { type: String, value: "conversion#${id}" },
       gs2sk: { type: String, value: "conversion#${orderId}" },
-      gs3sk: { type: String, value: "conversion#${quoteCurrency}" },
-      gs4sk: { type: String, value: "conversion#${baseCurrency}" },
+      gs3sk: { type: String, value: "conversion#${quoteId}" },
+      gs4sk: { type: String, value: "conversion#${dateCreated}" },
     },
     Payment: {
       pk: { type: String, value: "account#${accountId}" },
@@ -299,7 +299,7 @@ const Schema = {
       gs3sk: { type: String, value: "payment#${type}" },
       gs4sk: {
         type: String,
-        value: "payment#${id}#${orderId}#${address}#${txId}#${currency}",
+        value: "payment#${dateCreated}",
       },
     },
     Kyt: {
@@ -324,7 +324,7 @@ const Schema = {
       gs3sk: { type: String, value: "kyt#${type}" },
       gs4sk: {
         type: String,
-        value: "kyt#${address}#${asset}#${type}#${network}#${userIdChaina}",
+        value: "kyt#${dateCreated}",
       },
     },
     GasStation: {
@@ -360,7 +360,7 @@ const Schema = {
       gs4sk: {
         type: String,
         value:
-          "getStation#${id}#${codeProject}#${statusOrder}#${success}#${paymentId}#${tx_hash}",
+          "getStation#${dateCreated}",
       },
     },
   } as const,
