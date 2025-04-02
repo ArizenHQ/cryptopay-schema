@@ -556,7 +556,7 @@ declare const Schema: {
             };
             readonly gs3sk: {
                 readonly type: StringConstructor;
-                readonly value: "order#${dateCreated}";
+                readonly value: "order#${created}";
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
