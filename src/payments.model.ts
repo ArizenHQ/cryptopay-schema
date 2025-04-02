@@ -79,7 +79,7 @@ export class Payments {
   };
 
   getByOrderId = async (orderId: string) => {
-    return await this.scan({orderId: orderId}, {})
+    return await this.scan({orderId: orderId}, {sort: {field: 'ulid', order: 'DESC'}})
   }
 
   list = async (accountId: string, query: any = {}) => {

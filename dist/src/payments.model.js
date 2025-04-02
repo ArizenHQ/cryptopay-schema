@@ -127,7 +127,7 @@ var Payments = /** @class */ (function () {
         this.getByOrderId = function (orderId) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.scan({ orderId: orderId }, {})];
+                    case 0: return [4 /*yield*/, this.scan({ orderId: orderId }, { sort: { field: 'ulid', order: 'DESC' } })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
