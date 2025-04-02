@@ -542,10 +542,6 @@ declare const Schema: {
                 readonly default: "disabled";
                 readonly required: true;
             };
-            readonly dateCreated: {
-                readonly type: StringConstructor;
-                readonly generate: "isoDate";
-            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "order#";

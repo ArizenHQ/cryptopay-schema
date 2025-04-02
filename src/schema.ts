@@ -239,7 +239,6 @@ const Schema = {
         default: "disabled",
         required: true,
       },
-      dateCreated: { type: String, generate: "isoDate" },
       gs1pk: { type: String, value: "order#" },
       gs1sk: { type: String, value: "order#${id}" },
       gs2sk: { type: String, value: "order#${typeOrder}#${codeProject}" },
