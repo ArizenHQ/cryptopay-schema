@@ -1,6 +1,6 @@
 {
   "name": "cryptopay-schema",
-  "version": "2.1.23",
+  "version": "2.1.24",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
