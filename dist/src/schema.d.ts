@@ -542,6 +542,10 @@ declare const Schema: {
                 readonly default: "disabled";
                 readonly required: true;
             };
+            readonly created: {
+                readonly type: StringConstructor;
+                readonly generate: "isoDate";
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "order#";
@@ -556,7 +560,7 @@ declare const Schema: {
             };
             readonly gs3sk: {
                 readonly type: StringConstructor;
-                readonly value: "order#${dateCreated}";
+                readonly value: "order#${created}";
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
@@ -619,6 +623,10 @@ declare const Schema: {
                 readonly default: "pending";
                 readonly required: true;
             };
+            readonly created: {
+                readonly type: StringConstructor;
+                readonly generate: "isoDate";
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "conversion#";
@@ -637,7 +645,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "conversion#${dateCreated}";
+                readonly value: "conversion#${created}";
             };
         };
         readonly Payment: {
@@ -698,6 +706,10 @@ declare const Schema: {
                 readonly type: ObjectConstructor;
                 readonly default: readonly [];
             };
+            readonly created: {
+                readonly type: StringConstructor;
+                readonly generate: "isoDate";
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "payment#";
@@ -716,7 +728,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "payment#${dateCreated}";
+                readonly value: "payment#${created}";
             };
         };
         readonly Kyt: {
@@ -774,6 +786,10 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly required: true;
             };
+            readonly created: {
+                readonly type: StringConstructor;
+                readonly generate: "isoDate";
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "kyt#";
@@ -792,7 +808,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "kyt#${dateCreated}";
+                readonly value: "kyt#${created}";
             };
         };
         readonly GasStation: {
@@ -867,6 +883,10 @@ declare const Schema: {
             readonly fees: {
                 readonly type: NumberConstructor;
             };
+            readonly created: {
+                readonly type: StringConstructor;
+                readonly generate: "isoDate";
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "getStation#";
@@ -885,7 +905,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "getStation#${dateCreated}";
+                readonly value: "getStation#${created}";
             };
         };
     };
