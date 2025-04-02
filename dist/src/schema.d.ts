@@ -282,6 +282,10 @@ declare const Schema: {
                     };
                 };
             };
+            readonly ulid: {
+                readonly type: StringConstructor;
+                readonly generate: "ulid";
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "project#";
@@ -300,7 +304,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "project#${dateCreated}";
+                readonly value: "project#${ulid}";
             };
         };
         readonly Order: {
@@ -542,9 +546,9 @@ declare const Schema: {
                 readonly default: "disabled";
                 readonly required: true;
             };
-            readonly created: {
+            readonly ulid: {
                 readonly type: StringConstructor;
-                readonly generate: "isoDate";
+                readonly generate: "ulid";
             };
             readonly gs1pk: {
                 readonly type: StringConstructor;
@@ -560,7 +564,7 @@ declare const Schema: {
             };
             readonly gs3sk: {
                 readonly type: StringConstructor;
-                readonly value: "order#${created}";
+                readonly value: "order#${ulid}";
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
@@ -623,9 +627,9 @@ declare const Schema: {
                 readonly default: "pending";
                 readonly required: true;
             };
-            readonly created: {
+            readonly ulid: {
                 readonly type: StringConstructor;
-                readonly generate: "isoDate";
+                readonly generate: "ulid";
             };
             readonly gs1pk: {
                 readonly type: StringConstructor;
@@ -645,7 +649,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "conversion#${created}";
+                readonly value: "conversion#${ulid}";
             };
         };
         readonly Payment: {
@@ -706,9 +710,9 @@ declare const Schema: {
                 readonly type: ObjectConstructor;
                 readonly default: readonly [];
             };
-            readonly created: {
+            readonly ulid: {
                 readonly type: StringConstructor;
-                readonly generate: "isoDate";
+                readonly generate: "ulid";
             };
             readonly gs1pk: {
                 readonly type: StringConstructor;
@@ -728,7 +732,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "payment#${created}";
+                readonly value: "payment#${ulid}";
             };
         };
         readonly Kyt: {
@@ -786,9 +790,9 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly required: true;
             };
-            readonly created: {
+            readonly ulid: {
                 readonly type: StringConstructor;
-                readonly generate: "isoDate";
+                readonly generate: "ulid";
             };
             readonly gs1pk: {
                 readonly type: StringConstructor;
@@ -808,7 +812,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "kyt#${created}";
+                readonly value: "kyt#${ulid}";
             };
         };
         readonly GasStation: {
@@ -883,9 +887,9 @@ declare const Schema: {
             readonly fees: {
                 readonly type: NumberConstructor;
             };
-            readonly created: {
+            readonly ulid: {
                 readonly type: StringConstructor;
-                readonly generate: "isoDate";
+                readonly generate: "ulid";
             };
             readonly gs1pk: {
                 readonly type: StringConstructor;
@@ -905,7 +909,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "getStation#${created}";
+                readonly value: "getStation#${ulid}";
             };
         };
     };
