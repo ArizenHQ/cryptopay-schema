@@ -117,6 +117,24 @@ var Users = /** @class */ (function () {
                 }
             });
         }); };
+        this.scan = function () {
+            var args_1 = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args_1[_i] = arguments[_i];
+            }
+            return __awaiter(_this, __spreadArray([], args_1, true), void 0, function (query) {
+                if (query === void 0) { query = {}; }
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.User, 'scan', query, {
+                                index: 'gs4',
+                                follow: true,
+                            })];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
+            });
+        };
         this.list = function (accountId_1) {
             var args_1 = [];
             for (var _i = 1; _i < arguments.length; _i++) {
@@ -132,7 +150,7 @@ var Users = /** @class */ (function () {
                             if (accountId)
                                 key.pk = "account#".concat(accountId);
                             return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.User, 'find', key, query, {
-                                    index: 'gs1',
+                                    index: 'gs4',
                                     follow: true,
                                 })];
                         case 1: return [2 /*return*/, _b.sent()];

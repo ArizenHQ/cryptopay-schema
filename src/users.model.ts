@@ -80,11 +80,18 @@ export class Users {
     return await this.User.update(data, {return: 'get'});
   };
 
+  scan = async (query: any = {}) => {
+    return await paginateModel(this.User, 'scan', query, {
+      index: 'gs4',
+      follow: true,
+    });
+  };
+
   list = async (accountId: string, query: any = {}) => {
     const key: any = {};
     if (accountId) key.pk = `account#${accountId}`;
     return await paginateModel(this.User, 'find', key, query, {
-      index: 'gs1',
+      index: 'gs4',
       follow: true,
     });
   };
