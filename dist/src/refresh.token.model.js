@@ -58,11 +58,11 @@ var RefreshToken = /** @class */ (function () {
     function RefreshToken(secretsString) {
         var _this = this;
         this.create = function (_b) { return __awaiter(_this, [_b], void 0, function (_c) {
-            var userId = _c.userId, token = _c.token, expiresAt = _c.expiresAt, ip = _c.ip, userAgent = _c.userAgent;
+            var userId = _c.userId, tokenRefresh = _c.tokenRefresh, expiresAt = _c.expiresAt, ip = _c.ip, userAgent = _c.userAgent;
             return __generator(this, function (_d) {
                 return [2 /*return*/, this.RefreshToken.create({
                         userId: userId,
-                        token: token,
+                        tokenRefresh: tokenRefresh,
                         expiresAt: expiresAt,
                         ip: ip,
                         userAgent: userAgent,

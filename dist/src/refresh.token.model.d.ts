@@ -12,9 +12,9 @@ export declare class RefreshToken {
     secretsString: any;
     private constructor();
     static init: () => Promise<RefreshToken>;
-    create: ({ userId, token, expiresAt, ip, userAgent, }: {
+    create: ({ userId, tokenRefresh, expiresAt, ip, userAgent, }: {
         userId: string;
-        token: string;
+        tokenRefresh: string;
         expiresAt: Date;
         ip?: string;
         userAgent?: string;

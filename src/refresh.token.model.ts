@@ -55,20 +55,20 @@ export class RefreshToken {
 
   create = async ({
     userId,
-    token,
+    tokenRefresh,
     expiresAt,
     ip,
     userAgent,
   }: {
     userId: string;
-    token: string;
+    tokenRefresh: string;
     expiresAt: Date;
     ip?: string;
     userAgent?: string;
   }) => {
     return this.RefreshToken.create({
       userId,
-      token,
+      tokenRefresh,
       expiresAt,
       ip,
       userAgent,
