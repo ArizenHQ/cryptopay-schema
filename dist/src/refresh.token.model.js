@@ -78,18 +78,25 @@ var RefreshToken = /** @class */ (function () {
             });
         }); };
         this.revoke = function (tokenRefresh, replacedByToken) { return __awaiter(_this, void 0, void 0, function () {
-            var existing;
+            var existing, err_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.findByToken(tokenRefresh)];
+                    case 0:
+                        _b.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, this.findByToken(tokenRefresh)];
                     case 1:
                         existing = _b.sent();
                         if (!existing)
                             return [2 /*return*/, null];
-                        return [2 /*return*/, existing.update({
-                                revoked: true,
-                                replacedByToken: replacedByToken,
-                            })];
+                        existing.revoked = true;
+                        existing.replacedByToken = replacedByToken;
+                        return [4 /*yield*/, this.RefreshToken.update(existing, { return: "get" })];
+                    case 2: return [2 /*return*/, _b.sent()];
+                    case 3:
+                        err_1 = _b.sent();
+                        console.log("err", err_1);
+                        throw new Error("Error during revoke refresh token ".concat(err_1));
+                    case 4: return [2 /*return*/];
                 }
             });
         }); };

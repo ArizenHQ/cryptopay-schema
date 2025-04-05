@@ -81,14 +81,18 @@ export class RefreshToken {
   };
 
   revoke = async (tokenRefresh: string, replacedByToken?: string) => {
-    const existing = await this.findByToken(tokenRefresh);
-    if (!existing) return null;
-    return existing.update({
-      revoked: true,
-      replacedByToken,
-    });
+    try {
+      const existing = await this.findByToken(tokenRefresh);
+      if (!existing) return null;
+      existing.revoked = true;
+      existing.replacedByToken = replacedByToken;
+      return await this.RefreshToken.update(existing, { return: "get" });
+    } catch(err) {
+      console.log("err",err)
+      throw new Error(`Error during revoke refresh token ${err}`);
+    }
   };
-
+  
   findValid = async (userId: string, tokenRefresh: string) => {
     return await this.RefreshToken.get({ userId: userId, tokenRefresh: tokenRefresh, revoked: false }, { index: "gs3", follow: true });
   };
