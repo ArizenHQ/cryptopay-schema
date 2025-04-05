@@ -371,7 +371,7 @@ var Schema = {
             sk: { type: String, value: "refreshToken#${tokenId}" },
             tokenId: { type: String, generate: "uuid" },
             userId: { type: String, required: true },
-            token: { type: String, required: true }, // Le JWT du refresh_token
+            tokenRefresh: { type: String, required: true }, // Le JWT du refresh_token
             expiresAt: { type: Date, required: true },
             revoked: { type: Boolean, default: false },
             replacedByToken: { type: String },
@@ -379,9 +379,9 @@ var Schema = {
             userAgent: { type: String },
             ulid: { type: String, generate: "ulid" },
             gs1pk: { type: String, value: "refreshToken#" },
-            gs1sk: { type: String, value: "refreshToken#${token}" },
+            gs1sk: { type: String, value: "refreshToken#${tokenRefresh}" },
             gs2sk: { type: String, value: "refreshToken#${ulid}" },
-            gs3sk: { type: String, value: "refreshToken#${userId}#${ulid}" },
+            gs3sk: { type: String, value: "refreshToken#${userId}#${tokenRefresh}#${revoked}" },
         },
     },
     params: {

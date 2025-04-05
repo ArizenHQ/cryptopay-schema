@@ -76,13 +76,13 @@ export class RefreshToken {
   };
 
 
-  findByToken = async (token: string) => {
-    const result = await this.RefreshToken.get({ token: token }, { index: "gs1", follow: true });
+  findByToken = async (tokenRefresh: string) => {
+    const result = await this.RefreshToken.get({ tokenRefresh: tokenRefresh }, { index: "gs1", follow: true });
     return result?.[0] || null;
   };
 
-  revoke = async (token: string, replacedByToken?: string) => {
-    const existing = await this.findByToken(token);
+  revoke = async (tokenRefresh: string, replacedByToken?: string) => {
+    const existing = await this.findByToken(tokenRefresh);
     if (!existing) return null;
     return existing.update({
       revoked: true,
@@ -90,18 +90,8 @@ export class RefreshToken {
     });
   };
 
-  findValid = async (userId: string, token: string) => {
-    const pk = `user#${userId}`;
-    return await this.RefreshToken.find(
-      { pk },
-      {
-        where: "token = :token AND revoked = :revoked",
-        values: {
-          token,
-          revoked: false,
-        },
-      }
-    );
+  findValid = async (userId: string, tokenRefresh: string) => {
+    return await this.RefreshToken.get({ userId: userId, tokenRefresh: tokenRefresh, revoked: false }, { index: "gs3", follow: true });
   };
 
   revokeAll = async (userId: string) => {

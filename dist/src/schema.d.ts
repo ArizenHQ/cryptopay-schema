@@ -929,7 +929,7 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly required: true;
             };
-            readonly token: {
+            readonly tokenRefresh: {
                 readonly type: StringConstructor;
                 readonly required: true;
             };
@@ -960,7 +960,7 @@ declare const Schema: {
             };
             readonly gs1sk: {
                 readonly type: StringConstructor;
-                readonly value: "refreshToken#${token}";
+                readonly value: "refreshToken#${tokenRefresh}";
             };
             readonly gs2sk: {
                 readonly type: StringConstructor;
@@ -968,7 +968,7 @@ declare const Schema: {
             };
             readonly gs3sk: {
                 readonly type: StringConstructor;
-                readonly value: "refreshToken#${userId}#${ulid}";
+                readonly value: "refreshToken#${userId}#${tokenRefresh}#${revoked}";
             };
         };
     };

@@ -69,22 +69,22 @@ var RefreshToken = /** @class */ (function () {
                     })];
             });
         }); };
-        this.findByToken = function (token) { return __awaiter(_this, void 0, void 0, function () {
+        this.findByToken = function (tokenRefresh) { return __awaiter(_this, void 0, void 0, function () {
             var result;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.RefreshToken.get({ token: token }, { index: "gs1", follow: true })];
+                    case 0: return [4 /*yield*/, this.RefreshToken.get({ tokenRefresh: tokenRefresh }, { index: "gs1", follow: true })];
                     case 1:
                         result = _b.sent();
                         return [2 /*return*/, (result === null || result === void 0 ? void 0 : result[0]) || null];
                 }
             });
         }); };
-        this.revoke = function (token, replacedByToken) { return __awaiter(_this, void 0, void 0, function () {
+        this.revoke = function (tokenRefresh, replacedByToken) { return __awaiter(_this, void 0, void 0, function () {
             var existing;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.findByToken(token)];
+                    case 0: return [4 /*yield*/, this.findByToken(tokenRefresh)];
                     case 1:
                         existing = _b.sent();
                         if (!existing)
@@ -96,19 +96,10 @@ var RefreshToken = /** @class */ (function () {
                 }
             });
         }); };
-        this.findValid = function (userId, token) { return __awaiter(_this, void 0, void 0, function () {
-            var pk;
+        this.findValid = function (userId, tokenRefresh) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0:
-                        pk = "user#".concat(userId);
-                        return [4 /*yield*/, this.RefreshToken.find({ pk: pk }, {
-                                where: "token = :token AND revoked = :revoked",
-                                values: {
-                                    token: token,
-                                    revoked: false,
-                                },
-                            })];
+                    case 0: return [4 /*yield*/, this.RefreshToken.get({ userId: userId, tokenRefresh: tokenRefresh, revoked: false }, { index: "gs3", follow: true })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
