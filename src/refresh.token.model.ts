@@ -77,8 +77,7 @@ export class RefreshToken {
 
 
   findByToken = async (tokenRefresh: string) => {
-    const result = await this.RefreshToken.get({ tokenRefresh: tokenRefresh }, { index: "gs1", follow: true });
-    return result?.[0] || null;
+    return  await this.RefreshToken.get({ tokenRefresh: tokenRefresh }, { index: "gs1", follow: true });
   };
 
   revoke = async (tokenRefresh: string, replacedByToken?: string) => {

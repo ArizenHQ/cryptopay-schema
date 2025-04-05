@@ -70,13 +70,10 @@ var RefreshToken = /** @class */ (function () {
             });
         }); };
         this.findByToken = function (tokenRefresh) { return __awaiter(_this, void 0, void 0, function () {
-            var result;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.RefreshToken.get({ tokenRefresh: tokenRefresh }, { index: "gs1", follow: true })];
-                    case 1:
-                        result = _b.sent();
-                        return [2 /*return*/, (result === null || result === void 0 ? void 0 : result[0]) || null];
+                    case 1: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };
