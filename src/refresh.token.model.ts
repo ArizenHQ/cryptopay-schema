@@ -91,8 +91,9 @@ export class RefreshToken {
   };
 
   findValid = async (userId: string, token: string) => {
+    const pk = `user#${userId}`;
     return await this.RefreshToken.find(
-      { userId },
+      { pk },
       {
         where: "token = :token AND revoked = :revoked",
         values: {

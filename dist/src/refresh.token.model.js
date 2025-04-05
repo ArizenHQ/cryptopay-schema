@@ -97,15 +97,18 @@ var RefreshToken = /** @class */ (function () {
             });
         }); };
         this.findValid = function (userId, token) { return __awaiter(_this, void 0, void 0, function () {
+            var pk;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.RefreshToken.find({ userId: userId }, {
-                            where: "token = :token AND revoked = :revoked",
-                            values: {
-                                token: token,
-                                revoked: false,
-                            },
-                        })];
+                    case 0:
+                        pk = "user#".concat(userId);
+                        return [4 /*yield*/, this.RefreshToken.find({ pk: pk }, {
+                                where: "token = :token AND revoked = :revoked",
+                                values: {
+                                    token: token,
+                                    revoked: false,
+                                },
+                            })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
