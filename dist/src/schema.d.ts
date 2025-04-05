@@ -950,13 +950,25 @@ declare const Schema: {
             readonly userAgent: {
                 readonly type: StringConstructor;
             };
+            readonly ulid: {
+                readonly type: StringConstructor;
+                readonly generate: "ulid";
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "refreshToken#";
             };
             readonly gs1sk: {
                 readonly type: StringConstructor;
-                readonly value: "refreshToken#${tokenId}";
+                readonly value: "refreshToken#${token}";
+            };
+            readonly gs2sk: {
+                readonly type: StringConstructor;
+                readonly value: "refreshToken#${ulid}";
+            };
+            readonly gs3sk: {
+                readonly type: StringConstructor;
+                readonly value: "refreshToken#${userId}#${ulid}";
             };
         };
     };

@@ -75,15 +75,9 @@ export class RefreshToken {
     });
   };
 
+
   findByToken = async (token: string) => {
-    const result = await this.RefreshToken.find(
-      { gs1pk: "refreshToken#" },
-      {
-        where: "token = :token",
-        values: { token },
-        index: "gs1",
-      }
-    );
+    const result = await this.RefreshToken.get({ token: token }, { index: "gs1", follow: true });
     return result?.[0] || null;
   };
 

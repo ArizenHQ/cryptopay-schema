@@ -73,11 +73,7 @@ var RefreshToken = /** @class */ (function () {
             var result;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.RefreshToken.find({ gs1pk: "refreshToken#" }, {
-                            where: "token = :token",
-                            values: { token: token },
-                            index: "gs1",
-                        })];
+                    case 0: return [4 /*yield*/, this.RefreshToken.get({ token: token }, { index: "gs1", follow: true })];
                     case 1:
                         result = _b.sent();
                         return [2 /*return*/, (result === null || result === void 0 ? void 0 : result[0]) || null];

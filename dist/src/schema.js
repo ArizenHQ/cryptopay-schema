@@ -377,8 +377,11 @@ var Schema = {
             replacedByToken: { type: String },
             ip: { type: String },
             userAgent: { type: String },
+            ulid: { type: String, generate: "ulid" },
             gs1pk: { type: String, value: "refreshToken#" },
-            gs1sk: { type: String, value: "refreshToken#${tokenId}" },
+            gs1sk: { type: String, value: "refreshToken#${token}" },
+            gs2sk: { type: String, value: "refreshToken#${ulid}" },
+            gs3sk: { type: String, value: "refreshToken#${userId}#${ulid}" },
         },
     },
     params: {
