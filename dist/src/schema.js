@@ -366,6 +366,20 @@ var Schema = {
                 value: "getStation#${ulid}",
             },
         },
+        RefreshToken: {
+            pk: { type: String, value: "user#${userId}" },
+            sk: { type: String, value: "refreshToken#${tokenId}" },
+            tokenId: { type: String, generate: "uuid" },
+            userId: { type: String, required: true },
+            token: { type: String, required: true }, // Le JWT du refresh_token
+            expiresAt: { type: Date, required: true },
+            revoked: { type: Boolean, default: false },
+            replacedByToken: { type: String },
+            ip: { type: String },
+            userAgent: { type: String },
+            gs1pk: { type: String, value: "refreshToken#" },
+            gs1sk: { type: String, value: "refreshToken#${tokenId}" },
+        },
     },
     params: {
         isoDates: true,

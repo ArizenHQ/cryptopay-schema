@@ -912,6 +912,53 @@ declare const Schema: {
                 readonly value: "getStation#${ulid}";
             };
         };
+        readonly RefreshToken: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "user#${userId}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "refreshToken#${tokenId}";
+            };
+            readonly tokenId: {
+                readonly type: StringConstructor;
+                readonly generate: "uuid";
+            };
+            readonly userId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly token: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly expiresAt: {
+                readonly type: DateConstructor;
+                readonly required: true;
+            };
+            readonly revoked: {
+                readonly type: BooleanConstructor;
+                readonly default: false;
+            };
+            readonly replacedByToken: {
+                readonly type: StringConstructor;
+            };
+            readonly ip: {
+                readonly type: StringConstructor;
+            };
+            readonly userAgent: {
+                readonly type: StringConstructor;
+            };
+            readonly gs1pk: {
+                readonly type: StringConstructor;
+                readonly value: "refreshToken#";
+            };
+            readonly gs1sk: {
+                readonly type: StringConstructor;
+                readonly value: "refreshToken#${tokenId}";
+            };
+        };
     };
     readonly params: {
         readonly isoDates: true;
