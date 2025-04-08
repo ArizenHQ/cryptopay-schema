@@ -58,28 +58,35 @@ function decodeCursor(encoded) {
 }
 function paginateModel(model_1, method_1) {
     return __awaiter(this, arguments, void 0, function (model, method, keyOrParams, query, options) {
-        var _a, limit, _b, page, _c, next, result_1, result_2, nextToken, i, result, items;
-        var _d;
+        var _a, limit, _b, page, _c, next, _d, sort, reverse, _e, field, direction, finalOptions, result_1, result_2, nextToken, i, result, items;
+        var _f;
         if (keyOrParams === void 0) { keyOrParams = {}; }
         if (query === void 0) { query = {}; }
         if (options === void 0) { options = {}; }
-        return __generator(this, function (_e) {
-            switch (_e.label) {
+        return __generator(this, function (_g) {
+            switch (_g.label) {
                 case 0:
-                    _a = query.limit, limit = _a === void 0 ? null : _a, _b = query.page, page = _b === void 0 ? null : _b, _c = query.next, next = _c === void 0 ? null : _c;
+                    _a = query.limit, limit = _a === void 0 ? null : _a, _b = query.page, page = _b === void 0 ? null : _b, _c = query.next, next = _c === void 0 ? null : _c, _d = query.sort, sort = _d === void 0 ? '' : _d;
+                    reverse = false;
+                    console.log("sort", sort);
+                    if (sort) {
+                        _e = sort.split(' '), field = _e[0], direction = _e[1];
+                        reverse = (direction === null || direction === void 0 ? void 0 : direction.toLowerCase()) === 'desc';
+                    }
+                    finalOptions = __assign(__assign(__assign({}, options), query), { limit: limit, reverse: reverse });
                     // Decode base64 if next token is provided
                     if (next && typeof next === 'string') {
                         try {
-                            next = decodeCursor(next);
+                            finalOptions.next = decodeCursor(next);
                         }
                         catch (err) {
                             throw new Error('Invalid pagination cursor');
                         }
                     }
-                    if (!next) return [3 /*break*/, 2];
-                    return [4 /*yield*/, model[method](keyOrParams, __assign(__assign(__assign({}, options), query), { limit: limit, next: next }))];
+                    if (!finalOptions.next) return [3 /*break*/, 2];
+                    return [4 /*yield*/, model[method](keyOrParams, finalOptions)];
                 case 1:
-                    result_1 = _e.sent();
+                    result_1 = _g.sent();
                     return [2 /*return*/, {
                             items: result_1,
                             limit: limit,
@@ -90,12 +97,12 @@ function paginateModel(model_1, method_1) {
                     if (!(typeof page === 'number' && typeof limit === 'number')) return [3 /*break*/, 7];
                     nextToken = null;
                     i = 0;
-                    _e.label = 3;
+                    _g.label = 3;
                 case 3:
                     if (!(i <= page)) return [3 /*break*/, 6];
-                    return [4 /*yield*/, model[method](keyOrParams, __assign(__assign(__assign({}, options), query), { limit: limit, next: nextToken || undefined }))];
+                    return [4 /*yield*/, model[method](keyOrParams, __assign(__assign({}, finalOptions), { next: nextToken || undefined }))];
                 case 4:
-                    result_2 = _e.sent();
+                    result_2 = _g.sent();
                     nextToken = result_2.next;
                     if (!nextToken && i < page) {
                         return [2 /*return*/, {
@@ -105,7 +112,7 @@ function paginateModel(model_1, method_1) {
                                 hasNextPage: false,
                             }];
                     }
-                    _e.label = 5;
+                    _g.label = 5;
                 case 5:
                     i++;
                     return [3 /*break*/, 3];
@@ -116,10 +123,10 @@ function paginateModel(model_1, method_1) {
                         next: result_2.next ? encodeCursor(result_2.next) : undefined,
                         hasNextPage: !!result_2.next,
                     }];
-                case 7: return [4 /*yield*/, model[method](keyOrParams, __assign(__assign({}, options), query))];
+                case 7: return [4 /*yield*/, model[method](keyOrParams, finalOptions)];
                 case 8:
-                    result = _e.sent();
-                    items = (_d = result.items) !== null && _d !== void 0 ? _d : result;
+                    result = _g.sent();
+                    items = (_f = result.items) !== null && _f !== void 0 ? _f : result;
                     return [2 /*return*/, {
                             items: items,
                             hasNextPage: false,

@@ -26,26 +26,36 @@ export async function paginateModel(
   query: any = {},
   options: Record<string, any> = {}
 ): Promise<PaginatedResult> {
-  let { limit = null, page = null, next = null } = query;
+  let { limit = null, page = null, next = null, sort = '' } = query;
 
+  // ✅ reverse dynamique basé sur `sort`
+  let reverse = false;
+  console.log("sort", sort);
+  if (sort) {
+    const [field, direction] = sort.split(' ');
+    reverse = direction?.toLowerCase() === 'desc';
+  }
+
+  // Merge final options avec reverse calculé dynamiquement
+  const finalOptions = {
+    ...options,
+    ...query,
+    limit,
+    reverse,
+  };
 
   // Decode base64 if next token is provided
   if (next && typeof next === 'string') {
     try {
-      next = decodeCursor(next);
+      finalOptions.next = decodeCursor(next);
     } catch (err) {
       throw new Error('Invalid pagination cursor');
     }
   }
 
   // ✅ 1. Pagination moderne OneTable via `next`
-  if (next) {
-    const result = await model[method](keyOrParams, {
-      ...options,
-      ...query,
-      limit,
-      next,
-    });
+  if (finalOptions.next) {
+    const result = await model[method](keyOrParams, finalOptions);
     
     return {
       items: result,
@@ -62,9 +72,7 @@ export async function paginateModel(
 
     for (let i = 0; i <= page; i++) {
       result = await model[method](keyOrParams, {
-        ...options,
-        ...query,
-        limit,
+        ...finalOptions,
         next: nextToken || undefined,
       });
 
@@ -88,12 +96,8 @@ export async function paginateModel(
   }
 
   // ✅ 3. Sans pagination → fallback simple
-  const result = await model[method](keyOrParams, {
-    ...options,
-    ...query,
-  });
-
-  const items = result.items ?? result; // OneTable peut renvoyer soit un tableau, soit { items }
+  const result = await model[method](keyOrParams, finalOptions);
+  const items = result.items ?? result;
 
   return {
     items,

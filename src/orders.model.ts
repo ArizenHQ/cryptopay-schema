@@ -149,6 +149,7 @@ export class Orders {
   list = async (accountId: string, query: any = {}) => {
     const key: any = {};
     if (accountId) key.pk = `account#${accountId}`;
+
     return await paginateModel(this.Order, 'find', key, query, {
       index: 'gs3',
       follow: true,
