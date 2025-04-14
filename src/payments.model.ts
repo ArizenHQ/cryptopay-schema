@@ -50,7 +50,7 @@ export class Payments {
 
   insert = async (accountId: string, data: any) => {
     try {
-      const account = await this.Account.get({ id: accountId });
+      const account = await this.Account.get({ pk: `account#${accountId}` });
       this.table.setContext({ accountId: accountId });
       data.accountId = accountId;
       return await this.Payment.create(data).then(async (payment: any) => {

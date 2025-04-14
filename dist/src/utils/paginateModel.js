@@ -68,7 +68,6 @@ function paginateModel(model_1, method_1) {
                 case 0:
                     _a = query.limit, limit = _a === void 0 ? null : _a, _b = query.page, page = _b === void 0 ? null : _b, _c = query.next, next = _c === void 0 ? null : _c, _d = query.sort, sort = _d === void 0 ? '' : _d;
                     reverse = false;
-                    console.log("sort", sort);
                     if (sort) {
                         _e = sort.split(' '), field = _e[0], direction = _e[1];
                         reverse = (direction === null || direction === void 0 ? void 0 : direction.toLowerCase()) === 'desc';

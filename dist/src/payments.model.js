@@ -63,7 +63,7 @@ var Payments = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, this.Account.get({ id: accountId })];
+                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(accountId) })];
                     case 1:
                         account = _b.sent();
                         this.table.setContext({ accountId: accountId });

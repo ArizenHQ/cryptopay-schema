@@ -30,7 +30,6 @@ export async function paginateModel(
 
   // ✅ reverse dynamique basé sur `sort`
   let reverse = false;
-  console.log("sort", sort);
   if (sort) {
     const [field, direction] = sort.split(' ');
     reverse = direction?.toLowerCase() === 'desc';

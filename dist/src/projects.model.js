@@ -73,7 +73,7 @@ var Projects = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.Account.get({ id: data.accountId })];
+                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(data.accountId) })];
                     case 1:
                         account_1 = _b.sent();
                         if (!account_1)
