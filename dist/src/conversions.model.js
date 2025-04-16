@@ -165,14 +165,14 @@ var Conversions = /** @class */ (function () {
                     case 1:
                         conversion = _b.sent();
                         if (!conversion)
-                            throw new Error("no order fund for id: ".concat(id));
+                            throw new Error("no conversion fund for id: ".concat(id));
                         this.table.setContext({ accountId: conversion.accountId });
                         data.id = id;
                         return [4 /*yield*/, this.Conversion.update(data, { return: 'get' })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();
-                        throw new Error("Error during update order ".concat(err_1));
+                        throw new Error("Error during update conversion ".concat(err_1));
                     case 4: return [2 /*return*/];
                 }
             });
@@ -185,8 +185,8 @@ var Conversions = /** @class */ (function () {
                     case 1:
                         conversion = _b.sent();
                         if (!conversion)
-                            throw new Error("Order not found");
-                        return [2 /*return*/, this.Conversion.remove({ sk: "order#".concat(id), pk: "account#".concat(conversion.accountId) })];
+                            throw new Error("Conversion not found");
+                        return [2 /*return*/, this.Conversion.remove({ sk: "conversion#".concat(id), pk: "account#".concat(conversion.accountId) })];
                 }
             });
         }); };
