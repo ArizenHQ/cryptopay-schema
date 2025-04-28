@@ -18,6 +18,7 @@ export declare class Users {
     getByEmail: (email: string) => Promise<any>;
     findByEmail: (email: string) => Promise<any>;
     patchById: (id: string, data: any) => Promise<any>;
+    updatePassword: (id: string, password: string) => Promise<any>;
     scan: (query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     list: (accountId: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     removeById: (id: string) => Promise<any>;

@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -114,25 +103,35 @@ var Users = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var user, updateData;
+            var user;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4" })];
                     case 1:
                         user = _b.sent();
                         this.table.setContext({ accountId: user.accountId });
-                        updateData = __assign({}, data);
-                        updateData.id = id;
-                        updateData.email = (user.email === data.email) ? user.email : data.email;
-                        // Si on met à jour le mot de passe et qu'il correspond au mot de passe actuel (déjà crypté)
-                        // alors on ne le met pas à jour pour éviter un double cryptage
-                        if (updateData.password && updateData.password === user.password) {
-                            delete updateData.password;
+                        if (data.password) {
+                            delete data.password;
                         }
-                        console.log("updateData", updateData);
-                        console.log("user", user);
-                        return [4 /*yield*/, this.User.update(updateData)];
+                        return [4 /*yield*/, this.User.update(data, { return: 'get' })];
                     case 2: return [2 /*return*/, _b.sent()];
+                }
+            });
+        }); };
+        this.updatePassword = function (id, password) { return __awaiter(_this, void 0, void 0, function () {
+            var user, encryptedPassword;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4" })];
+                    case 1:
+                        user = _b.sent();
+                        return [4 /*yield*/, this.table.encrypt(password)];
+                    case 2:
+                        encryptedPassword = _b.sent();
+                        return [4 /*yield*/, this.User.update({ user: user }, { set: { password: encryptedPassword }, return: 'get' })];
+                    case 3: 
+                    //primary:
+                    return [2 /*return*/, _b.sent()];
                 }
             });
         }); };

@@ -6,6 +6,7 @@ import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from './utils/paginateModel';
 import { createHash } from 'crypto'
+
 export class Users {
 
   Crypto: any;
@@ -76,19 +77,17 @@ export class Users {
     let user = await this.User.get({ id: id }, { index: "gs4" });
     this.table.setContext({ accountId: user.accountId });
     
-    // Créer un objet de mise à jour
-    const updateData = { ...data };
-    updateData.id = id;
-    updateData.email = (user.email === data.email) ? user.email : data.email;
-    
-    // Si on met à jour le mot de passe et qu'il correspond au mot de passe actuel (déjà crypté)
-    // alors on ne le met pas à jour pour éviter un double cryptage
-    if (updateData.password && updateData.password === user.password) {
-      delete updateData.password;
+    if(data.password) {
+      delete data.password;
     }
-    console.log("updateData", updateData);
-    console.log("user", user);
-    return await this.User.update(updateData);
+    return await this.User.update(data, {return: 'get'});
+  };
+
+  updatePassword = async (id: string, password: string) => {
+    let user = await this.User.get({ id: id }, { index: "gs4" });
+    const encryptedPassword =await (this.table as any).encrypt(password);
+    //primary:
+    return await this.User.update({user}, {set:{password: encryptedPassword},return: 'get'});
   };
 
   scan = async (query: any = {}) => {
