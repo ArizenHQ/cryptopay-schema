@@ -49,7 +49,9 @@ exports.Users = void 0;
 var Dynamo_1 = require("dynamodb-onetable/Dynamo");
 var dynamodb_onetable_1 = require("dynamodb-onetable");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
-var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }) });
+var client = new Dynamo_1.Dynamo({
+    client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }),
+});
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var paginateModel_1 = require("./utils/paginateModel");
@@ -65,7 +67,13 @@ var Users = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         this.table.setContext({ accountId: data.accountId });
-                        return [4 /*yield*/, this.User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel, apiKey: this.generateApiKey() })];
+                        return [4 /*yield*/, this.User.create({
+                                name: data.name,
+                                email: data.email,
+                                password: data.password,
+                                permissionLevel: data.permissionLevel,
+                                apiKey: this.generateApiKey(),
+                            })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
@@ -113,7 +121,7 @@ var Users = /** @class */ (function () {
                         if (data.password) {
                             delete data.password;
                         }
-                        return [4 /*yield*/, this.User.update(data, { return: 'get' })];
+                        return [4 /*yield*/, this.User.update(data, { return: "get" })];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
             });
@@ -125,13 +133,17 @@ var Users = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4" })];
                     case 1:
                         user = _b.sent();
+                        if (!user) {
+                            throw new Error("User not found");
+                        }
                         return [4 /*yield*/, this.table.encrypt(password)];
                     case 2:
                         encryptedPassword = _b.sent();
-                        return [4 /*yield*/, this.User.update({ user: user }, { set: { password: encryptedPassword }, return: 'get' })];
-                    case 3: 
-                    //primary:
-                    return [2 /*return*/, _b.sent()];
+                        return [4 /*yield*/, this.User.update(user, {
+                                set: { password: encryptedPassword },
+                                return: "get",
+                            })];
+                    case 3: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };
@@ -144,8 +156,8 @@ var Users = /** @class */ (function () {
                 if (query === void 0) { query = {}; }
                 return __generator(this, function (_b) {
                     switch (_b.label) {
-                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.User, 'scan', query, {
-                                index: 'gs4',
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.User, "scan", query, {
+                                index: "gs4",
                                 follow: true,
                             })];
                         case 1: return [2 /*return*/, _b.sent()];
@@ -167,8 +179,8 @@ var Users = /** @class */ (function () {
                             key = {};
                             if (accountId)
                                 key.pk = "account#".concat(accountId);
-                            return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.User, 'find', key, query, {
-                                    index: 'gs4',
+                            return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.User, "find", key, query, {
+                                    index: "gs4",
                                     follow: true,
                                 })];
                         case 1: return [2 /*return*/, _b.sent()];

@@ -1,14 +1,15 @@
 import { Dynamo } from "dynamodb-onetable/Dynamo";
 import { Model, Table } from "dynamodb-onetable";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
+const client = new Dynamo({
+  client: new DynamoDBClient({ region: "eu-west-1" }),
+});
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
-import { paginateModel } from './utils/paginateModel';
-import { createHash } from 'crypto'
+import { paginateModel } from "./utils/paginateModel";
+import { createHash } from "crypto";
 
 export class Users {
-
   Crypto: any;
   table: Table;
   User: any;
@@ -19,8 +20,7 @@ export class Users {
   Kyt: any;
   secretsString: any;
   private constructor(secretsString: any) {
-
-    this.secretsString = secretsString
+    this.secretsString = secretsString;
 
     this.Crypto = {
       primary: {
@@ -46,15 +46,23 @@ export class Users {
   }
 
   static init = async () => {
-    const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration")
-    return new Users(secretsString)
-  }
+    const secretsString = await retrieveSecrets(
+      "/coinhouse-solution/CardPayment-configuration"
+    );
+    return new Users(secretsString);
+  };
   generateApiKey = () => {
     return createHash("sha256").update(Math.random().toString()).digest("hex");
-  }
+  };
   insert = async (data: any) => {
     this.table.setContext({ accountId: data.accountId });
-    return await this.User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel, apiKey: this.generateApiKey() });
+    return await this.User.create({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      permissionLevel: data.permissionLevel,
+      apiKey: this.generateApiKey(),
+    });
   };
 
   findById = async (id: string) => {
@@ -62,7 +70,10 @@ export class Users {
   };
 
   findByApiKey = async (apiKey: string) => {
-    return await this.User.find({ apiKey: apiKey }, { index: "gs1", follow: true });
+    return await this.User.find(
+      { apiKey: apiKey },
+      { index: "gs1", follow: true }
+    );
   };
 
   getByEmail = async (email: string) => {
@@ -70,29 +81,37 @@ export class Users {
   };
 
   findByEmail = async (email: string) => {
-    return await this.User.find({ email: email }, { index: "gs1", follow: true });
+    return await this.User.find(
+      { email: email },
+      { index: "gs1", follow: true }
+    );
   };
 
   patchById = async (id: string, data: any) => {
     let user = await this.User.get({ id: id }, { index: "gs4" });
     this.table.setContext({ accountId: user.accountId });
-    
-    if(data.password) {
+
+    if (data.password) {
       delete data.password;
     }
-    return await this.User.update(data, {return: 'get'});
+    return await this.User.update(data, { return: "get" });
   };
 
   updatePassword = async (id: string, password: string) => {
     let user = await this.User.get({ id: id }, { index: "gs4" });
-    const encryptedPassword =await (this.table as any).encrypt(password);
-    //primary:
-    return await this.User.update({user}, {set:{password: encryptedPassword},return: 'get'});
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const encryptedPassword = await (this.table as any).encrypt(password);
+    return await this.User.update(user, {
+      set: { password: encryptedPassword },
+      return: "get",
+    });
   };
 
   scan = async (query: any = {}) => {
-    return await paginateModel(this.User, 'scan', query, {
-      index: 'gs4',
+    return await paginateModel(this.User, "scan", query, {
+      index: "gs4",
       follow: true,
     });
   };
@@ -100,16 +119,21 @@ export class Users {
   list = async (accountId: string, query: any = {}) => {
     const key: any = {};
     if (accountId) key.pk = `account#${accountId}`;
-    return await paginateModel(this.User, 'find', key, query, {
-      index: 'gs4',
+    return await paginateModel(this.User, "find", key, query, {
+      index: "gs4",
       follow: true,
     });
   };
 
   removeById = async (id: string) => {
-    let user = await this.User.get({ id: id }, { index: "gs1", follow: true, decrypt: true });
-    return await this.User.remove({ id: id, email: undefined }, { index: "gs4", follow: true });
+    let user = await this.User.get(
+      { id: id },
+      { index: "gs1", follow: true, decrypt: true }
+    );
+    return await this.User.remove(
+      { id: id, email: undefined },
+      { index: "gs4", follow: true }
+    );
   };
-
 }
-export default Users
+export default Users;
