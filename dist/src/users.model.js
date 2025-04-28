@@ -130,7 +130,11 @@ var Users = /** @class */ (function () {
             var user, encryptedPassword;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4" })];
+                    case 0:
+                        if (!password || password.length < 8) {
+                            throw new Error("Password must be at least 8 characters long");
+                        }
+                        return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4" })];
                     case 1:
                         user = _b.sent();
                         if (!user) {

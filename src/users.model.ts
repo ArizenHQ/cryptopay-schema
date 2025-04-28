@@ -98,6 +98,10 @@ export class Users {
   };
 
   updatePassword = async (id: string, password: string) => {
+    if (!password || password.length < 8) {
+      throw new Error("Password must be at least 8 characters long");
+    }
+
     let user = await this.User.get({ id: id }, { index: "gs4" });
     if (!user) {
       throw new Error("User not found");
