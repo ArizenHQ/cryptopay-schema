@@ -56,8 +56,8 @@ export class Users {
     return await this.User.create({ name: data.name, email: data.email, password: data.password, permissionLevel: data.permissionLevel, apiKey: this.generateApiKey() });
   };
 
-  findById = async (id: string, decrypt: boolean = false) => {
-    return await this.User.get({ id: id }, { index: "gs4", follow: true, decrypt: decrypt });
+  findById = async (id: string) => {
+    return await this.User.get({ id: id }, { index: "gs4", follow: true });
   };
 
   findByApiKey = async (apiKey: string) => {
@@ -68,8 +68,8 @@ export class Users {
     return await this.User.get({ email: email });
   };
 
-  findByEmail = async (email: string, decrypt: boolean = false) => {
-    return await this.User.find({ email: email }, { index: "gs1", follow: true, decrypt: decrypt });
+  findByEmail = async (email: string) => {
+    return await this.User.find({ email: email }, { index: "gs1", follow: true });
   };
 
   patchById = async (id: string, data: any) => {

@@ -13,10 +13,10 @@ export declare class Users {
     static init: () => Promise<Users>;
     generateApiKey: () => string;
     insert: (data: any) => Promise<any>;
-    findById: (id: string, decrypt?: boolean) => Promise<any>;
+    findById: (id: string) => Promise<any>;
     findByApiKey: (apiKey: string) => Promise<any>;
     getByEmail: (email: string) => Promise<any>;
-    findByEmail: (email: string, decrypt?: boolean) => Promise<any>;
+    findByEmail: (email: string) => Promise<any>;
     patchById: (id: string, data: any) => Promise<any>;
     scan: (query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     list: (accountId: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
