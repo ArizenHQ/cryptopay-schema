@@ -70,14 +70,21 @@ var Users = /** @class */ (function () {
                 }
             });
         }); };
-        this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4", follow: true })];
-                    case 1: return [2 /*return*/, _b.sent()];
-                }
+        this.findById = function (id_1) {
+            var args_1 = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args_1[_i - 1] = arguments[_i];
+            }
+            return __awaiter(_this, __spreadArray([id_1], args_1, true), void 0, function (id, decrypt) {
+                if (decrypt === void 0) { decrypt = false; }
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4", follow: true, decrypt: decrypt })];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
             });
-        }); };
+        };
         this.findByApiKey = function (apiKey) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -94,14 +101,21 @@ var Users = /** @class */ (function () {
                 }
             });
         }); };
-        this.findByEmail = function (email) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.User.find({ email: email }, { index: "gs1", follow: true })];
-                    case 1: return [2 /*return*/, _b.sent()];
-                }
+        this.findByEmail = function (email_1) {
+            var args_1 = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args_1[_i - 1] = arguments[_i];
+            }
+            return __awaiter(_this, __spreadArray([email_1], args_1, true), void 0, function (email, decrypt) {
+                if (decrypt === void 0) { decrypt = false; }
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0: return [4 /*yield*/, this.User.find({ email: email }, { index: "gs1", follow: true, decrypt: decrypt })];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
             });
-        }); };
+        };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
             var user;
             return __generator(this, function (_b) {
