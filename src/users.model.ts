@@ -73,7 +73,7 @@ export class Users {
   };
 
   patchById = async (id: string, data: any) => {
-    let user = await this.User.get({ id: id }, { index: "gs1", follow: true, decrypt: true });
+    let user = await this.User.get({ id: id }, { index: "gs4", follow: true });
     this.table.setContext({ accountId: user.accountId });
     data.id = id;
     data.email = (user.email === data.email) ? user.email : data.email;
