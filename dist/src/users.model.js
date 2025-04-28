@@ -131,7 +131,7 @@ var Users = /** @class */ (function () {
                         }
                         console.log("updateData", updateData);
                         console.log("user", user);
-                        return [4 /*yield*/, this.User.update(updateData, { return: 'get' })];
+                        return [4 /*yield*/, this.User.update(updateData)];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
             });

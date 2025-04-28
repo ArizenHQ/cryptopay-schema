@@ -88,7 +88,7 @@ export class Users {
     }
     console.log("updateData", updateData);
     console.log("user", user);
-    return await this.User.update(updateData, {return: 'get'});
+    return await this.User.update(updateData);
   };
 
   scan = async (query: any = {}) => {
