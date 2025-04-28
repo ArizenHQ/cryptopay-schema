@@ -75,11 +75,21 @@ export class Users {
   patchById = async (id: string, data: any) => {
     let user = await this.User.get({ id: id }, { index: "gs4", follow: true });
     this.table.setContext({ accountId: user.accountId });
-    data.id = id;
-    data.email = (user.email === data.email) ? user.email : data.email;
-    return await this.User.update(data, {return: 'get'});
+    
+    // Créer un objet de mise à jour
+    const updateData = { ...data };
+    updateData.id = id;
+    updateData.email = (user.email === data.email) ? user.email : data.email;
+    
+    // Si on met à jour le mot de passe et qu'il correspond au mot de passe actuel (déjà crypté)
+    // alors on ne le met pas à jour pour éviter un double cryptage
+    if (updateData.password && updateData.password === user.password) {
+      delete updateData.password;
+    }
+    
+    return await this.User.update(updateData, {return: 'get'});
   };
-
+  
   scan = async (query: any = {}) => {
     return await paginateModel(this.User, 'scan', query, {
       index: 'gs4',
