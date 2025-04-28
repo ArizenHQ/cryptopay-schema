@@ -73,7 +73,7 @@ export class Users {
   };
 
   patchById = async (id: string, data: any) => {
-    let user = await this.User.get({ id: id }, { index: "gs4", follow: true });
+    let user = await this.User.get({ id: id }, { index: "gs4" });
     this.table.setContext({ accountId: user.accountId });
     
     // Créer un objet de mise à jour
