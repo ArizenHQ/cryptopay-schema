@@ -86,10 +86,11 @@ export class Users {
     if (updateData.password && updateData.password === user.password) {
       delete updateData.password;
     }
-    
+    console.log("updateData", updateData);
+    console.log("user", user);
     return await this.User.update(updateData, {return: 'get'});
   };
-  
+
   scan = async (query: any = {}) => {
     return await paginateModel(this.User, 'scan', query, {
       index: 'gs4',

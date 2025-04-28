@@ -129,6 +129,8 @@ var Users = /** @class */ (function () {
                         if (updateData.password && updateData.password === user.password) {
                             delete updateData.password;
                         }
+                        console.log("updateData", updateData);
+                        console.log("user", user);
                         return [4 /*yield*/, this.User.update(updateData, { return: 'get' })];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
