@@ -144,9 +144,31 @@ var Accounts = /** @class */ (function () {
                         if (!currentAccount) {
                             throw new Error("Account not found with id: ".concat(id));
                         }
-                        // Si parentAccountId a été modifié, mettre à jour gs5pk
-                        if (data.parentAccountId !== undefined && data.parentAccountId !== currentAccount.parentAccountId) {
-                            data.gs5pk = "reseller#".concat(data.parentAccountId);
+                        // Si parentAccountId a été fourni (défini ou null), mettre à jour gs5pk
+                        if (data.parentAccountId !== undefined) {
+                            if (data.parentAccountId) {
+                                // Si un nouveau parent est défini
+                                data.gs5pk = "reseller#".concat(data.parentAccountId);
+                            }
+                            else {
+                                // Si parentAccountId est null (suppression du parent)
+                                data.gs5pk = "standard#account";
+                            }
+                        }
+                        else if (!currentAccount.gs5pk) {
+                            // Si gs5pk n'est pas défini sur le compte existant, ajouter une valeur par défaut
+                            if (currentAccount.parentAccountId) {
+                                data.gs5pk = "reseller#".concat(currentAccount.parentAccountId);
+                            }
+                            else {
+                                data.gs5pk = "standard#account";
+                            }
+                        }
+                        // Traitement spécial pour les comptes revendeurs
+                        if ((data.isReseller === true || (currentAccount.isReseller && data.isReseller !== false))
+                            && !data.parentAccountId && !currentAccount.parentAccountId) {
+                            // Si c'est un compte revendeur (sans parent), utiliser son propre ID comme partie du gs5pk
+                            data.gs5pk = "reseller#".concat(id);
                         }
                         return [4 /*yield*/, this.Account.update(data, { return: "get" })];
                     case 2:
@@ -251,92 +273,40 @@ var Accounts = /** @class */ (function () {
             });
         };
         this.updateAccountsWithDefaultGs5pk = function () { return __awaiter(_this, void 0, void 0, function () {
-            var accounts, updatedCount, errorCount, _i, accounts_1, account, hasClients, error_1, error_2;
+            var accounts, updatedCount, errorCount, _i, accounts_1, account, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 18, , 19]);
+                        _b.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, this.Account.scan()];
                     case 1:
                         accounts = _b.sent();
                         console.log("Found ".concat(accounts.length, " accounts to check."));
                         updatedCount = 0;
                         errorCount = 0;
-                        _i = 0, accounts_1 = accounts;
-                        _b.label = 2;
-                    case 2:
-                        if (!(_i < accounts_1.length)) return [3 /*break*/, 17];
-                        account = accounts_1[_i];
-                        _b.label = 3;
-                    case 3:
-                        _b.trys.push([3, 15, , 16]);
-                        if (!account.parentAccountId) return [3 /*break*/, 6];
-                        if (!(account.gs5pk !== "reseller#".concat(account.parentAccountId))) return [3 /*break*/, 5];
-                        return [4 /*yield*/, this.Account.update({
-                                id: account.id,
-                                gs5pk: "reseller#".concat(account.parentAccountId)
-                            })];
-                    case 4:
-                        _b.sent();
-                        updatedCount++;
-                        _b.label = 5;
-                    case 5: return [3 /*break*/, 14];
-                    case 6:
-                        if (!account.isReseller) return [3 /*break*/, 12];
-                        return [4 /*yield*/, this.hasClients(account.id)];
-                    case 7:
-                        hasClients = _b.sent();
-                        if (!(hasClients && account.gs5pk !== "reseller#".concat(account.id))) return [3 /*break*/, 9];
-                        return [4 /*yield*/, this.Account.update({
-                                id: account.id,
-                                gs5pk: "reseller#".concat(account.id)
-                            })];
-                    case 8:
-                        _b.sent();
-                        updatedCount++;
-                        return [3 /*break*/, 11];
-                    case 9:
-                        if (!(!hasClients && account.gs5pk !== "standard#account")) return [3 /*break*/, 11];
-                        return [4 /*yield*/, this.Account.update({
-                                id: account.id,
-                                gs5pk: "standard#account"
-                            })];
-                    case 10:
-                        _b.sent();
-                        updatedCount++;
-                        _b.label = 11;
-                    case 11: return [3 /*break*/, 14];
-                    case 12:
-                        if (!(account.gs5pk !== "standard#account")) return [3 /*break*/, 14];
-                        return [4 /*yield*/, this.Account.update({
-                                id: account.id,
-                                gs5pk: "standard#account"
-                            })];
-                    case 13:
-                        _b.sent();
-                        updatedCount++;
-                        _b.label = 14;
-                    case 14: return [3 /*break*/, 16];
-                    case 15:
-                        error_1 = _b.sent();
-                        console.error("Error updating account ".concat(account.id, ":"), error_1);
-                        errorCount++;
-                        return [3 /*break*/, 16];
-                    case 16:
-                        _i++;
-                        return [3 /*break*/, 2];
-                    case 17:
+                        for (_i = 0, accounts_1 = accounts; _i < accounts_1.length; _i++) {
+                            account = accounts_1[_i];
+                            try {
+                                // Si c'est un compte client, gs5pk doit être "reseller#x"
+                                this.patchById(account.id, account);
+                                updatedCount++;
+                            }
+                            catch (error) {
+                                console.error("Error updating account ".concat(account.id, ":"), error);
+                                errorCount++;
+                            }
+                        }
                         console.log("Update completed: ".concat(updatedCount, " accounts updated, ").concat(errorCount, " errors."));
                         return [2 /*return*/, {
                                 total: accounts.length,
                                 updated: updatedCount,
                                 errors: errorCount
                             }];
-                    case 18:
-                        error_2 = _b.sent();
-                        console.error("Update error:", error_2);
-                        throw error_2;
-                    case 19: return [2 /*return*/];
+                    case 2:
+                        error_1 = _b.sent();
+                        console.error("Update error:", error_1);
+                        throw error_1;
+                    case 3: return [2 /*return*/];
                 }
             });
         }); };

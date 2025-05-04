@@ -88,23 +88,43 @@ export class Accounts {
     return await paginateModel(this.Account, 'scan', {}, query);
   };
 
-patchById = async (id: string, data: any) => {
-  // Récupérer le compte actuel
-  const currentAccount = await this.Account.get({ id: id });
-  if (!currentAccount) {
-    throw new Error(`Account not found with id: ${id}`);
-  }
-  // Si parentAccountId a été modifié, mettre à jour gs5pk
-  if (data.parentAccountId !== undefined && data.parentAccountId !== currentAccount.parentAccountId) {
-    data.gs5pk = `reseller#${data.parentAccountId}`;
-  }  
-  // Mettre à jour le compte
-  const updatedAccount = await this.Account.update(data, { return: "get" });
-  
-
-  
-  return updatedAccount;
-};
+  patchById = async (id: string, data: any) => {
+    // Récupérer le compte actuel
+    const currentAccount = await this.Account.get({ id: id });
+    if (!currentAccount) {
+      throw new Error(`Account not found with id: ${id}`);
+    }
+    
+    // Si parentAccountId a été fourni (défini ou null), mettre à jour gs5pk
+    if (data.parentAccountId !== undefined) {
+      if (data.parentAccountId) {
+        // Si un nouveau parent est défini
+        data.gs5pk = `reseller#${data.parentAccountId}`;
+      } else {
+        // Si parentAccountId est null (suppression du parent)
+        data.gs5pk = "standard#account";
+      }
+    } else if (!currentAccount.gs5pk) {
+      // Si gs5pk n'est pas défini sur le compte existant, ajouter une valeur par défaut
+      if (currentAccount.parentAccountId) {
+        data.gs5pk = `reseller#${currentAccount.parentAccountId}`;
+      } else {
+        data.gs5pk = "standard#account";
+      }
+    }
+    
+    // Traitement spécial pour les comptes revendeurs
+    if ((data.isReseller === true || (currentAccount.isReseller && data.isReseller !== false)) 
+        && !data.parentAccountId && !currentAccount.parentAccountId) {
+      // Si c'est un compte revendeur (sans parent), utiliser son propre ID comme partie du gs5pk
+      data.gs5pk = `reseller#${id}`;
+    }
+    
+    // Mettre à jour le compte
+    const updatedAccount = await this.Account.update(data, { return: "get" });
+    
+    return updatedAccount;
+  };
 
   removeById = async (id: string) => {
     return await this.Account.remove({ id: id });
@@ -186,41 +206,8 @@ patchById = async (id: string, data: any) => {
       for (const account of accounts) {
         try {
           // Si c'est un compte client, gs5pk doit être "reseller#x"
-          if (account.parentAccountId) {
-            if (account.gs5pk !== `reseller#${account.parentAccountId}`) {
-              await this.Account.update({
-                id: account.id,
-                gs5pk: `reseller#${account.parentAccountId}`
-              });
-              updatedCount++;
-            }
-          } 
-          // Si c'est un compte revendeur avec des clients, gs5pk peut être "reseller#resellerAccountId"
-          else if (account.isReseller) {
-            // Vérifier s'il a des clients
-            const hasClients = await this.hasClients(account.id);
-            if (hasClients && account.gs5pk !== `reseller#${account.id}`) {
-              await this.Account.update({
-                id: account.id,
-                gs5pk: `reseller#${account.id}`
-              });
-              updatedCount++;
-            } else if (!hasClients && account.gs5pk !== "standard#account") {
-              await this.Account.update({
-                id: account.id,
-                gs5pk: "standard#account"
-              });
-              updatedCount++;
-            }
-          }
-          // Si c'est un compte standard, gs5pk doit être "standard#account"
-          else if (account.gs5pk !== "standard#account") {
-            await this.Account.update({
-              id: account.id,
-              gs5pk: "standard#account"
-            });
-            updatedCount++;
-          }
+          this.patchById(account.id, account);
+          updatedCount++;
         } catch (error) {
           console.error(`Error updating account ${account.id}:`, error);
           errorCount++;
