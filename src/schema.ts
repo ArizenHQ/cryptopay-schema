@@ -46,7 +46,7 @@ const Schema = {
       isReseller: { type: Boolean, default: false },
       gs1pk: { type: String, value: "account#" },
       gs1sk: { type: String, value: "account#${name}${id}" },
-      gs5pk: { type: String, value: "${_template.resellerLink}" },
+      gs5pk: { type: String },
       gs5sk: { type: String, value: "account#${id}" },
     },
 
@@ -84,7 +84,7 @@ const Schema = {
         type: String,
         value: "user#${name}#${id}#${email}#${status}#${permissionLevel}",
       },
-      gs5pk: { type: String, value: "${resellerAccountId ? `reseller#${resellerAccountId}` : ''}" },
+      gs5pk: { type: String },
       gs5sk: { type: String, value: "user#${id}" },
     },
     Project: {
@@ -159,7 +159,7 @@ const Schema = {
       gs2sk: { type: String, value: "project#${id}" },
       gs3sk: { type: String, value: "project#${apiKey}" },
       gs4sk: { type: String, value: "project#${ulid}" },
-      gs5pk: { type: String, value: "${resellerAccountId ? `reseller#${resellerAccountId}` : ''}" },
+      gs5pk: { type: String },
       gs5sk: { type: String, value: "project#${id}" },
     },
     Order: {
@@ -413,9 +413,6 @@ const Schema = {
     timestamps: true,
     createdField: "dateCreated",
     updatedField: "dateLastUpdated",
-  },
-  templates: {
-    resellerLink: (item: any) => item.parentAccountId ? `reseller#${item.parentAccountId}` : null
   }
 } as const;
 

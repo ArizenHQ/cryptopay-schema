@@ -135,13 +135,27 @@ var Accounts = /** @class */ (function () {
             });
         };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var account;
+            var currentAccount, updatedAccount;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0:
-                        account = this.Account.find({ id: id });
-                        return [4 /*yield*/, account.update(data, { return: "get" })];
-                    case 1: return [2 /*return*/, _b.sent()];
+                    case 0: return [4 /*yield*/, this.Account.get({ id: id })];
+                    case 1:
+                        currentAccount = _b.sent();
+                        if (!currentAccount) {
+                            throw new Error("Account not found with id: ".concat(id));
+                        }
+                        return [4 /*yield*/, this.Account.update(data, { return: "get" })];
+                    case 2:
+                        updatedAccount = _b.sent();
+                        if (!(data.parentAccountId !== undefined && data.parentAccountId !== currentAccount.parentAccountId)) return [3 /*break*/, 5];
+                        return [4 /*yield*/, this.updateGs5pk(id, data.parentAccountId)];
+                    case 3:
+                        _b.sent();
+                        return [4 /*yield*/, this.Account.get({ id: id })];
+                    case 4: 
+                    // Récupérer à nouveau le compte après la mise à jour de gs5pk
+                    return [2 /*return*/, _b.sent()];
+                    case 5: return [2 /*return*/, updatedAccount];
                 }
             });
         }); };
@@ -176,8 +190,41 @@ var Accounts = /** @class */ (function () {
                 }
             });
         }); };
+        this.updateGs5pk = function (id, parentAccountId) { return __awaiter(_this, void 0, void 0, function () {
+            var error_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 5, , 6]);
+                        if (!parentAccountId) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.Account.update({
+                                id: id,
+                                gs5pk: "reseller#".concat(parentAccountId)
+                            })];
+                    case 1:
+                        _b.sent();
+                        return [3 /*break*/, 4];
+                    case 2: 
+                    // Si null ou undefined, supprimer l'attribut ou le définir à null
+                    return [4 /*yield*/, this.Account.update({
+                            id: id,
+                            gs5pk: null
+                        })];
+                    case 3:
+                        // Si null ou undefined, supprimer l'attribut ou le définir à null
+                        _b.sent();
+                        _b.label = 4;
+                    case 4: return [2 /*return*/, true];
+                    case 5:
+                        error_1 = _b.sent();
+                        console.error("Error updating gs5pk:", error_1);
+                        return [2 /*return*/, false];
+                    case 6: return [2 /*return*/];
+                }
+            });
+        }); };
         this.createClientAccount = function (resellerAccountId, data) { return __awaiter(_this, void 0, void 0, function () {
-            var reseller;
+            var reseller, clientAccount;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.getAccount(resellerAccountId)];
@@ -191,7 +238,17 @@ var Accounts = /** @class */ (function () {
                                 isReseller: false,
                                 parentAccountId: resellerAccountId
                             })];
-                    case 2: return [2 /*return*/, _b.sent()];
+                    case 2:
+                        clientAccount = _b.sent();
+                        // Étape 2: Mettre à jour explicitement le champ gs5pk
+                        return [4 /*yield*/, this.updateGs5pk(clientAccount.id, resellerAccountId)];
+                    case 3:
+                        // Étape 2: Mettre à jour explicitement le champ gs5pk
+                        _b.sent();
+                        return [4 /*yield*/, this.Account.get({ id: clientAccount.id })];
+                    case 4: 
+                    // Récupérer et retourner le compte mis à jour
+                    return [2 /*return*/, _b.sent()];
                 }
             });
         }); };
@@ -230,7 +287,9 @@ var Accounts = /** @class */ (function () {
                                 throw new Error("Account is not a reseller");
                             }
                             return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Account, 'find', { gs5pk: "reseller#".concat(resellerAccountId) }, query, { index: 'gs5', follow: true })];
-                        case 2: return [2 /*return*/, _b.sent()];
+                        case 2: 
+                        // Utiliser la clé gs5pk pour récupérer tous les clients de ce revendeur
+                        return [2 /*return*/, _b.sent()];
                     }
                 });
             });

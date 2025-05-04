@@ -63,7 +63,7 @@ var Users = /** @class */ (function () {
             return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex");
         };
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
-            var account, resellerAccountId;
+            var account, resellerAccountId, gs5pk;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.Account.get({ pk: "account#".concat(data.accountId) })];
@@ -72,8 +72,10 @@ var Users = /** @class */ (function () {
                         if (!account)
                             throw new Error("Account not found");
                         resellerAccountId = null;
+                        gs5pk = null;
                         if (account.parentAccountId) {
                             resellerAccountId = account.parentAccountId;
+                            gs5pk = "reseller#".concat(resellerAccountId);
                         }
                         this.table.setContext({ accountId: data.accountId });
                         return [4 /*yield*/, this.User.create({
@@ -83,6 +85,7 @@ var Users = /** @class */ (function () {
                                 permissionLevel: data.permissionLevel,
                                 resellerAccountId: resellerAccountId,
                                 apiKey: this.generateApiKey(),
+                                gs5pk: gs5pk,
                             })];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
@@ -121,7 +124,7 @@ var Users = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var user;
+            var user, account, resellerAccountId;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4" })];
@@ -131,8 +134,23 @@ var Users = /** @class */ (function () {
                         if (data.password) {
                             delete data.password;
                         }
+                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(data.accountId) })];
+                    case 2:
+                        account = _b.sent();
+                        if (!account)
+                            throw new Error("Account not found");
+                        resellerAccountId = null;
+                        if (account.parentAccountId) {
+                            resellerAccountId = account.parentAccountId;
+                        }
+                        else if (account.isReseller) {
+                            resellerAccountId = account.id;
+                        }
+                        // Ajouter le resellerAccountId aux données de mise à jour
+                        data.resellerAccountId = resellerAccountId;
+                        data.gs5pk = resellerAccountId ? "reseller#".concat(resellerAccountId) : null;
                         return [4 /*yield*/, this.User.update(data, { return: "get" })];
-                    case 2: return [2 /*return*/, _b.sent()];
+                    case 3: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };
@@ -197,6 +215,21 @@ var Users = /** @class */ (function () {
                                     index: "gs4",
                                     follow: true,
                                 })];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
+            });
+        };
+        this.listUsersForReseller = function (resellerAccountId_1) {
+            var args_1 = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args_1[_i - 1] = arguments[_i];
+            }
+            return __awaiter(_this, __spreadArray([resellerAccountId_1], args_1, true), void 0, function (resellerAccountId, query) {
+                if (query === void 0) { query = {}; }
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.User, 'find', { gs5pk: "reseller#".concat(resellerAccountId) }, query, { index: 'gs5', follow: true })];
                         case 1: return [2 /*return*/, _b.sent()];
                     }
                 });

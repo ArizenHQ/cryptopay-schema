@@ -88,6 +88,7 @@ export class Projects {
           status: data.status,
           parameters: data.parameters,
           resellerAccountId: resellerAccountId,
+          gs5pk: resellerAccountId ? `reseller#${resellerAccountId}` : null,
           apiKey: this.generateApiKey(),
           hmacPassword: this.randomString(),
         }).then(async (project: any) => {
@@ -174,6 +175,22 @@ export class Projects {
     );
     this.table.setContext({ accountId: project.accountId });
     data.id = id;
+
+    // Si le projet change de compte, mettre à jour resellerAccountId
+    if (data.accountId && data.accountId !== project.accountId) {
+      const account = await this.Account.get({ pk: `account#${data.accountId}` });
+      if (!account) throw new Error("Account not found");
+      
+      // Déterminer le nouveau resellerAccountId
+      let resellerAccountId = null;
+      if (account.parentAccountId) {
+        resellerAccountId = account.parentAccountId;
+      }
+      
+      // Ajouter le resellerAccountId aux données de mise à jour
+      data.resellerAccountId = resellerAccountId;
+      data.gs5pk = resellerAccountId ? `reseller#${resellerAccountId}` : null;
+    }
     const controlData = this.checkData(data);
     if (controlData !== true) return controlData;
     return await this.Project.update(data, { return: "get" });

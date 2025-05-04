@@ -60,8 +60,10 @@ export class Users {
     if (!account) throw new Error("Account not found");
     
     let resellerAccountId = null;
+    let gs5pk = null;
     if (account.parentAccountId) {
       resellerAccountId = account.parentAccountId;
+      gs5pk = `reseller#${resellerAccountId}`;
     }
 
     this.table.setContext({ accountId: data.accountId });
@@ -73,6 +75,7 @@ export class Users {
       permissionLevel: data.permissionLevel,
       resellerAccountId: resellerAccountId,
       apiKey: this.generateApiKey(),
+      gs5pk: gs5pk,
     });
   };
 
@@ -105,6 +108,22 @@ export class Users {
     if (data.password) {
       delete data.password;
     }
+    const account = await this.Account.get({ pk: `account#${data.accountId}` });
+    if (!account) throw new Error("Account not found");
+    
+    // Déterminer le nouveau resellerAccountId
+    let resellerAccountId = null;
+    if (account.parentAccountId) {
+      resellerAccountId = account.parentAccountId;
+    } else if (account.isReseller) {
+      resellerAccountId = account.id;
+    }
+    
+    // Ajouter le resellerAccountId aux données de mise à jour
+    data.resellerAccountId = resellerAccountId;
+    data.gs5pk = resellerAccountId ? `reseller#${resellerAccountId}` : null;
+
+    
     return await this.User.update(data, { return: "get" });
   };
 
@@ -138,6 +157,16 @@ export class Users {
       index: "gs4",
       follow: true,
     });
+  };
+
+  listUsersForReseller = async (resellerAccountId: string, query: any = {}) => {
+    return await paginateModel(
+      this.User,
+      'find',
+      { gs5pk: `reseller#${resellerAccountId}` },
+      query,
+      { index: 'gs5', follow: true }
+    );
   };
 
   removeById = async (id: string) => {

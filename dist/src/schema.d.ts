@@ -101,7 +101,6 @@ declare const Schema: {
             };
             readonly gs5pk: {
                 readonly type: StringConstructor;
-                readonly value: "${_template.resellerLink}";
             };
             readonly gs5sk: {
                 readonly type: StringConstructor;
@@ -183,7 +182,6 @@ declare const Schema: {
             };
             readonly gs5pk: {
                 readonly type: StringConstructor;
-                readonly value: "${resellerAccountId ? `reseller#${resellerAccountId}` : ''}";
             };
             readonly gs5sk: {
                 readonly type: StringConstructor;
@@ -376,7 +374,6 @@ declare const Schema: {
             };
             readonly gs5pk: {
                 readonly type: StringConstructor;
-                readonly value: "${resellerAccountId ? `reseller#${resellerAccountId}` : ''}";
             };
             readonly gs5sk: {
                 readonly type: StringConstructor;
@@ -1053,9 +1050,6 @@ declare const Schema: {
         readonly timestamps: true;
         readonly createdField: "dateCreated";
         readonly updatedField: "dateLastUpdated";
-    };
-    readonly templates: {
-        readonly resellerLink: (item: any) => string | null;
     };
 };
 export default Schema;

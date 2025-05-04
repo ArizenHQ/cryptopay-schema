@@ -22,6 +22,7 @@ export declare class Accounts {
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;
     createReseller: (data: any) => Promise<any>;
+    updateGs5pk: (id: string, parentAccountId: string | null) => Promise<boolean>;
     createClientAccount: (resellerAccountId: string, data: any) => Promise<any>;
     hasAccessToAccount: (accessorId: string, targetId: string) => Promise<boolean>;
     listClientsOfReseller: (resellerAccountId: string, query?: any) => Promise<PaginatedResult<any>>;

@@ -95,6 +95,7 @@ var Projects = /** @class */ (function () {
                                     status: data.status,
                                     parameters: data.parameters,
                                     resellerAccountId: resellerAccountId,
+                                    gs5pk: resellerAccountId ? "reseller#".concat(resellerAccountId) : null,
                                     apiKey: this.generateApiKey(),
                                     hmacPassword: this.randomString(),
                                 }).then(function (project) { return __awaiter(_this, void 0, void 0, function () {
@@ -231,7 +232,7 @@ var Projects = /** @class */ (function () {
             });
         };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var project, controlData;
+            var project, account, resellerAccountId, controlData;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
@@ -239,11 +240,26 @@ var Projects = /** @class */ (function () {
                         project = _b.sent();
                         this.table.setContext({ accountId: project.accountId });
                         data.id = id;
+                        if (!(data.accountId && data.accountId !== project.accountId)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(data.accountId) })];
+                    case 2:
+                        account = _b.sent();
+                        if (!account)
+                            throw new Error("Account not found");
+                        resellerAccountId = null;
+                        if (account.parentAccountId) {
+                            resellerAccountId = account.parentAccountId;
+                        }
+                        // Ajouter le resellerAccountId aux données de mise à jour
+                        data.resellerAccountId = resellerAccountId;
+                        data.gs5pk = resellerAccountId ? "reseller#".concat(resellerAccountId) : null;
+                        _b.label = 3;
+                    case 3:
                         controlData = this.checkData(data);
                         if (controlData !== true)
                             return [2 /*return*/, controlData];
                         return [4 /*yield*/, this.Project.update(data, { return: "get" })];
-                    case 2: return [2 /*return*/, _b.sent()];
+                    case 4: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };

@@ -21,6 +21,7 @@ export declare class Users {
     updatePassword: (id: string, password: string) => Promise<any>;
     scan: (query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     list: (accountId: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
+    listUsersForReseller: (resellerAccountId: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     removeById: (id: string) => Promise<any>;
 }
 export default Users;
