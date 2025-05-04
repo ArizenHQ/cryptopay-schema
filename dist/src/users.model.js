@@ -127,9 +127,10 @@ var Users = /** @class */ (function () {
             var user, account, resellerAccountId;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4" })];
+                    case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4", follow: true })];
                     case 1:
                         user = _b.sent();
+                        console.log(user);
                         this.table.setContext({ accountId: user.accountId });
                         return [4 /*yield*/, this.Account.get({ pk: "account#".concat(user.accountId) })];
                     case 2:

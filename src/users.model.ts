@@ -102,7 +102,8 @@ export class Users {
   };
 
   patchById = async (id: string, data: any) => {
-    let user = await this.User.get({ id: id }, { index: "gs4" });
+    let user = await this.User.get({ id: id }, { index: "gs4", follow: true });
+    console.log(user);
     this.table.setContext({ accountId: user.accountId });
     
     const account = await this.Account.get({ pk: `account#${user.accountId}` });
