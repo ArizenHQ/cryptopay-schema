@@ -131,10 +131,7 @@ var Users = /** @class */ (function () {
                     case 1:
                         user = _b.sent();
                         this.table.setContext({ accountId: user.accountId });
-                        if (data.password) {
-                            delete data.password;
-                        }
-                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(data.accountId) })];
+                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(user.accountId) })];
                     case 2:
                         account = _b.sent();
                         if (!account)
@@ -149,6 +146,9 @@ var Users = /** @class */ (function () {
                         // Ajouter le resellerAccountId aux données de mise à jour
                         data.resellerAccountId = resellerAccountId;
                         data.gs5pk = resellerAccountId ? "reseller#".concat(resellerAccountId) : "standard#user";
+                        if (data.password) {
+                            delete data.password;
+                        }
                         return [4 /*yield*/, this.User.update(data, { return: "get" })];
                     case 3: return [2 /*return*/, _b.sent()];
                 }

@@ -104,11 +104,8 @@ export class Users {
   patchById = async (id: string, data: any) => {
     let user = await this.User.get({ id: id }, { index: "gs4" });
     this.table.setContext({ accountId: user.accountId });
-
-    if (data.password) {
-      delete data.password;
-    }
-    const account = await this.Account.get({ pk: `account#${data.accountId}` });
+    
+    const account = await this.Account.get({ pk: `account#${user.accountId}` });
     if (!account) throw new Error("Account not found");
     
     // Déterminer le nouveau resellerAccountId
@@ -123,9 +120,13 @@ export class Users {
     data.resellerAccountId = resellerAccountId;
     data.gs5pk = resellerAccountId ? `reseller#${resellerAccountId}` : "standard#user";
 
+    if (data.password) {
+      delete data.password;
+    }
     
     return await this.User.update(data, { return: "get" });
   };
+
 
   updatePassword = async (id: string, password: string) => {
     if (!password || password.length < 8) {
