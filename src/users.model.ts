@@ -213,8 +213,10 @@ export class Users {
             await this.User.update({
               id: user.id,
               resellerAccountId: resellerAccountId,
-              gs5pk: correctGs5pk,
-              gs5sk: `user#${user.id}`
+              gs5pk: correctGs5pk
+            }, {
+              id: user.id,
+              follow: true 
             });
             updatedCount++;
           }

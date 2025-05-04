@@ -274,8 +274,7 @@ var Accounts = /** @class */ (function () {
                         if (!(account.gs5pk !== "reseller#".concat(account.parentAccountId))) return [3 /*break*/, 5];
                         return [4 /*yield*/, this.Account.update({
                                 id: account.id,
-                                gs5pk: "reseller#".concat(account.parentAccountId),
-                                gs5sk: "account#".concat(account.id)
+                                gs5pk: "reseller#".concat(account.parentAccountId)
                             })];
                     case 4:
                         _b.sent();
@@ -290,8 +289,7 @@ var Accounts = /** @class */ (function () {
                         if (!(hasClients && account.gs5pk !== "reseller#".concat(account.id))) return [3 /*break*/, 9];
                         return [4 /*yield*/, this.Account.update({
                                 id: account.id,
-                                gs5pk: "reseller#".concat(account.id),
-                                gs5sk: "account#".concat(account.id)
+                                gs5pk: "reseller#".concat(account.id)
                             })];
                     case 8:
                         _b.sent();
@@ -301,8 +299,7 @@ var Accounts = /** @class */ (function () {
                         if (!(!hasClients && account.gs5pk !== "standard#account")) return [3 /*break*/, 11];
                         return [4 /*yield*/, this.Account.update({
                                 id: account.id,
-                                gs5pk: "standard#account",
-                                gs5sk: "account#".concat(account.id)
+                                gs5pk: "standard#account"
                             })];
                     case 10:
                         _b.sent();
@@ -313,8 +310,7 @@ var Accounts = /** @class */ (function () {
                         if (!(account.gs5pk !== "standard#account")) return [3 /*break*/, 14];
                         return [4 /*yield*/, this.Account.update({
                                 id: account.id,
-                                gs5pk: "standard#account",
-                                gs5sk: "account#".concat(account.id)
+                                gs5pk: "standard#account"
                             })];
                     case 13:
                         _b.sent();

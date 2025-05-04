@@ -126,6 +126,7 @@ patchById = async (id: string, data: any) => {
     return account;
   };
 
+
   createClientAccount = async (resellerAccountId: string, data: any) => {
     // Vérifier que le revendeur existe et est valide
     const reseller = await this.getAccount(resellerAccountId);
@@ -189,8 +190,7 @@ patchById = async (id: string, data: any) => {
             if (account.gs5pk !== `reseller#${account.parentAccountId}`) {
               await this.Account.update({
                 id: account.id,
-                gs5pk: `reseller#${account.parentAccountId}`,
-                gs5sk: `account#${account.id}`
+                gs5pk: `reseller#${account.parentAccountId}`
               });
               updatedCount++;
             }
@@ -202,15 +202,13 @@ patchById = async (id: string, data: any) => {
             if (hasClients && account.gs5pk !== `reseller#${account.id}`) {
               await this.Account.update({
                 id: account.id,
-                gs5pk: `reseller#${account.id}`,
-                gs5sk: `account#${account.id}`
+                gs5pk: `reseller#${account.id}`
               });
               updatedCount++;
             } else if (!hasClients && account.gs5pk !== "standard#account") {
               await this.Account.update({
                 id: account.id,
-                gs5pk: "standard#account",
-                gs5sk: `account#${account.id}`
+                gs5pk: "standard#account"
               });
               updatedCount++;
             }
@@ -219,8 +217,7 @@ patchById = async (id: string, data: any) => {
           else if (account.gs5pk !== "standard#account") {
             await this.Account.update({
               id: account.id,
-              gs5pk: "standard#account",
-              gs5sk: `account#${account.id}`
+              gs5pk: "standard#account"
             });
             updatedCount++;
           }
