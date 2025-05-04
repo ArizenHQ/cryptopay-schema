@@ -63,18 +63,28 @@ var Users = /** @class */ (function () {
             return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex");
         };
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
+            var account, resellerAccountId;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0:
+                    case 0: return [4 /*yield*/, this.Account.get({ pk: "account#".concat(data.accountId) })];
+                    case 1:
+                        account = _b.sent();
+                        if (!account)
+                            throw new Error("Account not found");
+                        resellerAccountId = null;
+                        if (account.parentAccountId) {
+                            resellerAccountId = account.parentAccountId;
+                        }
                         this.table.setContext({ accountId: data.accountId });
                         return [4 /*yield*/, this.User.create({
                                 name: data.name,
                                 email: data.email,
                                 password: data.password,
                                 permissionLevel: data.permissionLevel,
+                                resellerAccountId: resellerAccountId,
                                 apiKey: this.generateApiKey(),
                             })];
-                    case 1: return [2 /*return*/, _b.sent()];
+                    case 2: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };

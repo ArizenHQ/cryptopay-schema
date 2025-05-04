@@ -68,6 +68,12 @@ export class Projects {
     try {
       const account = await this.Account.get({ pk: `account#${data.accountId}` });
       if (!account) throw new Error("Account not found");
+      // Déterminer si ce compte a un revendeur parent
+      let resellerAccountId = null;
+      if (account.parentAccountId) {
+        resellerAccountId = account.parentAccountId;
+      }
+
       this.table.setContext({ accountId: data.accountId });
       const isValid = this.checkData(data);
 
@@ -81,6 +87,7 @@ export class Projects {
           userIdCNHS: data.userIdCNHS || null,
           status: data.status,
           parameters: data.parameters,
+          resellerAccountId: resellerAccountId,
           apiKey: this.generateApiKey(),
           hmacPassword: this.randomString(),
         }).then(async (project: any) => {
@@ -96,6 +103,14 @@ export class Projects {
     } catch (error: any) {
       throw error;
     }
+  };
+
+  listProjectsForReseller = async (resellerAccountId: string, query: any = {}) => {
+    return await paginateModel(this.Project, 'find', 
+      { gs5pk: `reseller#${resellerAccountId}` }, 
+      query,
+      { index: 'gs5', follow: true }
+    );
   };
 
   findById = async (id: string) => {

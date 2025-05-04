@@ -55,12 +55,23 @@ export class Users {
     return createHash("sha256").update(Math.random().toString()).digest("hex");
   };
   insert = async (data: any) => {
+
+    const account = await this.Account.get({ pk: `account#${data.accountId}` });
+    if (!account) throw new Error("Account not found");
+    
+    let resellerAccountId = null;
+    if (account.parentAccountId) {
+      resellerAccountId = account.parentAccountId;
+    }
+
     this.table.setContext({ accountId: data.accountId });
+    
     return await this.User.create({
       name: data.name,
       email: data.email,
       password: data.password,
       permissionLevel: data.permissionLevel,
+      resellerAccountId: resellerAccountId,
       apiKey: this.generateApiKey(),
     });
   };
