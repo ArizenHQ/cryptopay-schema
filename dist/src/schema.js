@@ -46,7 +46,7 @@ var Schema = {
             isReseller: { type: Boolean, default: false },
             gs1pk: { type: String, value: "account#" },
             gs1sk: { type: String, value: "account#${name}${id}" },
-            gs5pk: { type: String, value: "${parentAccountId ? `reseller#${parentAccountId}` : ''}" },
+            gs5pk: { type: String, value: "${_template.resellerLink}" },
             gs5sk: { type: String, value: "account#${id}" },
         },
         User: {
@@ -410,6 +410,9 @@ var Schema = {
         createdField: "dateCreated",
         updatedField: "dateLastUpdated",
     },
+    templates: {
+        resellerLink: function (item) { return item.parentAccountId ? "reseller#".concat(item.parentAccountId) : null; }
+    }
 };
 exports.default = Schema;
 //# sourceMappingURL=schema.js.map
