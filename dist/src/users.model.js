@@ -252,7 +252,7 @@ var Users = /** @class */ (function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 8, , 9]);
+                        _b.trys.push([0, 10, , 11]);
                         return [4 /*yield*/, this.User.scan()];
                     case 1:
                         allUsers = _b.sent();
@@ -262,17 +262,19 @@ var Users = /** @class */ (function () {
                         _i = 0, allUsers_1 = allUsers;
                         _b.label = 2;
                     case 2:
-                        if (!(_i < allUsers_1.length)) return [3 /*break*/, 7];
+                        if (!(_i < allUsers_1.length)) return [3 /*break*/, 9];
                         user = allUsers_1[_i];
                         _b.label = 3;
                     case 3:
-                        _b.trys.push([3, 5, , 6]);
+                        _b.trys.push([3, 7, , 8]);
+                        // Récupérer le compte associé
+                        console.log(user);
                         return [4 /*yield*/, this.Account.get({ pk: "account#".concat(user.accountId) })];
                     case 4:
                         account = _b.sent();
                         if (!account) {
                             console.warn("Account not found for user ".concat(user.id));
-                            return [3 /*break*/, 6];
+                            return [3 /*break*/, 8];
                         }
                         resellerAccountId = null;
                         correctGs5pk = "standard#user";
@@ -284,41 +286,40 @@ var Users = /** @class */ (function () {
                             resellerAccountId = account.id;
                             correctGs5pk = "reseller#".concat(resellerAccountId);
                         }
-                        // Mettre à jour l'utilisateur si nécessaire
-                        if (user.resellerAccountId !== resellerAccountId || user.gs5pk !== correctGs5pk) {
-                            this.patchById(user.id, {
-                                id: user.id
-                            });
-                            /* this.table.setContext({ accountId: user.accountId });
-                            await this.User.update({
-                              id: user.id,
-                              accountId: user.accountId,
-                              resellerAccountId: resellerAccountId,
-                              gs5pk: correctGs5pk
-                            }); */
-                            updatedCount++;
-                        }
-                        return [3 /*break*/, 6];
+                        if (!(user.resellerAccountId !== resellerAccountId || user.gs5pk !== correctGs5pk)) return [3 /*break*/, 6];
+                        return [4 /*yield*/, this.patchById(user.id, user)];
                     case 5:
+                        _b.sent();
+                        /* this.table.setContext({ accountId: user.accountId });
+                        await this.User.update({
+                          id: user.id,
+                          accountId: user.accountId,
+                          resellerAccountId: resellerAccountId,
+                          gs5pk: correctGs5pk
+                        }); */
+                        updatedCount++;
+                        _b.label = 6;
+                    case 6: return [3 /*break*/, 8];
+                    case 7:
                         error_1 = _b.sent();
                         console.error("Error updating user ".concat(user.id, ":"), error_1);
                         errorCount++;
-                        return [3 /*break*/, 6];
-                    case 6:
+                        return [3 /*break*/, 8];
+                    case 8:
                         _i++;
                         return [3 /*break*/, 2];
-                    case 7:
+                    case 9:
                         console.log("Update completed: ".concat(updatedCount, " users updated, ").concat(errorCount, " errors."));
                         return [2 /*return*/, {
                                 total: allUsers.length,
                                 updated: updatedCount,
                                 errors: errorCount
                             }];
-                    case 8:
+                    case 10:
                         error_2 = _b.sent();
                         console.error("Update error:", error_2);
                         throw error_2;
-                    case 9: return [2 /*return*/];
+                    case 11: return [2 /*return*/];
                 }
             });
         }); };

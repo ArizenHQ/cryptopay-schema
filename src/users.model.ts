@@ -192,6 +192,7 @@ export class Users {
       for (const user of allUsers) {
         try {
           // Récupérer le compte associé
+          console.log(user);
           const account = await this.Account.get({ pk: `account#${user.accountId}` });
           if (!account) {
             console.warn(`Account not found for user ${user.id}`);
@@ -210,9 +211,7 @@ export class Users {
           }
           // Mettre à jour l'utilisateur si nécessaire
           if (user.resellerAccountId !== resellerAccountId || user.gs5pk !== correctGs5pk) {
-            this.patchById(user.id, {
-              id: user.id
-            });
+           await this.patchById(user.id, user);
             /* this.table.setContext({ accountId: user.accountId });
             await this.User.update({
               id: user.id,
