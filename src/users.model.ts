@@ -123,7 +123,7 @@ export class Users {
     if (data.password) {
       delete data.password;
     }
-    
+
     return await this.User.update(data, { return: "get" });
   };
 
@@ -210,12 +210,16 @@ export class Users {
           }
           // Mettre à jour l'utilisateur si nécessaire
           if (user.resellerAccountId !== resellerAccountId || user.gs5pk !== correctGs5pk) {
-            this.table.setContext({ accountId: user.accountId });
+            this.patchById(user.id, {
+              id: user.id
+            });
+            /* this.table.setContext({ accountId: user.accountId });
             await this.User.update({
               id: user.id,
+              accountId: user.accountId,
               resellerAccountId: resellerAccountId,
               gs5pk: correctGs5pk
-            });
+            }); */
             updatedCount++;
           }
         } catch (error) {
