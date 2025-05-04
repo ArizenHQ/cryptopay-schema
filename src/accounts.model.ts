@@ -189,7 +189,8 @@ patchById = async (id: string, data: any) => {
             if (account.gs5pk !== `reseller#${account.parentAccountId}`) {
               await this.Account.update({
                 id: account.id,
-                gs5pk: `reseller#${account.parentAccountId}`
+                gs5pk: `reseller#${account.parentAccountId}`,
+                gs5sk: `account#${account.id}`
               });
               updatedCount++;
             }
@@ -201,13 +202,15 @@ patchById = async (id: string, data: any) => {
             if (hasClients && account.gs5pk !== `reseller#${account.id}`) {
               await this.Account.update({
                 id: account.id,
-                gs5pk: `reseller#${account.id}`
+                gs5pk: `reseller#${account.id}`,
+                gs5sk: `account#${account.id}`
               });
               updatedCount++;
             } else if (!hasClients && account.gs5pk !== "standard#account") {
               await this.Account.update({
                 id: account.id,
-                gs5pk: "standard#account"
+                gs5pk: "standard#account",
+                gs5sk: `account#${account.id}`
               });
               updatedCount++;
             }
@@ -216,7 +219,8 @@ patchById = async (id: string, data: any) => {
           else if (account.gs5pk !== "standard#account") {
             await this.Account.update({
               id: account.id,
-              gs5pk: "standard#account"
+              gs5pk: "standard#account",
+              gs5sk: `account#${account.id}`
             });
             updatedCount++;
           }

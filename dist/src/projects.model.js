@@ -361,7 +361,8 @@ var Projects = /** @class */ (function () {
                         return [4 /*yield*/, this.Project.update({
                                 id: project.id,
                                 resellerAccountId: resellerAccountId,
-                                gs5pk: correctGs5pk
+                                gs5pk: correctGs5pk,
+                                gs5sk: "project#".concat(project.id)
                             })];
                     case 5:
                         _b.sent();

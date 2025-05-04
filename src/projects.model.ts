@@ -271,7 +271,8 @@ export class Projects {
               await this.Project.update({
                 id: project.id,
                 resellerAccountId: resellerAccountId,
-                gs5pk: correctGs5pk
+                gs5pk: correctGs5pk,
+                gs5sk: `project#${project.id}`
               });
               updatedCount++;
             }

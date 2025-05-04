@@ -288,7 +288,8 @@ var Users = /** @class */ (function () {
                         return [4 /*yield*/, this.User.update({
                                 id: user.id,
                                 resellerAccountId: resellerAccountId,
-                                gs5pk: correctGs5pk
+                                gs5pk: correctGs5pk,
+                                gs5sk: "user#".concat(user.id)
                             })];
                     case 5:
                         _b.sent();

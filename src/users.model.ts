@@ -200,7 +200,6 @@ export class Users {
           // Déterminer le resellerAccountId et gs5pk correct
           let resellerAccountId = null;
           let correctGs5pk = "standard#user";
-          
           if (account.parentAccountId) {
             resellerAccountId = account.parentAccountId;
             correctGs5pk = `reseller#${resellerAccountId}`;
@@ -214,7 +213,8 @@ export class Users {
             await this.User.update({
               id: user.id,
               resellerAccountId: resellerAccountId,
-              gs5pk: correctGs5pk
+              gs5pk: correctGs5pk,
+              gs5sk: `user#${user.id}`
             });
             updatedCount++;
           }
