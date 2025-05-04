@@ -207,16 +207,13 @@ export class Users {
             resellerAccountId = account.id;
             correctGs5pk = `reseller#${resellerAccountId}`;
           }
-          
           // Mettre à jour l'utilisateur si nécessaire
           if (user.resellerAccountId !== resellerAccountId || user.gs5pk !== correctGs5pk) {
             await this.User.update({
               id: user.id,
+              pk: `account#${user.accountId}`,
               resellerAccountId: resellerAccountId,
               gs5pk: correctGs5pk
-            }, {
-              id: user.id,
-              follow: true 
             });
             updatedCount++;
           }

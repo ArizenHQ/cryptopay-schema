@@ -287,11 +287,9 @@ var Users = /** @class */ (function () {
                         if (!(user.resellerAccountId !== resellerAccountId || user.gs5pk !== correctGs5pk)) return [3 /*break*/, 6];
                         return [4 /*yield*/, this.User.update({
                                 id: user.id,
+                                pk: "account#".concat(user.accountId),
                                 resellerAccountId: resellerAccountId,
                                 gs5pk: correctGs5pk
-                            }, {
-                                id: user.id,
-                                follow: true
                             })];
                     case 5:
                         _b.sent();
