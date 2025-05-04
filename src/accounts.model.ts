@@ -126,7 +126,25 @@ export class Accounts {
     });
   };
 
+  hasAccessToAccount = async (accessorId: string, targetId: string) => {
+    // Si c'est le même compte, accès autorisé
+    if (accessorId === targetId) return true;
+    
+    // Récupérer le compte cible
+    const targetAccount = await this.getAccount(targetId);
+    if (!targetAccount) return false;
+    
+    // Si le compte cible a comme parentAccountId l'accessorId, alors l'accès est autorisé
+    return targetAccount.parentAccountId === accessorId;
+  };
+
   listClientsOfReseller = async (resellerAccountId: string, query: any = {}) => {
+    
+    const resellerAccount = await this.getAccount(resellerAccountId);
+    if (!resellerAccount || !resellerAccount.isReseller) {
+      throw new Error("Account is not a reseller");
+    }
+
     return await paginateModel(this.Account, 'find', 
       { gs5pk: `reseller#${resellerAccountId}` }, 
       query,

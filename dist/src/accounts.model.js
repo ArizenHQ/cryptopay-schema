@@ -195,17 +195,42 @@ var Accounts = /** @class */ (function () {
                 }
             });
         }); };
+        this.hasAccessToAccount = function (accessorId, targetId) { return __awaiter(_this, void 0, void 0, function () {
+            var targetAccount;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        // Si c'est le même compte, accès autorisé
+                        if (accessorId === targetId)
+                            return [2 /*return*/, true];
+                        return [4 /*yield*/, this.getAccount(targetId)];
+                    case 1:
+                        targetAccount = _b.sent();
+                        if (!targetAccount)
+                            return [2 /*return*/, false];
+                        // Si le compte cible a comme parentAccountId l'accessorId, alors l'accès est autorisé
+                        return [2 /*return*/, targetAccount.parentAccountId === accessorId];
+                }
+            });
+        }); };
         this.listClientsOfReseller = function (resellerAccountId_1) {
             var args_1 = [];
             for (var _i = 1; _i < arguments.length; _i++) {
                 args_1[_i - 1] = arguments[_i];
             }
             return __awaiter(_this, __spreadArray([resellerAccountId_1], args_1, true), void 0, function (resellerAccountId, query) {
+                var resellerAccount;
                 if (query === void 0) { query = {}; }
                 return __generator(this, function (_b) {
                     switch (_b.label) {
-                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Account, 'find', { gs5pk: "reseller#".concat(resellerAccountId) }, query, { index: 'gs5', follow: true })];
-                        case 1: return [2 /*return*/, _b.sent()];
+                        case 0: return [4 /*yield*/, this.getAccount(resellerAccountId)];
+                        case 1:
+                            resellerAccount = _b.sent();
+                            if (!resellerAccount || !resellerAccount.isReseller) {
+                                throw new Error("Account is not a reseller");
+                            }
+                            return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Account, 'find', { gs5pk: "reseller#".concat(resellerAccountId) }, query, { index: 'gs5', follow: true })];
+                        case 2: return [2 /*return*/, _b.sent()];
                     }
                 });
             });
