@@ -130,7 +130,6 @@ var Users = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4", follow: true })];
                     case 1:
                         user = _b.sent();
-                        console.log(user);
                         this.table.setContext({ accountId: user.accountId });
                         return [4 /*yield*/, this.Account.get({ pk: "account#".concat(user.accountId) })];
                     case 2:
@@ -286,9 +285,9 @@ var Users = /** @class */ (function () {
                             correctGs5pk = "reseller#".concat(resellerAccountId);
                         }
                         if (!(user.resellerAccountId !== resellerAccountId || user.gs5pk !== correctGs5pk)) return [3 /*break*/, 6];
+                        this.table.setContext({ accountId: user.accountId });
                         return [4 /*yield*/, this.User.update({
                                 id: user.id,
-                                pk: "account#".concat(user.accountId),
                                 resellerAccountId: resellerAccountId,
                                 gs5pk: correctGs5pk
                             })];

@@ -103,7 +103,6 @@ export class Users {
 
   patchById = async (id: string, data: any) => {
     let user = await this.User.get({ id: id }, { index: "gs4", follow: true });
-    console.log(user);
     this.table.setContext({ accountId: user.accountId });
     
     const account = await this.Account.get({ pk: `account#${user.accountId}` });
@@ -211,9 +210,9 @@ export class Users {
           }
           // Mettre à jour l'utilisateur si nécessaire
           if (user.resellerAccountId !== resellerAccountId || user.gs5pk !== correctGs5pk) {
+            this.table.setContext({ accountId: user.accountId });
             await this.User.update({
               id: user.id,
-              pk: `account#${user.accountId}`,
               resellerAccountId: resellerAccountId,
               gs5pk: correctGs5pk
             });
