@@ -61,9 +61,11 @@ export class Projects {
   randomString = () => {
     return randomBytes(5).toString("hex");
   };
+
   generateApiKey = () => {
     return createHash("sha256").update(Math.random().toString()).digest("hex");
   };
+
   insert = async (data: any) => {
     try {
       const account = await this.Account.get({ pk: `account#${data.accountId}` });
@@ -78,7 +80,7 @@ export class Projects {
       const isValid = this.checkData(data);
 
       if (isValid === true) {
-        return this.Project.create({
+        const projectData: any = {
           name: data.name,
           accountId: data.accountId,
           codeProject: data.codeProject,
@@ -87,11 +89,15 @@ export class Projects {
           userIdCNHS: data.userIdCNHS || null,
           status: data.status,
           parameters: data.parameters,
-          resellerAccountId: resellerAccountId,
-          gs5pk: resellerAccountId ? `reseller#${resellerAccountId}` : null,
           apiKey: this.generateApiKey(),
           hmacPassword: this.randomString(),
-        }).then(async (project: any) => {
+          resellerAccountId: resellerAccountId
+        };
+        if (resellerAccountId) {
+          projectData.gs5pk = `reseller#${resellerAccountId}`;
+        }
+
+        return this.Project.create(projectData).then(async (project: any) => {
           await this.createApiKey({
             accountName: account.name,
             project: project,
@@ -114,9 +120,11 @@ export class Projects {
     );
   };
 
+
   findById = async (id: string) => {
     return await this.Project.get({ id: id }, { index: "gs2", follow: true });
   };
+
 
   findPublicById = async (id: string) => {
     let project = await this.Project.get(
@@ -155,6 +163,7 @@ export class Projects {
       { index: "gs3", follow: true }
     );
   };
+
   getById = async (id: string) => {
     return await this.Project.get({ id: id }, { index: "gs2", follow: true });
   };
@@ -189,7 +198,7 @@ export class Projects {
       
       // Ajouter le resellerAccountId aux données de mise à jour
       data.resellerAccountId = resellerAccountId;
-      data.gs5pk = resellerAccountId ? `reseller#${resellerAccountId}` : null;
+      data.gs5pk = resellerAccountId ? `reseller#${resellerAccountId}` : "standard#project";
     }
     const controlData = this.checkData(data);
     if (controlData !== true) return controlData;
@@ -229,6 +238,61 @@ export class Projects {
         });
     }
   };
+
+    // Méthode pour mettre à jour les projets existants avec les valeurs gs5pk appropriées
+    updateProjectsWithCorrectGs5pk = async () => {
+      try {
+        const allProjects = await this.Project.scan();
+        console.log(`Found ${allProjects.length} projects to check.`);
+        
+        let updatedCount = 0;
+        let errorCount = 0;
+        
+        for (const project of allProjects) {
+          try {
+            // Récupérer le compte associé au projet
+            const account = await this.Account.get({ pk: `account#${project.accountId}` });
+            if (!account) {
+              console.warn(`Account not found for project ${project.id}`);
+              continue;
+            }
+            
+            // Déterminer le resellerAccountId et gs5pk correct
+            let resellerAccountId = null;
+            let correctGs5pk = "standard#project";
+            
+            if (account.parentAccountId) {
+              resellerAccountId = account.parentAccountId;
+              correctGs5pk = `reseller#${resellerAccountId}`;
+            }
+            
+            // Mettre à jour le projet si nécessaire
+            if (project.resellerAccountId !== resellerAccountId || project.gs5pk !== correctGs5pk) {
+              await this.Project.update({
+                id: project.id,
+                resellerAccountId: resellerAccountId,
+                gs5pk: correctGs5pk
+              });
+              updatedCount++;
+            }
+          } catch (error) {
+            console.error(`Error updating project ${project.id}:`, error);
+            errorCount++;
+          }
+        }
+        
+        console.log(`Update completed: ${updatedCount} projects updated, ${errorCount} errors.`);
+        
+        return {
+          total: allProjects.length,
+          updated: updatedCount,
+          errors: errorCount
+        };
+      } catch (error) {
+        console.error("Update error:", error);
+        throw error;
+      }
+    };
 
   checkData = (data: any) => {
     // Vérification du type de projet

@@ -121,7 +121,7 @@ export class Users {
     
     // Ajouter le resellerAccountId aux données de mise à jour
     data.resellerAccountId = resellerAccountId;
-    data.gs5pk = resellerAccountId ? `reseller#${resellerAccountId}` : null;
+    data.gs5pk = resellerAccountId ? `reseller#${resellerAccountId}` : "standard#user";
 
     
     return await this.User.update(data, { return: "get" });
@@ -178,6 +178,63 @@ export class Users {
       { id: id, email: undefined },
       { index: "gs4", follow: true }
     );
+  };
+
+  updateUsersWithCorrectGs5pk = async () => {
+    try {
+      const allUsers = await this.User.scan();
+      console.log(`Found ${allUsers.length} users to check.`);
+      
+      let updatedCount = 0;
+      let errorCount = 0;
+      
+      for (const user of allUsers) {
+        try {
+          // Récupérer le compte associé
+          const account = await this.Account.get({ pk: `account#${user.accountId}` });
+          if (!account) {
+            console.warn(`Account not found for user ${user.id}`);
+            continue;
+          }
+          
+          // Déterminer le resellerAccountId et gs5pk correct
+          let resellerAccountId = null;
+          let correctGs5pk = "standard#user";
+          
+          if (account.parentAccountId) {
+            resellerAccountId = account.parentAccountId;
+            correctGs5pk = `reseller#${resellerAccountId}`;
+          } else if (account.isReseller) {
+            resellerAccountId = account.id;
+            correctGs5pk = `reseller#${resellerAccountId}`;
+          }
+          
+          // Mettre à jour l'utilisateur si nécessaire
+          if (user.resellerAccountId !== resellerAccountId || user.gs5pk !== correctGs5pk) {
+            await this.User.update({
+              id: user.id,
+              resellerAccountId: resellerAccountId,
+              gs5pk: correctGs5pk
+            });
+            updatedCount++;
+          }
+        } catch (error) {
+          console.error(`Error updating user ${user.id}:`, error);
+          errorCount++;
+        }
+      }
+      
+      console.log(`Update completed: ${updatedCount} users updated, ${errorCount} errors.`);
+      
+      return {
+        total: allUsers.length,
+        updated: updatedCount,
+        errors: errorCount
+      };
+    } catch (error) {
+      console.error("Update error:", error);
+      throw error;
+    }
   };
 }
 export default Users;

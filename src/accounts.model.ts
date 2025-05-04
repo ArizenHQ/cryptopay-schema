@@ -94,17 +94,14 @@ patchById = async (id: string, data: any) => {
   if (!currentAccount) {
     throw new Error(`Account not found with id: ${id}`);
   }
-  
+  // Si parentAccountId a été modifié, mettre à jour gs5pk
+  if (data.parentAccountId !== undefined && data.parentAccountId !== currentAccount.parentAccountId) {
+    data.gs5pk = `reseller#${data.parentAccountId}`;
+  }  
   // Mettre à jour le compte
   const updatedAccount = await this.Account.update(data, { return: "get" });
   
-  // Si parentAccountId a été modifié, mettre à jour gs5pk
-  if (data.parentAccountId !== undefined && data.parentAccountId !== currentAccount.parentAccountId) {
-    await this.updateGs5pk(id, data.parentAccountId);
-    
-    // Récupérer à nouveau le compte après la mise à jour de gs5pk
-    return await this.Account.get({ id: id });
-  }
+
   
   return updatedAccount;
 };
@@ -129,27 +126,6 @@ patchById = async (id: string, data: any) => {
     return account;
   };
 
-  updateGs5pk = async (id: string, parentAccountId: string | null) => {
-    try {
-      if (parentAccountId) {
-        await this.Account.update({
-          id: id,
-          gs5pk: `reseller#${parentAccountId}`
-        });
-      } else {
-        // Si null ou undefined, supprimer l'attribut ou le définir à null
-        await this.Account.update({
-          id: id,
-          gs5pk: null
-        });
-      }
-      return true;
-    } catch (error) {
-      console.error("Error updating gs5pk:", error);
-      return false;
-    }
-  };
-
   createClientAccount = async (resellerAccountId: string, data: any) => {
     // Vérifier que le revendeur existe et est valide
     const reseller = await this.getAccount(resellerAccountId);
@@ -157,18 +133,15 @@ patchById = async (id: string, data: any) => {
       throw new Error("Invalid reseller account");
     }
     
-    // Étape 1: Créer le compte client de base
+    // Créer le compte client avec la valeur gs5pk spécifique
     const clientAccount = await this.Account.create({
       name: data.name,
       isReseller: false,
-      parentAccountId: resellerAccountId
+      parentAccountId: resellerAccountId,
+      gs5pk: `reseller#${resellerAccountId}` // Écraser la valeur par défaut
     });
     
-    // Étape 2: Mettre à jour explicitement le champ gs5pk
-    await this.updateGs5pk(clientAccount.id, resellerAccountId);
-    
-    // Récupérer et retourner le compte mis à jour
-    return await this.Account.get({ id: clientAccount.id });
+    return clientAccount;
   };
 
   hasAccessToAccount = async (accessorId: string, targetId: string) => {
@@ -198,6 +171,79 @@ patchById = async (id: string, data: any) => {
       query,
       { index: 'gs5', follow: true }
     );
+  };
+
+  updateAccountsWithDefaultGs5pk = async () => {
+    try {
+      // Récupérer tous les comptes sans gs5pk défini
+      const accounts = await this.Account.scan();
+      console.log(`Found ${accounts.length} accounts to check.`);
+      
+      let updatedCount = 0;
+      let errorCount = 0;
+      
+      for (const account of accounts) {
+        try {
+          // Si c'est un compte client, gs5pk doit être "reseller#x"
+          if (account.parentAccountId) {
+            if (account.gs5pk !== `reseller#${account.parentAccountId}`) {
+              await this.Account.update({
+                id: account.id,
+                gs5pk: `reseller#${account.parentAccountId}`
+              });
+              updatedCount++;
+            }
+          } 
+          // Si c'est un compte revendeur avec des clients, gs5pk peut être "reseller#resellerAccountId"
+          else if (account.isReseller) {
+            // Vérifier s'il a des clients
+            const hasClients = await this.hasClients(account.id);
+            if (hasClients && account.gs5pk !== `reseller#${account.id}`) {
+              await this.Account.update({
+                id: account.id,
+                gs5pk: `reseller#${account.id}`
+              });
+              updatedCount++;
+            } else if (!hasClients && account.gs5pk !== "standard#account") {
+              await this.Account.update({
+                id: account.id,
+                gs5pk: "standard#account"
+              });
+              updatedCount++;
+            }
+          }
+          // Si c'est un compte standard, gs5pk doit être "standard#account"
+          else if (account.gs5pk !== "standard#account") {
+            await this.Account.update({
+              id: account.id,
+              gs5pk: "standard#account"
+            });
+            updatedCount++;
+          }
+        } catch (error) {
+          console.error(`Error updating account ${account.id}:`, error);
+          errorCount++;
+        }
+      }
+      
+      console.log(`Update completed: ${updatedCount} accounts updated, ${errorCount} errors.`);
+      
+      return {
+        total: accounts.length,
+        updated: updatedCount,
+        errors: errorCount
+      };
+    } catch (error) {
+      console.error("Update error:", error);
+      throw error;
+    }
+  };
+
+  hasClients = async (resellerAccountId: string) => {
+    const clients = await this.Account.find({
+      parentAccountId: resellerAccountId
+    }, { limit: 1 });
+    return clients.length > 0;
   };
 }
 

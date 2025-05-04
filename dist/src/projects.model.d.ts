@@ -24,6 +24,11 @@ export declare class Projects {
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;
     createApiKey: (obj: any) => Promise<void>;
+    updateProjectsWithCorrectGs5pk: () => Promise<{
+        total: any;
+        updated: number;
+        errors: number;
+    }>;
     checkData: (data: any) => boolean;
 }
 export default Projects;

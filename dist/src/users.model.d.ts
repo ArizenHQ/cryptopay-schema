@@ -23,5 +23,10 @@ export declare class Users {
     list: (accountId: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     listUsersForReseller: (resellerAccountId: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     removeById: (id: string) => Promise<any>;
+    updateUsersWithCorrectGs5pk: () => Promise<{
+        total: any;
+        updated: number;
+        errors: number;
+    }>;
 }
 export default Users;

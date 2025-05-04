@@ -144,18 +144,14 @@ var Accounts = /** @class */ (function () {
                         if (!currentAccount) {
                             throw new Error("Account not found with id: ".concat(id));
                         }
+                        // Si parentAccountId a été modifié, mettre à jour gs5pk
+                        if (data.parentAccountId !== undefined && data.parentAccountId !== currentAccount.parentAccountId) {
+                            data.gs5pk = "reseller#".concat(data.parentAccountId);
+                        }
                         return [4 /*yield*/, this.Account.update(data, { return: "get" })];
                     case 2:
                         updatedAccount = _b.sent();
-                        if (!(data.parentAccountId !== undefined && data.parentAccountId !== currentAccount.parentAccountId)) return [3 /*break*/, 5];
-                        return [4 /*yield*/, this.updateGs5pk(id, data.parentAccountId)];
-                    case 3:
-                        _b.sent();
-                        return [4 /*yield*/, this.Account.get({ id: id })];
-                    case 4: 
-                    // Récupérer à nouveau le compte après la mise à jour de gs5pk
-                    return [2 /*return*/, _b.sent()];
-                    case 5: return [2 /*return*/, updatedAccount];
+                        return [2 /*return*/, updatedAccount];
                 }
             });
         }); };
@@ -190,39 +186,6 @@ var Accounts = /** @class */ (function () {
                 }
             });
         }); };
-        this.updateGs5pk = function (id, parentAccountId) { return __awaiter(_this, void 0, void 0, function () {
-            var error_1;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _b.trys.push([0, 5, , 6]);
-                        if (!parentAccountId) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this.Account.update({
-                                id: id,
-                                gs5pk: "reseller#".concat(parentAccountId)
-                            })];
-                    case 1:
-                        _b.sent();
-                        return [3 /*break*/, 4];
-                    case 2: 
-                    // Si null ou undefined, supprimer l'attribut ou le définir à null
-                    return [4 /*yield*/, this.Account.update({
-                            id: id,
-                            gs5pk: null
-                        })];
-                    case 3:
-                        // Si null ou undefined, supprimer l'attribut ou le définir à null
-                        _b.sent();
-                        _b.label = 4;
-                    case 4: return [2 /*return*/, true];
-                    case 5:
-                        error_1 = _b.sent();
-                        console.error("Error updating gs5pk:", error_1);
-                        return [2 /*return*/, false];
-                    case 6: return [2 /*return*/];
-                }
-            });
-        }); };
         this.createClientAccount = function (resellerAccountId, data) { return __awaiter(_this, void 0, void 0, function () {
             var reseller, clientAccount;
             return __generator(this, function (_b) {
@@ -236,19 +199,12 @@ var Accounts = /** @class */ (function () {
                         return [4 /*yield*/, this.Account.create({
                                 name: data.name,
                                 isReseller: false,
-                                parentAccountId: resellerAccountId
+                                parentAccountId: resellerAccountId,
+                                gs5pk: "reseller#".concat(resellerAccountId) // Écraser la valeur par défaut
                             })];
                     case 2:
                         clientAccount = _b.sent();
-                        // Étape 2: Mettre à jour explicitement le champ gs5pk
-                        return [4 /*yield*/, this.updateGs5pk(clientAccount.id, resellerAccountId)];
-                    case 3:
-                        // Étape 2: Mettre à jour explicitement le champ gs5pk
-                        _b.sent();
-                        return [4 /*yield*/, this.Account.get({ id: clientAccount.id })];
-                    case 4: 
-                    // Récupérer et retourner le compte mis à jour
-                    return [2 /*return*/, _b.sent()];
+                        return [2 /*return*/, clientAccount];
                 }
             });
         }); };
@@ -294,6 +250,109 @@ var Accounts = /** @class */ (function () {
                 });
             });
         };
+        this.updateAccountsWithDefaultGs5pk = function () { return __awaiter(_this, void 0, void 0, function () {
+            var accounts, updatedCount, errorCount, _i, accounts_1, account, hasClients, error_1, error_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 18, , 19]);
+                        return [4 /*yield*/, this.Account.scan()];
+                    case 1:
+                        accounts = _b.sent();
+                        console.log("Found ".concat(accounts.length, " accounts to check."));
+                        updatedCount = 0;
+                        errorCount = 0;
+                        _i = 0, accounts_1 = accounts;
+                        _b.label = 2;
+                    case 2:
+                        if (!(_i < accounts_1.length)) return [3 /*break*/, 17];
+                        account = accounts_1[_i];
+                        _b.label = 3;
+                    case 3:
+                        _b.trys.push([3, 15, , 16]);
+                        if (!account.parentAccountId) return [3 /*break*/, 6];
+                        if (!(account.gs5pk !== "reseller#".concat(account.parentAccountId))) return [3 /*break*/, 5];
+                        return [4 /*yield*/, this.Account.update({
+                                id: account.id,
+                                gs5pk: "reseller#".concat(account.parentAccountId)
+                            })];
+                    case 4:
+                        _b.sent();
+                        updatedCount++;
+                        _b.label = 5;
+                    case 5: return [3 /*break*/, 14];
+                    case 6:
+                        if (!account.isReseller) return [3 /*break*/, 12];
+                        return [4 /*yield*/, this.hasClients(account.id)];
+                    case 7:
+                        hasClients = _b.sent();
+                        if (!(hasClients && account.gs5pk !== "reseller#".concat(account.id))) return [3 /*break*/, 9];
+                        return [4 /*yield*/, this.Account.update({
+                                id: account.id,
+                                gs5pk: "reseller#".concat(account.id)
+                            })];
+                    case 8:
+                        _b.sent();
+                        updatedCount++;
+                        return [3 /*break*/, 11];
+                    case 9:
+                        if (!(!hasClients && account.gs5pk !== "standard#account")) return [3 /*break*/, 11];
+                        return [4 /*yield*/, this.Account.update({
+                                id: account.id,
+                                gs5pk: "standard#account"
+                            })];
+                    case 10:
+                        _b.sent();
+                        updatedCount++;
+                        _b.label = 11;
+                    case 11: return [3 /*break*/, 14];
+                    case 12:
+                        if (!(account.gs5pk !== "standard#account")) return [3 /*break*/, 14];
+                        return [4 /*yield*/, this.Account.update({
+                                id: account.id,
+                                gs5pk: "standard#account"
+                            })];
+                    case 13:
+                        _b.sent();
+                        updatedCount++;
+                        _b.label = 14;
+                    case 14: return [3 /*break*/, 16];
+                    case 15:
+                        error_1 = _b.sent();
+                        console.error("Error updating account ".concat(account.id, ":"), error_1);
+                        errorCount++;
+                        return [3 /*break*/, 16];
+                    case 16:
+                        _i++;
+                        return [3 /*break*/, 2];
+                    case 17:
+                        console.log("Update completed: ".concat(updatedCount, " accounts updated, ").concat(errorCount, " errors."));
+                        return [2 /*return*/, {
+                                total: accounts.length,
+                                updated: updatedCount,
+                                errors: errorCount
+                            }];
+                    case 18:
+                        error_2 = _b.sent();
+                        console.error("Update error:", error_2);
+                        throw error_2;
+                    case 19: return [2 /*return*/];
+                }
+            });
+        }); };
+        this.hasClients = function (resellerAccountId) { return __awaiter(_this, void 0, void 0, function () {
+            var clients;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Account.find({
+                            parentAccountId: resellerAccountId
+                        }, { limit: 1 })];
+                    case 1:
+                        clients = _b.sent();
+                        return [2 /*return*/, clients.length > 0];
+                }
+            });
+        }); };
         this.secretsString = secretsString;
         this.Crypto = {
             primary: {

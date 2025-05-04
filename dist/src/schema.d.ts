@@ -101,6 +101,7 @@ declare const Schema: {
             };
             readonly gs5pk: {
                 readonly type: StringConstructor;
+                readonly default: "standard#account";
             };
             readonly gs5sk: {
                 readonly type: StringConstructor;
@@ -182,6 +183,7 @@ declare const Schema: {
             };
             readonly gs5pk: {
                 readonly type: StringConstructor;
+                readonly default: "standard#user";
             };
             readonly gs5sk: {
                 readonly type: StringConstructor;
@@ -374,6 +376,7 @@ declare const Schema: {
             };
             readonly gs5pk: {
                 readonly type: StringConstructor;
+                readonly default: "standard#project";
             };
             readonly gs5sk: {
                 readonly type: StringConstructor;
