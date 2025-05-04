@@ -14,6 +14,7 @@ export declare class Projects {
     randomString: () => string;
     generateApiKey: () => string;
     insert: (data: any) => Promise<any>;
+    listProjectsForReseller: (resellerAccountId: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;
     findByCodeProject: (codeProject: string, showHiddenFields?: boolean) => Promise<any>;

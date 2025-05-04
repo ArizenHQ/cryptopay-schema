@@ -9,6 +9,7 @@ export declare class Accounts {
     Order: any;
     Payment: any;
     Kyt: any;
+    Partner: any;
     secretsString: any;
     private constructor();
     static init: () => Promise<Accounts>;
@@ -20,5 +21,8 @@ export declare class Accounts {
     scan: (query?: any) => Promise<PaginatedResult<any>>;
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;
+    createReseller: (data: any) => Promise<any>;
+    createClientAccount: (resellerAccountId: string, data: any) => Promise<any>;
+    listClientsOfReseller: (resellerAccountId: string, query?: any) => Promise<PaginatedResult<any>>;
 }
 export default Accounts;

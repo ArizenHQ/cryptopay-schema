@@ -26,8 +26,44 @@ declare const Schema: {
             readonly sort: "gs4sk";
             readonly project: "all";
         };
+        readonly gs5: {
+            readonly hash: "gs5pk";
+            readonly sort: "gs5sk";
+            readonly project: "all";
+        };
     };
     readonly models: {
+        readonly Partner: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "account#${id}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "partner#";
+            };
+            readonly id: {
+                readonly type: StringConstructor;
+                readonly value: "${id}";
+            };
+            readonly name: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly type: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["direct", "reseller"];
+                readonly default: "direct";
+            };
+            readonly gs1pk: {
+                readonly type: StringConstructor;
+                readonly value: "partner#";
+            };
+            readonly gs1sk: {
+                readonly type: StringConstructor;
+                readonly value: "partner#${name}";
+            };
+        };
         readonly Account: {
             readonly pk: {
                 readonly type: StringConstructor;
@@ -47,6 +83,14 @@ declare const Schema: {
                 readonly unique: true;
                 readonly validate: RegExp;
             };
+            readonly parentAccountId: {
+                readonly type: StringConstructor;
+                readonly required: false;
+            };
+            readonly isReseller: {
+                readonly type: BooleanConstructor;
+                readonly default: false;
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "account#";
@@ -54,6 +98,14 @@ declare const Schema: {
             readonly gs1sk: {
                 readonly type: StringConstructor;
                 readonly value: "account#${name}${id}";
+            };
+            readonly gs5pk: {
+                readonly type: StringConstructor;
+                readonly value: "${parentAccountId ? `reseller#${parentAccountId}` : ''}";
+            };
+            readonly gs5sk: {
+                readonly type: StringConstructor;
+                readonly value: "account#${id}";
             };
         };
         readonly User: {
@@ -105,6 +157,10 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly hidden: true;
             };
+            readonly resellerAccountId: {
+                readonly type: StringConstructor;
+                readonly required: false;
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "user#";
@@ -125,6 +181,14 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly value: "user#${name}#${id}#${email}#${status}#${permissionLevel}";
             };
+            readonly gs5pk: {
+                readonly type: StringConstructor;
+                readonly value: "${resellerAccountId ? `reseller#${resellerAccountId}` : ''}";
+            };
+            readonly gs5sk: {
+                readonly type: StringConstructor;
+                readonly value: "user#${id}";
+            };
         };
         readonly Project: {
             readonly pk: {
@@ -143,6 +207,10 @@ declare const Schema: {
             readonly accountId: {
                 readonly type: StringConstructor;
                 readonly required: true;
+            };
+            readonly resellerAccountId: {
+                readonly type: StringConstructor;
+                readonly required: false;
             };
             readonly name: {
                 readonly type: StringConstructor;
@@ -305,6 +373,14 @@ declare const Schema: {
             readonly gs4sk: {
                 readonly type: StringConstructor;
                 readonly value: "project#${ulid}";
+            };
+            readonly gs5pk: {
+                readonly type: StringConstructor;
+                readonly value: "${resellerAccountId ? `reseller#${resellerAccountId}` : ''}";
+            };
+            readonly gs5sk: {
+                readonly type: StringConstructor;
+                readonly value: "project#${id}";
             };
         };
         readonly Order: {

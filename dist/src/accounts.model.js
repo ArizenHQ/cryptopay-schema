@@ -59,9 +59,16 @@ var Accounts = /** @class */ (function () {
     function Accounts(secretsString) {
         var _this = this;
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
+            var accountData;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Account.create({ name: data.name })];
+                    case 0:
+                        accountData = {
+                            name: data.name,
+                            isReseller: data.isReseller || false,
+                            parentAccountId: data.parentAccountId || null
+                        };
+                        return [4 /*yield*/, this.Account.create(accountData)];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
@@ -146,6 +153,63 @@ var Accounts = /** @class */ (function () {
                 }
             });
         }); };
+        this.createReseller = function (data) { return __awaiter(_this, void 0, void 0, function () {
+            var accountData, account;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        accountData = {
+                            name: data.name,
+                            isReseller: true
+                        };
+                        return [4 /*yield*/, this.Account.create(accountData)];
+                    case 1:
+                        account = _b.sent();
+                        return [4 /*yield*/, this.Partner.create({
+                                id: account.id,
+                                name: data.name,
+                                type: data.partnerType || "reseller"
+                            })];
+                    case 2:
+                        _b.sent();
+                        return [2 /*return*/, account];
+                }
+            });
+        }); };
+        this.createClientAccount = function (resellerAccountId, data) { return __awaiter(_this, void 0, void 0, function () {
+            var reseller;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.getAccount(resellerAccountId)];
+                    case 1:
+                        reseller = _b.sent();
+                        if (!reseller || !reseller.isReseller) {
+                            throw new Error("Invalid reseller account");
+                        }
+                        return [4 /*yield*/, this.Account.create({
+                                name: data.name,
+                                isReseller: false,
+                                parentAccountId: resellerAccountId
+                            })];
+                    case 2: return [2 /*return*/, _b.sent()];
+                }
+            });
+        }); };
+        this.listClientsOfReseller = function (resellerAccountId_1) {
+            var args_1 = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args_1[_i - 1] = arguments[_i];
+            }
+            return __awaiter(_this, __spreadArray([resellerAccountId_1], args_1, true), void 0, function (resellerAccountId, query) {
+                if (query === void 0) { query = {}; }
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Account, 'find', { gs5pk: "reseller#".concat(resellerAccountId) }, query, { index: 'gs5', follow: true })];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
+            });
+        };
         this.secretsString = secretsString;
         this.Crypto = {
             primary: {
@@ -166,6 +230,7 @@ var Accounts = /** @class */ (function () {
         this.Order = this.table.getModel("Order");
         this.Payment = this.table.getModel("Payment");
         this.Kyt = this.table.getModel("Kyt");
+        this.Partner = this.table.getModel("Partner");
     }
     var _a;
     _a = Accounts;

@@ -67,7 +67,7 @@ var Projects = /** @class */ (function () {
             return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex");
         };
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
-            var account_1, isValid, error_1;
+            var account_1, resellerAccountId, isValid, error_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -78,6 +78,10 @@ var Projects = /** @class */ (function () {
                         account_1 = _b.sent();
                         if (!account_1)
                             throw new Error("Account not found");
+                        resellerAccountId = null;
+                        if (account_1.parentAccountId) {
+                            resellerAccountId = account_1.parentAccountId;
+                        }
                         this.table.setContext({ accountId: data.accountId });
                         isValid = this.checkData(data);
                         if (isValid === true) {
@@ -90,6 +94,7 @@ var Projects = /** @class */ (function () {
                                     userIdCNHS: data.userIdCNHS || null,
                                     status: data.status,
                                     parameters: data.parameters,
+                                    resellerAccountId: resellerAccountId,
                                     apiKey: this.generateApiKey(),
                                     hmacPassword: this.randomString(),
                                 }).then(function (project) { return __awaiter(_this, void 0, void 0, function () {
@@ -117,6 +122,21 @@ var Projects = /** @class */ (function () {
                 }
             });
         }); };
+        this.listProjectsForReseller = function (resellerAccountId_1) {
+            var args_1 = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args_1[_i - 1] = arguments[_i];
+            }
+            return __awaiter(_this, __spreadArray([resellerAccountId_1], args_1, true), void 0, function (resellerAccountId, query) {
+                if (query === void 0) { query = {}; }
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.Project, 'find', { gs5pk: "reseller#".concat(resellerAccountId) }, query, { index: 'gs5', follow: true })];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
+            });
+        };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {

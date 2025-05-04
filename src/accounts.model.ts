@@ -17,6 +17,7 @@ export class Accounts {
   Order: any;
   Payment: any;
   Kyt: any;
+  Partner: any;
   secretsString: any;
 
   private constructor(secretsString: any) {
@@ -43,6 +44,7 @@ export class Accounts {
     this.Order = this.table.getModel("Order");
     this.Payment = this.table.getModel("Payment");
     this.Kyt = this.table.getModel("Kyt");
+    this.Partner = this.table.getModel("Partner");
   }
 
   static init = async () => {
@@ -53,7 +55,12 @@ export class Accounts {
   };
 
   insert = async (data: any) => {
-    return await this.Account.create({ name: data.name });
+    const accountData = {
+      name: data.name,
+      isReseller: data.isReseller || false,
+      parentAccountId: data.parentAccountId || null
+    };
+    return await this.Account.create(accountData);
   };
 
   findById = async (id: string) => {
@@ -88,6 +95,43 @@ export class Accounts {
 
   removeById = async (id: string) => {
     return await this.Account.remove({ id: id });
+  };
+
+  createReseller = async (data: any) => {
+    const accountData = {
+      name: data.name,
+      isReseller: true
+    };
+    const account = await this.Account.create(accountData);
+    
+    await this.Partner.create({
+      id: account.id,
+      name: data.name,
+      type: data.partnerType || "reseller"
+    });
+    
+    return account;
+  };
+
+  createClientAccount = async (resellerAccountId: string, data: any) => {
+    const reseller = await this.getAccount(resellerAccountId);
+    if (!reseller || !reseller.isReseller) {
+      throw new Error("Invalid reseller account");
+    }
+    
+    return await this.Account.create({
+      name: data.name,
+      isReseller: false,
+      parentAccountId: resellerAccountId
+    });
+  };
+
+  listClientsOfReseller = async (resellerAccountId: string, query: any = {}) => {
+    return await paginateModel(this.Account, 'find', 
+      { gs5pk: `reseller#${resellerAccountId}` }, 
+      query,
+      { index: 'gs5', follow: true }
+    );
   };
 }
 
