@@ -325,69 +325,39 @@ var Projects = /** @class */ (function () {
         }); };
         // Méthode pour mettre à jour les projets existants avec les valeurs gs5pk appropriées
         this.updateProjectsWithCorrectGs5pk = function () { return __awaiter(_this, void 0, void 0, function () {
-            var allProjects, updatedCount, errorCount, _i, allProjects_1, project, account, resellerAccountId, correctGs5pk, error_2, error_3;
+            var allProjects, updatedCount, errorCount, _i, allProjects_1, project, error_2;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 10, , 11]);
+                        _b.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, this.Project.scan()];
                     case 1:
                         allProjects = _b.sent();
                         console.log("Found ".concat(allProjects.length, " projects to check."));
                         updatedCount = 0;
                         errorCount = 0;
-                        _i = 0, allProjects_1 = allProjects;
-                        _b.label = 2;
-                    case 2:
-                        if (!(_i < allProjects_1.length)) return [3 /*break*/, 9];
-                        project = allProjects_1[_i];
-                        _b.label = 3;
-                    case 3:
-                        _b.trys.push([3, 7, , 8]);
-                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(project.accountId) })];
-                    case 4:
-                        account = _b.sent();
-                        if (!account) {
-                            console.warn("Account not found for project ".concat(project.id));
-                            return [3 /*break*/, 8];
+                        for (_i = 0, allProjects_1 = allProjects; _i < allProjects_1.length; _i++) {
+                            project = allProjects_1[_i];
+                            try {
+                                this.patchById(project.id, project);
+                                updatedCount++;
+                            }
+                            catch (error) {
+                                console.error("Error updating project ".concat(project.id, ":"), error);
+                                errorCount++;
+                            }
                         }
-                        resellerAccountId = null;
-                        correctGs5pk = "standard#project";
-                        if (account.parentAccountId) {
-                            resellerAccountId = account.parentAccountId;
-                            correctGs5pk = "reseller#".concat(resellerAccountId);
-                        }
-                        if (!(project.resellerAccountId !== resellerAccountId || project.gs5pk !== correctGs5pk)) return [3 /*break*/, 6];
-                        return [4 /*yield*/, this.Project.update({
-                                id: project.id,
-                                resellerAccountId: resellerAccountId,
-                                gs5pk: correctGs5pk
-                            })];
-                    case 5:
-                        _b.sent();
-                        updatedCount++;
-                        _b.label = 6;
-                    case 6: return [3 /*break*/, 8];
-                    case 7:
-                        error_2 = _b.sent();
-                        console.error("Error updating project ".concat(project.id, ":"), error_2);
-                        errorCount++;
-                        return [3 /*break*/, 8];
-                    case 8:
-                        _i++;
-                        return [3 /*break*/, 2];
-                    case 9:
                         console.log("Update completed: ".concat(updatedCount, " projects updated, ").concat(errorCount, " errors."));
                         return [2 /*return*/, {
                                 total: allProjects.length,
                                 updated: updatedCount,
                                 errors: errorCount
                             }];
-                    case 10:
-                        error_3 = _b.sent();
-                        console.error("Update error:", error_3);
-                        throw error_3;
-                    case 11: return [2 /*return*/];
+                    case 2:
+                        error_2 = _b.sent();
+                        console.error("Update error:", error_2);
+                        throw error_2;
+                    case 3: return [2 /*return*/];
                 }
             });
         }); };

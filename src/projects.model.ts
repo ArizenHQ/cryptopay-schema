@@ -250,31 +250,8 @@ export class Projects {
         
         for (const project of allProjects) {
           try {
-            // Récupérer le compte associé au projet
-            const account = await this.Account.get({ pk: `account#${project.accountId}` });
-            if (!account) {
-              console.warn(`Account not found for project ${project.id}`);
-              continue;
-            }
-            
-            // Déterminer le resellerAccountId et gs5pk correct
-            let resellerAccountId = null;
-            let correctGs5pk = "standard#project";
-            
-            if (account.parentAccountId) {
-              resellerAccountId = account.parentAccountId;
-              correctGs5pk = `reseller#${resellerAccountId}`;
-            }
-            
-            // Mettre à jour le projet si nécessaire
-            if (project.resellerAccountId !== resellerAccountId || project.gs5pk !== correctGs5pk) {
-              await this.Project.update({
-                id: project.id,
-                resellerAccountId: resellerAccountId,
-                gs5pk: correctGs5pk
-              });
-              updatedCount++;
-            }
+            this.patchById(project.id, project);
+            updatedCount++;
           } catch (error) {
             console.error(`Error updating project ${project.id}:`, error);
             errorCount++;
