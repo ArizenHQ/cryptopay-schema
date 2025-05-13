@@ -55,6 +55,30 @@ declare const Schema: {
                 readonly enum: readonly ["direct", "reseller"];
                 readonly default: "direct";
             };
+            readonly clientIds: {
+                readonly type: ArrayConstructor;
+                readonly default: readonly [];
+            };
+            readonly accountId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly commissionRate: {
+                readonly type: NumberConstructor;
+                readonly default: 4;
+            };
+            readonly contractStartDate: {
+                readonly type: DateConstructor;
+            };
+            readonly contractEndDate: {
+                readonly type: DateConstructor;
+            };
+            readonly contactPerson: {
+                readonly type: StringConstructor;
+            };
+            readonly contractDetails: {
+                readonly type: ObjectConstructor;
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "partner#";
@@ -780,6 +804,9 @@ declare const Schema: {
                 readonly default: {};
             };
             readonly orderId: {
+                readonly type: StringConstructor;
+            };
+            readonly accountId: {
                 readonly type: StringConstructor;
             };
             readonly audit: {

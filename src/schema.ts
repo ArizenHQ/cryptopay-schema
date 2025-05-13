@@ -322,6 +322,7 @@ const Schema = {
       debit: { type: Number },
       context: { type: Object, default: {} },
       orderId: { type: String },
+      accountId: { type: String },
       audit: { type: Object, default: [] },
       ulid: { type: String, generate: "ulid" },
       gs1pk: { type: String, value: "payment#" },
