@@ -178,10 +178,22 @@ var Accounts = /** @class */ (function () {
             });
         }); };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
+            var account;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Account.remove({ id: id })];
-                    case 1: return [2 /*return*/, _b.sent()];
+                    case 0: return [4 /*yield*/, this.Account.get({ id: id })];
+                    case 1:
+                        account = _b.sent();
+                        if (!account) {
+                            throw new Error("Account not found with id: ".concat(id));
+                        }
+                        if (!account.isReseller) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.Partner.remove({ id: id })];
+                    case 2:
+                        _b.sent();
+                        _b.label = 3;
+                    case 3: return [4 /*yield*/, this.Account.remove({ id: id })];
+                    case 4: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };
@@ -199,6 +211,7 @@ var Accounts = /** @class */ (function () {
                         account = _b.sent();
                         return [4 /*yield*/, this.Partner.create({
                                 id: account.id,
+                                accountId: account.id,
                                 name: data.name,
                                 type: data.partnerType || "reseller"
                             })];

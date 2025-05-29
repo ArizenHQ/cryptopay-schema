@@ -127,6 +127,13 @@ export class Accounts {
   };
 
   removeById = async (id: string) => {
+    const account = await this.Account.get({ id: id });
+    if (!account) {
+      throw new Error(`Account not found with id: ${id}`);
+    }
+    if (account.isReseller) {
+      await this.Partner.remove({ id: id });
+    }
     return await this.Account.remove({ id: id });
   };
 
@@ -139,6 +146,7 @@ export class Accounts {
     
     await this.Partner.create({
       id: account.id,
+      accountId: account.id,
       name: data.name,
       type: data.partnerType || "reseller"
     });
