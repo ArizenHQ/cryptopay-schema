@@ -72,7 +72,7 @@ export class Accounts {
 
   getFullAccount = async (id: string) => {
     this.table.setContext({ id: id });
-    return await this.table.fetch(["Account", "User", "Project", "Partner", "Payment", "Kyt", "Order"], {
+    return await this.table.fetch(["Account", "User", "Project", "Partner", "Payment", "Conversion", "Kyt", "Order", "GasStation"], {
       pk: `account#${id}`,
     });
   };

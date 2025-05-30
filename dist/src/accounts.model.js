@@ -94,7 +94,7 @@ var Accounts = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         this.table.setContext({ id: id });
-                        return [4 /*yield*/, this.table.fetch(["Account", "User", "Project", "Partner", "Payment", "Kyt", "Order"], {
+                        return [4 /*yield*/, this.table.fetch(["Account", "User", "Project", "Partner", "Payment", "Conversion", "Kyt", "Order", "GasStation"], {
                                 pk: "account#".concat(id),
                             })];
                     case 1: return [2 /*return*/, _b.sent()];
