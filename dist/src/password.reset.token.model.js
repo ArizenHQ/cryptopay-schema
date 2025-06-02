@@ -61,13 +61,15 @@ var PasswordResetToken = /** @class */ (function () {
             var userId = _c.userId, token = _c.token, expiresAt = _c.expiresAt, ip = _c.ip, userAgent = _c.userAgent;
             return __generator(this, function (_d) {
                 switch (_d.label) {
-                    case 0: return [4 /*yield*/, this.PasswordResetToken.create({
-                            userId: userId,
-                            token: token,
-                            expiresAt: expiresAt,
-                            ip: ip,
-                            userAgent: userAgent,
-                        })];
+                    case 0:
+                        this.table.setContext({ userId: userId });
+                        return [4 /*yield*/, this.PasswordResetToken.create({
+                                userId: userId,
+                                token: token,
+                                expiresAt: expiresAt,
+                                ip: ip,
+                                userAgent: userAgent,
+                            })];
                     case 1: return [2 /*return*/, _d.sent()];
                 }
             });
