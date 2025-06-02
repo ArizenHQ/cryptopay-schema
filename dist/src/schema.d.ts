@@ -1081,6 +1081,62 @@ declare const Schema: {
                 readonly value: "refreshToken#${userId}#${tokenRefresh}#${revoked}";
             };
         };
+        readonly PasswordResetToken: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "user#${userId}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "resetToken#${tokenId}";
+            };
+            readonly tokenId: {
+                readonly type: StringConstructor;
+                readonly generate: "uuid";
+            };
+            readonly userId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly token: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly expiresAt: {
+                readonly type: DateConstructor;
+                readonly required: true;
+            };
+            readonly used: {
+                readonly type: BooleanConstructor;
+                readonly default: false;
+            };
+            readonly ip: {
+                readonly type: StringConstructor;
+            };
+            readonly userAgent: {
+                readonly type: StringConstructor;
+            };
+            readonly ulid: {
+                readonly type: StringConstructor;
+                readonly generate: "ulid";
+            };
+            readonly gs1pk: {
+                readonly type: StringConstructor;
+                readonly value: "resetToken#";
+            };
+            readonly gs1sk: {
+                readonly type: StringConstructor;
+                readonly value: "resetToken#${token}";
+            };
+            readonly gs2sk: {
+                readonly type: StringConstructor;
+                readonly value: "resetToken#${ulid}";
+            };
+            readonly gs3sk: {
+                readonly type: StringConstructor;
+                readonly value: "resetToken#${userId}#${token}#${used}";
+            };
+        };
     };
     readonly params: {
         readonly isoDates: true;

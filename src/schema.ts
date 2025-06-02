@@ -416,6 +416,26 @@ const Schema = {
       gs2sk: { type: String, value: "refreshToken#${ulid}" },
       gs3sk: { type: String, value: "refreshToken#${userId}#${tokenRefresh}#${revoked}" },
     },
+    PasswordResetToken: {
+      pk:              { type: String, value: "user#${userId}" },
+      sk:              { type: String, value: "resetToken#${tokenId}" },
+    
+      tokenId:         { type: String, generate: "uuid" },
+      userId:          { type: String, required: true },
+    
+      token:           { type: String, required: true },
+      expiresAt:       { type: Date, required: true },
+      used:            { type: Boolean, default: false },
+    
+      ip:              { type: String },
+      userAgent:       { type: String },
+      ulid:            { type: String, generate: "ulid" },
+    
+      gs1pk:           { type: String, value: "resetToken#" },
+      gs1sk:           { type: String, value: "resetToken#${token}" },
+      gs2sk:           { type: String, value: "resetToken#${ulid}" },
+      gs3sk:           { type: String, value: "resetToken#${userId}#${token}#${used}" },
+    },
     
   } as const,
   params: {
