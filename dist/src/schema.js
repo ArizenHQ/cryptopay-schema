@@ -69,6 +69,8 @@ var Schema = {
                 unique: true,
             },
             password: { type: String, required: true, crypt: true },
+            mustResetPassword: { type: Boolean, default: false },
+            passwordLastUpdatedAt: { type: Date },
             status: {
                 type: String,
                 required: true,

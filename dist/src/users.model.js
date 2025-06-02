@@ -154,31 +154,38 @@ var Users = /** @class */ (function () {
                 }
             });
         }); };
-        this.updatePassword = function (id, password) { return __awaiter(_this, void 0, void 0, function () {
-            var user, encryptedPassword;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        if (!password || password.length < 8) {
-                            throw new Error("Password must be at least 8 characters long");
-                        }
-                        return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4" })];
-                    case 1:
-                        user = _b.sent();
-                        if (!user) {
-                            throw new Error("User not found");
-                        }
-                        return [4 /*yield*/, this.table.encrypt(password)];
-                    case 2:
-                        encryptedPassword = _b.sent();
-                        return [4 /*yield*/, this.User.update(user, {
-                                set: { password: encryptedPassword },
-                                return: "get",
-                            })];
-                    case 3: return [2 /*return*/, _b.sent()];
-                }
+        this.updatePassword = function (id_1, password_1) {
+            var args_1 = [];
+            for (var _i = 2; _i < arguments.length; _i++) {
+                args_1[_i - 2] = arguments[_i];
+            }
+            return __awaiter(_this, __spreadArray([id_1, password_1], args_1, true), void 0, function (id, password, mustResetPassword) {
+                var user, encryptedPassword;
+                if (mustResetPassword === void 0) { mustResetPassword = false; }
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0:
+                            if (!password || password.length < 8) {
+                                throw new Error("Password must be at least 8 characters long");
+                            }
+                            return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4" })];
+                        case 1:
+                            user = _b.sent();
+                            if (!user) {
+                                throw new Error("User not found");
+                            }
+                            return [4 /*yield*/, this.table.encrypt(password)];
+                        case 2:
+                            encryptedPassword = _b.sent();
+                            return [4 /*yield*/, this.User.update(user, {
+                                    set: { password: encryptedPassword, mustResetPassword: mustResetPassword, passwordLastUpdatedAt: new Date() },
+                                    return: "get",
+                                })];
+                        case 3: return [2 /*return*/, _b.sent()];
+                    }
+                });
             });
-        }); };
+        };
         this.scan = function () {
             var args_1 = [];
             for (var _i = 0; _i < arguments.length; _i++) {

@@ -128,7 +128,7 @@ export class Users {
   };
 
 
-  updatePassword = async (id: string, password: string) => {
+  updatePassword = async (id: string, password: string, mustResetPassword: boolean = false) => {
     if (!password || password.length < 8) {
       throw new Error("Password must be at least 8 characters long");
     }
@@ -139,7 +139,7 @@ export class Users {
     }
     const encryptedPassword = await (this.table as any).encrypt(password);
     return await this.User.update(user, {
-      set: { password: encryptedPassword },
+      set: { password: encryptedPassword, mustResetPassword: mustResetPassword, passwordLastUpdatedAt: new Date() },
       return: "get",
     });
   };

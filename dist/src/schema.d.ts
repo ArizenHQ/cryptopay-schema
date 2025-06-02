@@ -166,6 +166,13 @@ declare const Schema: {
                 readonly required: true;
                 readonly crypt: true;
             };
+            readonly mustResetPassword: {
+                readonly type: BooleanConstructor;
+                readonly default: false;
+            };
+            readonly passwordLastUpdatedAt: {
+                readonly type: DateConstructor;
+            };
             readonly status: {
                 readonly type: StringConstructor;
                 readonly required: true;
