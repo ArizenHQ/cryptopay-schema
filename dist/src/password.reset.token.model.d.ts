@@ -5,7 +5,7 @@ export declare class PasswordResetToken {
     secretsString: any;
     private constructor();
     static init: () => Promise<PasswordResetToken>;
-    create: ({ userId, token, expiresAt, ip, userAgent, }: {
+    create: ({ userId, token, expiresAt, ip, userAgent }: {
         userId: string;
         token: string;
         expiresAt: Date;

@@ -68,7 +68,7 @@ var PasswordResetToken = /** @class */ (function () {
                                 token: token,
                                 expiresAt: expiresAt,
                                 ip: ip,
-                                userAgent: userAgent,
+                                userAgent: userAgent
                             })];
                     case 1: return [2 /*return*/, _d.sent()];
                 }
