@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RefreshToken = exports.Conversions = exports.GasStations = exports.Kyts = exports.Payments = exports.Orders = exports.Projects = exports.Users = exports.Accounts = void 0;
+exports.PasswordResetToken = exports.RefreshToken = exports.Conversions = exports.GasStations = exports.Kyts = exports.Payments = exports.Orders = exports.Projects = exports.Users = exports.Accounts = void 0;
 var accounts_model_1 = require("./src/accounts.model");
 Object.defineProperty(exports, "Accounts", { enumerable: true, get: function () { return accounts_model_1.Accounts; } });
 var users_model_1 = require("./src/users.model");
@@ -19,4 +19,6 @@ var conversions_model_1 = require("./src/conversions.model");
 Object.defineProperty(exports, "Conversions", { enumerable: true, get: function () { return conversions_model_1.Conversions; } });
 var refresh_token_model_1 = require("./src/refresh.token.model");
 Object.defineProperty(exports, "RefreshToken", { enumerable: true, get: function () { return refresh_token_model_1.RefreshToken; } });
+var password_reset_token_model_1 = require("./src/password.reset.token.model");
+Object.defineProperty(exports, "PasswordResetToken", { enumerable: true, get: function () { return password_reset_token_model_1.PasswordResetToken; } });
 //# sourceMappingURL=index.js.map

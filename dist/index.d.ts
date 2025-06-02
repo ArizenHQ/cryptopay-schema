@@ -7,3 +7,4 @@ export { Kyts } from './src/kyts.model';
 export { GasStations } from './src/gasStations.model';
 export { Conversions } from './src/conversions.model';
 export { RefreshToken } from './src/refresh.token.model';
+export { PasswordResetToken } from './src/password.reset.token.model';
