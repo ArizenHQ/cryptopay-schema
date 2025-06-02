@@ -36,7 +36,7 @@ export class PasswordResetToken {
     token,
     expiresAt,
     ip,
-    userAgent,
+    userAgent
   }: {
     userId: string;
     token: string;
@@ -50,7 +50,7 @@ export class PasswordResetToken {
       token,
       expiresAt,
       ip,
-      userAgent,
+      userAgent
     });
   };
 
