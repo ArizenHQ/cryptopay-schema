@@ -139,7 +139,7 @@ export class Users {
     }
     const encryptedPassword = await (this.table as any).encrypt(password);
     return await this.User.update(user, {
-      set: { password: encryptedPassword, mustResetPassword: mustResetPassword, passwordLastUpdatedAt: new Date() },
+      set: { password: encryptedPassword, mustResetPassword: mustResetPassword, passwordLastUpdatedAt: new Date().toISOString() },
       return: "get",
     });
   };

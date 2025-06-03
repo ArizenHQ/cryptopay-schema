@@ -178,7 +178,7 @@ var Users = /** @class */ (function () {
                         case 2:
                             encryptedPassword = _b.sent();
                             return [4 /*yield*/, this.User.update(user, {
-                                    set: { password: encryptedPassword, mustResetPassword: mustResetPassword, passwordLastUpdatedAt: new Date() },
+                                    set: { password: encryptedPassword, mustResetPassword: mustResetPassword, passwordLastUpdatedAt: new Date().toISOString() },
                                     return: "get",
                                 })];
                         case 3: return [2 /*return*/, _b.sent()];
