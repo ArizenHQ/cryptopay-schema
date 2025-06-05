@@ -84,6 +84,7 @@ var Users = /** @class */ (function () {
                                 password: data.password,
                                 permissionLevel: data.permissionLevel,
                                 resellerAccountId: resellerAccountId,
+                                mustResetPassword: data.mustResetPassword || false,
                                 apiKey: this.generateApiKey(),
                                 gs5pk: gs5pk,
                             })];
