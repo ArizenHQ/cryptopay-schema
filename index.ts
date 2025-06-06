@@ -8,3 +8,4 @@ export {GasStations}    from './src/gasStations.model';
 export {Conversions}    from './src/conversions.model';
 export {RefreshToken}   from './src/refresh.token.model';
 export {PasswordResetToken} from './src/password.reset.token.model';
+export {DocumentOrder}    from './src/documents.order.model';

@@ -565,6 +565,33 @@ declare const Schema: {
                     readonly company: {
                         readonly type: StringConstructor;
                     };
+                    readonly companyNumber: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly companyVatNumber: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly birthDate: {
+                        readonly type: StringConstructor;
+                    };
+                };
+            };
+            readonly complementaryDocs: {
+                readonly type: ArrayConstructor;
+                readonly default: readonly [];
+                readonly items: {
+                    readonly type: ObjectConstructor;
+                    readonly schema: {
+                        readonly name: {
+                            readonly type: StringConstructor;
+                        };
+                        readonly type: {
+                            readonly type: StringConstructor;
+                        };
+                        readonly url: {
+                            readonly type: StringConstructor;
+                        };
+                    };
                 };
             };
             readonly internalRef: {
@@ -676,6 +703,61 @@ declare const Schema: {
             readonly gs4sk: {
                 readonly type: StringConstructor;
                 readonly value: "order#${id}#${typeOrder}#${codeProject}#${success}#${tx_hash}";
+            };
+        };
+        readonly DocumentOrder: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "account#${accountId}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "document#${id}";
+            };
+            readonly id: {
+                readonly type: StringConstructor;
+                readonly generate: "uuid";
+                readonly validate: RegExp;
+            };
+            readonly accountId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly orderId: {
+                readonly type: StringConstructor;
+            };
+            readonly name: {
+                readonly type: StringConstructor;
+            };
+            readonly type: {
+                readonly type: StringConstructor;
+            };
+            readonly url: {
+                readonly type: StringConstructor;
+            };
+            readonly ulid: {
+                readonly type: StringConstructor;
+                readonly generate: "ulid";
+            };
+            readonly gs1pk: {
+                readonly type: StringConstructor;
+                readonly value: "document#";
+            };
+            readonly gs1sk: {
+                readonly type: StringConstructor;
+                readonly value: "document#${id}";
+            };
+            readonly gs2sk: {
+                readonly type: StringConstructor;
+                readonly value: "document#${orderId}";
+            };
+            readonly gs3sk: {
+                readonly type: StringConstructor;
+                readonly value: "document#${type}";
+            };
+            readonly gs4sk: {
+                readonly type: StringConstructor;
+                readonly value: "document#${ulid}";
             };
         };
         readonly Conversion: {

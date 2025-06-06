@@ -234,7 +234,22 @@ const Schema = {
           firstname: { type: String },
           lastname: { type: String },
           company: { type: String },
+          companyNumber: { type: String },
+          companyVatNumber: { type: String },
+          birthDate: { type: String },
         },
+      },
+      complementaryDocs: {
+        type: Array,
+        default: [],
+        items: {
+          type: Object,
+          schema: {
+            name: { type: String },
+            type: { type: String },
+            url: { type: String },
+          }
+        }
       },
       internalRef: { type: String, required: true },
       paymentId: { type: String },
@@ -278,6 +293,22 @@ const Schema = {
         type: String,
         value: "order#${id}#${typeOrder}#${codeProject}#${success}#${tx_hash}",
       },
+    },
+    DocumentOrder: {
+      pk: { type: String, value: "account#${accountId}" },
+      sk: { type: String, value: "document#${id}" },
+      id: { type: String, generate: "uuid", validate: Match.uuid },
+      accountId: { type: String, required: true },
+      orderId: { type: String },
+      name: { type: String },
+      type: { type: String },
+      url: { type: String },
+      ulid: { type: String, generate: "ulid" },
+      gs1pk: { type: String, value: "document#" },
+      gs1sk: { type: String, value: "document#${id}" },
+      gs2sk: { type: String, value: "document#${orderId}" },
+      gs3sk: { type: String, value: "document#${type}" },
+      gs4sk: { type: String, value: "document#${ulid}" },
     },
     Conversion: {
       pk: { type: String, value: "account#${accountId}" },
