@@ -68,12 +68,9 @@ export class DocumentOrder {
     }
   };
 
-  findById = async (id: string) => {
-    return await this.DocumentOrder.get({ id: id }, { index: "gs1", follow: true });
-  };
 
   findByOrderId = async (orderId: string) => {
-    return await this.DocumentOrder.get({ orderId: orderId }, { index: "gs2", follow: true });
+    return await this.DocumentOrder.find({ orderId: orderId }, { index: "gs2", follow: true });
   };
 
   scan = async (params: any = {}, query: any = {}) => {

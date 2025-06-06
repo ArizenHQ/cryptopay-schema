@@ -82,18 +82,10 @@ var DocumentOrder = /** @class */ (function () {
                 }
             });
         }); };
-        this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.DocumentOrder.get({ id: id }, { index: "gs1", follow: true })];
-                    case 1: return [2 /*return*/, _b.sent()];
-                }
-            });
-        }); };
         this.findByOrderId = function (orderId) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.DocumentOrder.get({ orderId: orderId }, { index: "gs2", follow: true })];
+                    case 0: return [4 /*yield*/, this.DocumentOrder.find({ orderId: orderId }, { index: "gs2", follow: true })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });

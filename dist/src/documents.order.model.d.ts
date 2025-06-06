@@ -14,7 +14,6 @@ export declare class DocumentOrder {
     private constructor();
     static init: () => Promise<DocumentOrder>;
     insert: (accountId: string, orderId: string, data: any) => Promise<any>;
-    findById: (id: string) => Promise<any>;
     findByOrderId: (orderId: string) => Promise<any>;
     scan: (params?: any, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     getById: (id: string) => Promise<any>;
