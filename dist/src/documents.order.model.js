@@ -57,15 +57,12 @@ var DocumentOrder = /** @class */ (function () {
     function DocumentOrder(secretsString) {
         var _this = this;
         this.insert = function (accountId, orderId, data) { return __awaiter(_this, void 0, void 0, function () {
-            var account, error_1;
+            var error_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(accountId) })];
-                    case 1:
-                        account = _b.sent();
+                        _b.trys.push([0, 2, , 3]);
                         this.table.setContext({ accountId: accountId });
                         data.accountId = accountId;
                         data.orderId = orderId;
@@ -74,11 +71,11 @@ var DocumentOrder = /** @class */ (function () {
                                     return [2 /*return*/, document];
                                 });
                             }); })];
-                    case 2: return [2 /*return*/, _b.sent()];
-                    case 3:
+                    case 1: return [2 /*return*/, _b.sent()];
+                    case 2:
                         error_1 = _b.sent();
-                        throw new Error("Error during add new conversion ".concat(error_1));
-                    case 4: return [2 /*return*/];
+                        throw new Error("Error during add new document ".concat(error_1));
+                    case 3: return [2 /*return*/];
                 }
             });
         }); };
@@ -138,37 +135,37 @@ var DocumentOrder = /** @class */ (function () {
             });
         };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var conversion, err_1;
+            var document_1, err_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
                         return [4 /*yield*/, this.DocumentOrder.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
-                        conversion = _b.sent();
-                        if (!conversion)
-                            throw new Error("no conversion fund for id: ".concat(id));
-                        this.table.setContext({ accountId: conversion.accountId });
+                        document_1 = _b.sent();
+                        if (!document_1)
+                            throw new Error("no document fund for id: ".concat(id));
+                        this.table.setContext({ accountId: document_1.accountId });
                         data.id = id;
-                        return [4 /*yield*/, this.Conversion.update(data, { return: 'get' })];
+                        return [4 /*yield*/, this.DocumentOrder.update(data, { return: 'get' })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();
-                        throw new Error("Error during update conversion ".concat(err_1));
+                        throw new Error("Error during update document ".concat(err_1));
                     case 4: return [2 /*return*/];
                 }
             });
         }); };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            var conversion;
+            var document;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Conversion.get({ id: id }, { index: "gs1", follow: true })];
+                    case 0: return [4 /*yield*/, this.DocumentOrder.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
-                        conversion = _b.sent();
-                        if (!conversion)
-                            throw new Error("Conversion not found");
-                        return [2 /*return*/, this.Conversion.remove({ sk: "conversion#".concat(id), pk: "account#".concat(conversion.accountId) })];
+                        document = _b.sent();
+                        if (!document)
+                            throw new Error("Document not found");
+                        return [2 /*return*/, this.DocumentOrder.remove({ sk: "document#".concat(id), pk: "account#".concat(document.accountId) })];
                 }
             });
         }); };

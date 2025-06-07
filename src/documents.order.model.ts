@@ -56,7 +56,6 @@ export class DocumentOrder {
 
   insert = async (accountId: string, orderId: string, data: any) => {
     try {
-      const account = await this.Account.get({ pk: `account#${accountId}` });
       this.table.setContext({ accountId: accountId });
       data.accountId = accountId;
       data.orderId = orderId;
@@ -64,7 +63,7 @@ export class DocumentOrder {
         return document;
       })
     } catch (error) {
-      throw new Error(`Error during add new conversion ${error}`);
+      throw new Error(`Error during add new document ${error}`);
     }
   };
 
@@ -94,20 +93,20 @@ export class DocumentOrder {
 
   patchById = async (id: string, data: any) => {
     try {
-      let conversion = await this.DocumentOrder.get({ id: id }, { index: "gs1", follow: true });
-      if (!conversion) throw new Error(`no conversion fund for id: ${id}`)
-      this.table.setContext({ accountId: conversion.accountId });
+      let document = await this.DocumentOrder.get({ id: id }, { index: "gs1", follow: true });
+      if (!document) throw new Error(`no document fund for id: ${id}`)
+      this.table.setContext({ accountId: document.accountId });
       data.id = id;
-      return await this.Conversion.update(data, {return: 'get'});
+      return await this.DocumentOrder.update(data, {return: 'get'});
     } catch (err) {
-      throw new Error(`Error during update conversion ${err}`);
+      throw new Error(`Error during update document ${err}`);
     }
   };
 
   removeById = async (id: string) => {
-    let conversion = await this.Conversion.get({ id: id }, { index: "gs1", follow: true });
-    if (!conversion) throw new Error(`Conversion not found`);
-    return this.Conversion.remove({ sk: `conversion#${id}`, pk: `account#${conversion.accountId}` });
+    let document = await this.DocumentOrder.get({ id: id }, { index: "gs1", follow: true });
+    if (!document) throw new Error(`Document not found`);
+    return this.DocumentOrder.remove({ sk: `document#${id}`, pk: `account#${document.accountId}` });
   };
 
 
