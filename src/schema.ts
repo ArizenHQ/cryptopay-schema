@@ -231,12 +231,15 @@ const Schema = {
         default: {},
         schema: {
           email: { type: String, validate: Match.email },
+          type: { type: String, enum: ["individual", "company"] },
           firstname: { type: String },
           lastname: { type: String },
-          company: { type: String },
-          companyNumber: { type: String },
-          companyVatNumber: { type: String },
+          nationality: { type: String },
           birthDate: { type: String },
+          companyName: { type: String },
+          companyAddress: { type: String },
+          companyCountry: { type: String },
+          companyVatNumber: { type: String },
         },
       },
       complementaryDocs: {

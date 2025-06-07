@@ -556,22 +556,32 @@ declare const Schema: {
                         readonly type: StringConstructor;
                         readonly validate: RegExp;
                     };
+                    readonly type: {
+                        readonly type: StringConstructor;
+                        readonly enum: readonly ["individual", "company"];
+                    };
                     readonly firstname: {
                         readonly type: StringConstructor;
                     };
                     readonly lastname: {
                         readonly type: StringConstructor;
                     };
-                    readonly company: {
-                        readonly type: StringConstructor;
-                    };
-                    readonly companyNumber: {
-                        readonly type: StringConstructor;
-                    };
-                    readonly companyVatNumber: {
+                    readonly nationality: {
                         readonly type: StringConstructor;
                     };
                     readonly birthDate: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly companyName: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly companyAddress: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly companyCountry: {
+                        readonly type: StringConstructor;
+                    };
+                    readonly companyVatNumber: {
                         readonly type: StringConstructor;
                     };
                 };
