@@ -240,18 +240,6 @@ var Schema = {
                     companyVatNumber: { type: String },
                 },
             },
-            complementaryDocs: {
-                type: Array,
-                default: [],
-                items: {
-                    type: Object,
-                    schema: {
-                        name: { type: String },
-                        type: { type: String },
-                        url: { type: String },
-                    }
-                }
-            },
             internalRef: { type: String, required: true },
             paymentId: { type: String },
             conversionId: { type: String },

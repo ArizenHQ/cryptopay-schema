@@ -586,24 +586,6 @@ declare const Schema: {
                     };
                 };
             };
-            readonly complementaryDocs: {
-                readonly type: ArrayConstructor;
-                readonly default: readonly [];
-                readonly items: {
-                    readonly type: ObjectConstructor;
-                    readonly schema: {
-                        readonly name: {
-                            readonly type: StringConstructor;
-                        };
-                        readonly type: {
-                            readonly type: StringConstructor;
-                        };
-                        readonly url: {
-                            readonly type: StringConstructor;
-                        };
-                    };
-                };
-            };
             readonly internalRef: {
                 readonly type: StringConstructor;
                 readonly required: true;
