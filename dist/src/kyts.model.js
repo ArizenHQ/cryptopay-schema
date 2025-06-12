@@ -62,16 +62,24 @@ var Kyts = /** @class */ (function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 3, , 4]);
+                        _b.trys.push([0, 6, , 7]);
                         return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();
                         this.table.setContext({ accountId: project.accountId });
                         data.accountId = project.accountId;
                         data.projectId = projectId;
-                        return [4 /*yield*/, this.Kyt.get({ address: data.address }, { index: "gs2", follow: true })];
+                        kyt = null;
+                        if (!data.orderId) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.Kyt.get({ orderId: data.orderId }, { index: "gs5", follow: true })];
                     case 2:
                         kyt = _b.sent();
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, this.Kyt.get({ address: data.address }, { index: "gs2", follow: true })];
+                    case 4:
+                        kyt = _b.sent();
+                        _b.label = 5;
+                    case 5:
                         param = {};
                         if (incrementCount)
                             param = { add: { calls: 1 } };
@@ -90,12 +98,12 @@ var Kyts = /** @class */ (function () {
                                     });
                                 }); })];
                         }
-                        return [3 /*break*/, 4];
-                    case 3:
+                        return [3 /*break*/, 7];
+                    case 6:
                         error_1 = _b.sent();
                         console.error(error_1);
                         throw new Error("Error during add or update new kyt ".concat(error_1));
-                    case 4: return [2 /*return*/];
+                    case 7: return [2 /*return*/];
                 }
             });
         }); };

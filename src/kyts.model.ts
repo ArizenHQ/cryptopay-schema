@@ -55,8 +55,12 @@ export class Kyts {
       this.table.setContext({ accountId: project.accountId });
       data.accountId = project.accountId;
       data.projectId = projectId;
-
-      const kyt = await this.Kyt.get({ address: data.address }, { index: "gs2", follow: true })
+      let kyt = null;
+      if(data.orderId) {
+        kyt = await this.Kyt.get({ orderId: data.orderId }, { index: "gs5", follow: true })
+      } else {
+        kyt = await this.Kyt.get({ address: data.address }, { index: "gs2", follow: true })
+      }
       let param = {}
       if(incrementCount) param = { add: { calls: 1 } };
 
