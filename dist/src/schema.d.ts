@@ -974,6 +974,9 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly required: true;
             };
+            readonly orderId: {
+                readonly type: StringConstructor;
+            };
             readonly ulid: {
                 readonly type: StringConstructor;
                 readonly generate: "ulid";
@@ -997,6 +1000,14 @@ declare const Schema: {
             readonly gs4sk: {
                 readonly type: StringConstructor;
                 readonly value: "kyt#${ulid}";
+            };
+            readonly gs5pk: {
+                readonly type: StringConstructor;
+                readonly value: "kyt#";
+            };
+            readonly gs5sk: {
+                readonly type: StringConstructor;
+                readonly value: "kyt#${orderId}";
             };
         };
         readonly GasStation: {

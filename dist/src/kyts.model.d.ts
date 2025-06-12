@@ -16,6 +16,7 @@ export declare class Kyts {
     findPublicById: (id: string) => Promise<any>;
     scan: (params?: any, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     getById: (id: string) => Promise<any>;
+    findByOrderId: (orderId: string) => Promise<any>;
     list: (accountId: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;

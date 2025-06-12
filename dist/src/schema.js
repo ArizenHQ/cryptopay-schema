@@ -372,6 +372,7 @@ var Schema = {
             calls: { type: Number, default: 0 },
             accountId: { type: String, required: true },
             projectId: { type: String, required: true },
+            orderId: { type: String },
             ulid: { type: String, generate: "ulid" },
             gs1pk: { type: String, value: "kyt#" },
             gs1sk: { type: String, value: "kyt#${id}" },
@@ -381,6 +382,8 @@ var Schema = {
                 type: String,
                 value: "kyt#${ulid}",
             },
+            gs5pk: { type: String, value: "kyt#" },
+            gs5sk: { type: String, value: "kyt#${orderId}" },
         },
         GasStation: {
             pk: { type: String, value: "account#${accountId}" },
