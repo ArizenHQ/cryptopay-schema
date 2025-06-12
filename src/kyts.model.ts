@@ -98,7 +98,7 @@ export class Kyts {
   };
 
   findByOrderId = async (orderId: string) => {
-    return await this.Kyt.get({ orderId: orderId }, { index: "gs5", follow: true });
+    return await this.Kyt.find({ orderId: orderId }, { index: "gs5", follow: true });
   };
 
   list = async (accountId: string, query: any = {}) => {
