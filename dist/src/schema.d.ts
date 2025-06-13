@@ -697,6 +697,77 @@ declare const Schema: {
                 readonly value: "order#${id}#${typeOrder}#${codeProject}#${success}#${tx_hash}";
             };
         };
+        readonly PaymentLink: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "account#${accountId}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "paymentLink#${id}";
+            };
+            readonly id: {
+                readonly type: StringConstructor;
+                readonly generate: "uuid";
+                readonly validate: RegExp;
+            };
+            readonly accountId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly orderId: {
+                readonly type: StringConstructor;
+            };
+            readonly projectId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly status: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["pending", "done", "failed"];
+                readonly default: "pending";
+                readonly required: true;
+            };
+            readonly params: {
+                readonly type: ObjectConstructor;
+                readonly default: {};
+            };
+            readonly dateExpiration: {
+                readonly type: StringConstructor;
+            };
+            readonly ulid: {
+                readonly type: StringConstructor;
+                readonly generate: "ulid";
+            };
+            readonly gs1pk: {
+                readonly type: StringConstructor;
+                readonly value: "paymentLink#";
+            };
+            readonly gs1sk: {
+                readonly type: StringConstructor;
+                readonly value: "paymentLink#${id}";
+            };
+            readonly gs2sk: {
+                readonly type: StringConstructor;
+                readonly value: "paymentLink#${orderId}";
+            };
+            readonly gs3sk: {
+                readonly type: StringConstructor;
+                readonly value: "paymentLink#${ulid}";
+            };
+            readonly gs4sk: {
+                readonly type: StringConstructor;
+                readonly value: "paymentLink#${status}";
+            };
+            readonly gs5pk: {
+                readonly type: StringConstructor;
+                readonly default: "standard#paymentLink";
+            };
+            readonly gs5sk: {
+                readonly type: StringConstructor;
+                readonly value: "paymentLink#${projectId}";
+            };
+        };
         readonly DocumentOrder: {
             readonly pk: {
                 readonly type: StringConstructor;

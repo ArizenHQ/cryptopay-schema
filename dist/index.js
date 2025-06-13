@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DocumentOrder = exports.PasswordResetToken = exports.RefreshToken = exports.Conversions = exports.GasStations = exports.Kyts = exports.Payments = exports.Orders = exports.Projects = exports.Users = exports.Accounts = void 0;
+exports.PaymentLinks = exports.DocumentOrder = exports.PasswordResetToken = exports.RefreshToken = exports.Conversions = exports.GasStations = exports.Kyts = exports.Payments = exports.Orders = exports.Projects = exports.Users = exports.Accounts = void 0;
 var accounts_model_1 = require("./src/accounts.model");
 Object.defineProperty(exports, "Accounts", { enumerable: true, get: function () { return accounts_model_1.Accounts; } });
 var users_model_1 = require("./src/users.model");
@@ -23,4 +23,6 @@ var password_reset_token_model_1 = require("./src/password.reset.token.model");
 Object.defineProperty(exports, "PasswordResetToken", { enumerable: true, get: function () { return password_reset_token_model_1.PasswordResetToken; } });
 var documents_order_model_1 = require("./src/documents.order.model");
 Object.defineProperty(exports, "DocumentOrder", { enumerable: true, get: function () { return documents_order_model_1.DocumentOrder; } });
+var paymentLink_model_1 = require("./src/paymentLink.model");
+Object.defineProperty(exports, "PaymentLinks", { enumerable: true, get: function () { return paymentLink_model_1.PaymentLinks; } });
 //# sourceMappingURL=index.js.map
