@@ -722,6 +722,11 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly required: true;
             };
+            readonly type: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["cryptoOrder"];
+                readonly required: true;
+            };
             readonly status: {
                 readonly type: StringConstructor;
                 readonly enum: readonly ["pending", "done", "failed"];
@@ -732,8 +737,9 @@ declare const Schema: {
                 readonly type: ObjectConstructor;
                 readonly default: {};
             };
-            readonly dateExpiration: {
-                readonly type: StringConstructor;
+            readonly expiresAt: {
+                readonly type: DateConstructor;
+                readonly required: true;
             };
             readonly ulid: {
                 readonly type: StringConstructor;
@@ -757,7 +763,7 @@ declare const Schema: {
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "paymentLink#${status}";
+                readonly value: "paymentLink#${cryptoOrder}";
             };
             readonly gs5pk: {
                 readonly type: StringConstructor;

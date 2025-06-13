@@ -73,7 +73,7 @@ var PaymentLinks = /** @class */ (function () {
                     case 3:
                         error_1 = _b.sent();
                         console.error(error_1);
-                        throw new Error("Error during add or update new kyt ".concat(error_1));
+                        throw new Error("Error during add or update new PaymentLink ".concat(error_1));
                     case 4: return [2 /*return*/];
                 }
             });
@@ -134,17 +134,17 @@ var PaymentLinks = /** @class */ (function () {
             });
         };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var kyt, currentDate, err_1;
+            var paymentLink, currentDate, err_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
                         return [4 /*yield*/, this.PaymentLink.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
-                        kyt = _b.sent();
-                        if (!kyt)
-                            throw new Error("no kyt fund for id: ".concat(id));
-                        this.table.setContext({ accountId: kyt.accountId });
+                        paymentLink = _b.sent();
+                        if (!paymentLink)
+                            throw new Error("no PaymentLink fund for id: ".concat(id));
+                        this.table.setContext({ accountId: paymentLink.accountId });
                         data.id = id;
                         currentDate = new Date();
                         data.dateLastUpdated = currentDate.getTime();
@@ -152,21 +152,21 @@ var PaymentLinks = /** @class */ (function () {
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();
-                        throw new Error("Error during update kyt ".concat(err_1));
+                        throw new Error("Error during update PaymentLink ".concat(err_1));
                     case 4: return [2 /*return*/];
                 }
             });
         }); };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            var kyt;
+            var paymentLink;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Kyt.get({ id: id }, { index: "gs1", follow: true })];
+                    case 0: return [4 /*yield*/, this.PaymentLink.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
-                        kyt = _b.sent();
-                        if (!kyt)
-                            throw new Error("Kyt not found");
-                        return [4 /*yield*/, this.Kyt.remove({ sk: "kyt#".concat(id), pk: "account#".concat(kyt.accountId) })];
+                        paymentLink = _b.sent();
+                        if (!paymentLink)
+                            throw new Error("PaymentLink not found");
+                        return [4 /*yield*/, this.PaymentLink.remove({ sk: "paymentLink#".concat(id), pk: "account#".concat(paymentLink.accountId) })];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
             });

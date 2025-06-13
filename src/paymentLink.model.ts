@@ -59,7 +59,7 @@ export class PaymentLinks {
       return await this.PaymentLink.create(data);
     } catch (error) {
       console.error(error)
-      throw new Error(`Error during add or update new kyt ${error}`);
+      throw new Error(`Error during add or update new PaymentLink ${error}`);
     }
   };
 
@@ -87,22 +87,22 @@ export class PaymentLinks {
   
   patchById = async (id: string, data: any) => {
     try {
-      let kyt = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
-      if (!kyt) throw new Error(`no kyt fund for id: ${id}`)
-      this.table.setContext({ accountId: kyt.accountId });
+      let paymentLink = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
+      if (!paymentLink) throw new Error(`no PaymentLink fund for id: ${id}`)
+      this.table.setContext({ accountId: paymentLink.accountId });
       data.id = id;
       const currentDate = new Date();
       data.dateLastUpdated = currentDate.getTime();
       return await this.PaymentLink.update(data, {return: 'get'});
     } catch (err) {
-      throw new Error(`Error during update kyt ${err}`);
+      throw new Error(`Error during update PaymentLink ${err}`);
     }
   };
 
   removeById = async (id: string) => {
-    let kyt = await this.Kyt.get({ id: id }, { index: "gs1", follow: true });
-    if (!kyt) throw new Error(`Kyt not found`);
-    return await this.Kyt.remove({ sk: `kyt#${id}`, pk: `account#${kyt.accountId}` });
+    let paymentLink = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
+    if (!paymentLink) throw new Error(`PaymentLink not found`);
+    return await this.PaymentLink.remove({ sk: `paymentLink#${id}`, pk: `account#${paymentLink.accountId}` });
   };
 
 }
