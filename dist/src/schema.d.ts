@@ -733,6 +733,10 @@ declare const Schema: {
                 readonly default: "pending";
                 readonly required: true;
             };
+            readonly internalRef: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
             readonly params: {
                 readonly type: ObjectConstructor;
                 readonly default: {};

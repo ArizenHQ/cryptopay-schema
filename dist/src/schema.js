@@ -297,6 +297,7 @@ var Schema = {
                 default: "pending",
                 required: true,
             },
+            internalRef: { type: String, required: true },
             params: { type: Object, default: {} },
             expiresAt: { type: Date, required: true },
             ulid: { type: String, generate: "ulid" },
