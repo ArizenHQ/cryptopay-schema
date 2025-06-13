@@ -293,7 +293,7 @@ var Schema = {
             type: { type: String, enum: ["cryptoOrder"], required: true },
             status: {
                 type: String,
-                enum: ["pending", "done", "failed", "actived"],
+                enum: ["pending", "done", "failed", "actived", "expired"],
                 default: "pending",
                 required: true,
             },

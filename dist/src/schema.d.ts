@@ -729,7 +729,7 @@ declare const Schema: {
             };
             readonly status: {
                 readonly type: StringConstructor;
-                readonly enum: readonly ["pending", "done", "failed", "actived"];
+                readonly enum: readonly ["pending", "done", "failed", "actived", "expired"];
                 readonly default: "pending";
                 readonly required: true;
             };
