@@ -184,6 +184,7 @@ const Schema = {
       amount: { type: Number, required: true },
       euroAmount: { type: Number },
       quoteAmount: { type: Number},
+      fees: { type: Number},
       amountToClaim: { type: Number },
       quoteId: { type: String },
       dateQuote: { type: String },
