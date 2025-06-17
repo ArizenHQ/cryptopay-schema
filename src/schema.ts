@@ -185,6 +185,7 @@ const Schema = {
       euroAmount: { type: Number },
       quoteAmount: { type: Number},
       fees: { type: Number},
+      feesIncluded: { type: Boolean, default: true },
       amountToClaim: { type: Number },
       quoteId: { type: String },
       dateQuote: { type: String },
@@ -344,6 +345,7 @@ const Schema = {
       base: { type: Number },
       baseCurrency: { type: String },
       fees: { type: Number },
+      feesIncluded: { type: Boolean, default: true },
       dateConversion: { type: String },
       status: {
         type: String,

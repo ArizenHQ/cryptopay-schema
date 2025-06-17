@@ -182,6 +182,8 @@ var Schema = {
             amount: { type: Number, required: true },
             euroAmount: { type: Number },
             quoteAmount: { type: Number },
+            fees: { type: Number },
+            feesIncluded: { type: Boolean, default: true },
             amountToClaim: { type: Number },
             quoteId: { type: String },
             dateQuote: { type: String },
@@ -341,6 +343,7 @@ var Schema = {
             base: { type: Number },
             baseCurrency: { type: String },
             fees: { type: Number },
+            feesIncluded: { type: Boolean, default: true },
             dateConversion: { type: String },
             status: {
                 type: String,

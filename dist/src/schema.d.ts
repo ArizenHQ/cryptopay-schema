@@ -465,6 +465,13 @@ declare const Schema: {
             readonly quoteAmount: {
                 readonly type: NumberConstructor;
             };
+            readonly fees: {
+                readonly type: NumberConstructor;
+            };
+            readonly feesIncluded: {
+                readonly type: BooleanConstructor;
+                readonly default: true;
+            };
             readonly amountToClaim: {
                 readonly type: NumberConstructor;
             };
@@ -886,6 +893,10 @@ declare const Schema: {
             };
             readonly fees: {
                 readonly type: NumberConstructor;
+            };
+            readonly feesIncluded: {
+                readonly type: BooleanConstructor;
+                readonly default: true;
             };
             readonly dateConversion: {
                 readonly type: StringConstructor;
