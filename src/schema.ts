@@ -295,7 +295,7 @@ const Schema = {
       type: { type: String, enum: ["cryptoOrder"], required: true },
       status: {
         type: String,
-        enum: ["pending", "done", "failed", "actived", "expired"],
+        enum: ["pending", "done", "failed", "activated", "expired"],
         default: "pending",
         required: true,
       },
