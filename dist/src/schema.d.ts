@@ -462,6 +462,9 @@ declare const Schema: {
             readonly euroAmount: {
                 readonly type: NumberConstructor;
             };
+            readonly quoteAmount: {
+                readonly type: NumberConstructor;
+            };
             readonly amountToClaim: {
                 readonly type: NumberConstructor;
             };

@@ -183,6 +183,7 @@ const Schema = {
       currency: { type: String, enum: ["ETH", "POL", "MATIC", "EUR", "USDT", "USDC"] },
       amount: { type: Number, required: true },
       euroAmount: { type: Number },
+      quoteAmount: { type: Number},
       amountToClaim: { type: Number },
       quoteId: { type: String },
       dateQuote: { type: String },
