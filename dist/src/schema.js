@@ -120,6 +120,7 @@ var Schema = {
             description: { type: String, required: false },
             autorizedByCNHS: { type: Boolean, default: false },
             autoConvert: { type: Boolean, default: false },
+            feesIncluded: { type: Boolean, default: true },
             userIdCNHS: { type: String },
             parameters: {
                 type: Object,

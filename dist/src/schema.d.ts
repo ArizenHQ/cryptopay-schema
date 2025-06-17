@@ -285,6 +285,10 @@ declare const Schema: {
                 readonly type: BooleanConstructor;
                 readonly default: false;
             };
+            readonly feesIncluded: {
+                readonly type: BooleanConstructor;
+                readonly default: true;
+            };
             readonly userIdCNHS: {
                 readonly type: StringConstructor;
             };
