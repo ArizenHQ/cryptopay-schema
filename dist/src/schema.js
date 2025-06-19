@@ -295,7 +295,7 @@ var Schema = {
             orderId: { type: String },
             projectId: { type: String, required: true },
             type: { type: String, enum: ["cryptoOrder"], required: true },
-            status: {
+            statusPaymentLink: {
                 type: String,
                 enum: ["pending", "done", "failed", "activated", "expired"],
                 default: "pending",

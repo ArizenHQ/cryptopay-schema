@@ -741,7 +741,7 @@ declare const Schema: {
                 readonly enum: readonly ["cryptoOrder"];
                 readonly required: true;
             };
-            readonly status: {
+            readonly statusPaymentLink: {
                 readonly type: StringConstructor;
                 readonly enum: readonly ["pending", "done", "failed", "activated", "expired"];
                 readonly default: "pending";
