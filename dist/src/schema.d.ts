@@ -453,7 +453,11 @@ declare const Schema: {
             };
             readonly currency: {
                 readonly type: StringConstructor;
-                readonly enum: readonly ["ETH", "POL", "MATIC", "EUR", "USDT", "USDC"];
+                readonly enum: readonly ["ETH", "POL", "MATIC", "EUR", "USDT", "USDC", "BTC", "SOL", "AVAX"];
+            };
+            readonly blockchain: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["ethereum", "polygon", "arbitrum", "solana", "avalanche", "base", "bitcoin", "bnb"];
             };
             readonly amount: {
                 readonly type: NumberConstructor;
