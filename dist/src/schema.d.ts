@@ -351,7 +351,6 @@ declare const Schema: {
                     };
                     readonly smartContractAddress: {
                         readonly type: StringConstructor;
-                        readonly validate: RegExp;
                     };
                     readonly walletAddress: {
                         readonly type: StringConstructor;
@@ -560,11 +559,9 @@ declare const Schema: {
             };
             readonly customerAddress: {
                 readonly type: StringConstructor;
-                readonly validate: RegExp;
             };
             readonly publicAddressDest: {
                 readonly type: StringConstructor;
-                readonly validate: RegExp;
             };
             readonly customer: {
                 readonly type: ObjectConstructor;
@@ -675,7 +672,6 @@ declare const Schema: {
             };
             readonly walletAddress: {
                 readonly type: StringConstructor;
-                readonly validate: RegExp;
             };
             readonly webhookUrl: {
                 readonly type: StringConstructor;
