@@ -210,7 +210,7 @@ export const blockchainNames = [
   }
 
   // Utility helpers for UI
-  export function listBlockchains(modules?: string[]) {
+  export function listBlockchains(modules?: string | string[]) {
     const set = new Set<string>();
     for (const entries of Object.values(currencyNetworkMap)) {
       for (const e of entries) {
@@ -218,18 +218,24 @@ export const blockchainNames = [
       }
     }
     const all = Array.from(set.values()).sort((a, b) => a.localeCompare(b));
-    if (!modules || modules.length === 0) return all;
-    const mods = new Set(modules.map((m) => String(m).toLowerCase()));
+    if (!modules || (Array.isArray(modules) && modules.length === 0)) return all;
+    const mods = new Set(
+      (Array.isArray(modules) ? modules : [modules]).map((m) => String(m).toLowerCase())
+    );
     return all.filter((b) => mods.has(b.toLowerCase()));
   }
 
-  export function listCurrenciesForBlockchain(blockchain?: string) {
-    const b = String(blockchain || '').toLowerCase();
-    const result: string[] = [];
+  export function listCurrenciesForBlockchain(blockchain?: string | string[]) {
+    const targets: string[] = Array.isArray(blockchain)
+      ? blockchain.map((b) => String(b || '').toLowerCase())
+      : (blockchain ? [String(blockchain).toLowerCase()] : []);
+    const allow = new Set<string>(targets);
+    const result: Set<string> = new Set();
+    if (allow.size === 0) return [];
     for (const [cur, nets] of Object.entries(currencyNetworkMap)) {
-      if (nets.some(e => e.name.toLowerCase() === b)) result.push(cur);
+      if (nets.some((e) => allow.has(String(e.name || '').toLowerCase()))) result.add(cur);
     }
-    return result.sort();
+    return Array.from(result.values()).sort();
   }
 
   // Map blockchain -> default secret network label when not explicitly provided

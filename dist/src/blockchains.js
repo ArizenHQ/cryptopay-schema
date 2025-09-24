@@ -224,20 +224,25 @@ function listBlockchains(modules) {
         }
     }
     var all = Array.from(set.values()).sort(function (a, b) { return a.localeCompare(b); });
-    if (!modules || modules.length === 0)
+    if (!modules || (Array.isArray(modules) && modules.length === 0))
         return all;
-    var mods = new Set(modules.map(function (m) { return String(m).toLowerCase(); }));
+    var mods = new Set((Array.isArray(modules) ? modules : [modules]).map(function (m) { return String(m).toLowerCase(); }));
     return all.filter(function (b) { return mods.has(b.toLowerCase()); });
 }
 function listCurrenciesForBlockchain(blockchain) {
-    var b = String(blockchain || '').toLowerCase();
-    var result = [];
+    var targets = Array.isArray(blockchain)
+        ? blockchain.map(function (b) { return String(b || '').toLowerCase(); })
+        : (blockchain ? [String(blockchain).toLowerCase()] : []);
+    var allow = new Set(targets);
+    var result = new Set();
+    if (allow.size === 0)
+        return [];
     for (var _i = 0, _a = Object.entries(exports.currencyNetworkMap); _i < _a.length; _i++) {
         var _b = _a[_i], cur = _b[0], nets = _b[1];
-        if (nets.some(function (e) { return e.name.toLowerCase() === b; }))
-            result.push(cur);
+        if (nets.some(function (e) { return allow.has(String(e.name || '').toLowerCase()); }))
+            result.add(cur);
     }
-    return result.sort();
+    return Array.from(result.values()).sort();
 }
 // Map blockchain -> default secret network label when not explicitly provided
 // Used to compose secret keys like notification_crypto_pay_${blockchain}_${network}
