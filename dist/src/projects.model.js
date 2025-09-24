@@ -54,6 +54,7 @@ var ApiGatewayCryptoPayment_js_1 = require("./utils/ApiGatewayCryptoPayment.js")
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var crypto_1 = require("crypto");
 var paginateModel_1 = require("./utils/paginateModel");
+var blockchains_1 = require("./blockchains");
 var client = new Dynamo_1.Dynamo({
     client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }),
 });
@@ -367,6 +368,40 @@ var Projects = /** @class */ (function () {
             var isCardPayment = data.typeProject === "cardPayment";
             var isGasStation = data.typeProject === "gasStation";
             var params = data.parameters || {};
+            // Normalize/validate multi-blockchain parameters when provided (backward-compatible)
+            if (params.blockchain && typeof params.blockchain === 'string') {
+                var bc_1 = String(params.blockchain).toLowerCase();
+                var isValid = blockchains_1.blockchainNames.some(function (n) { return n.toLowerCase() === bc_1; });
+                if (!isValid)
+                    throw new Error("Invalid blockchain '".concat(params.blockchain, "'."));
+                // Persist normalized lowercase for consistency
+                params.blockchain = bc_1;
+            }
+            if (Array.isArray(params.blockchains)) {
+                var normalized = Array.from(new Set(params.blockchains.map(function (b) { return String(b || '').toLowerCase(); }).filter(Boolean)));
+                var valid = normalized.filter(function (b) { return blockchains_1.blockchainNames.some(function (n) { return n.toLowerCase() === b; }); });
+                if (valid.length !== normalized.length) {
+                    throw new Error("Some provided blockchains are invalid");
+                }
+                params.blockchains = valid;
+                // Ensure single blockchain is consistent with list if both present
+                if (params.blockchain && !valid.includes(params.blockchain))
+                    params.blockchains.unshift(params.blockchain);
+            }
+            if (Array.isArray(params.supportedCurrencies)) {
+                var normalizedCurrencies = Array.from(new Set(params.supportedCurrencies.map(function (c) { return String(c || '').toUpperCase(); }).filter(Boolean)));
+                var unknown = normalizedCurrencies.filter(function (c) { return !(c in blockchains_1.currencyNetworkMap); });
+                if (unknown.length)
+                    throw new Error("Unsupported currencies: ".concat(unknown.join(', ')));
+                // If a specific blockchain is selected, ensure currencies are available on that blockchain
+                if (params.blockchain) {
+                    var allowed_1 = new Set((0, blockchains_1.listCurrenciesForBlockchain)(params.blockchain).map(function (c) { return c.toUpperCase(); }));
+                    var notAllowed = normalizedCurrencies.filter(function (c) { return !allowed_1.has(c); });
+                    if (notAllowed.length)
+                        throw new Error("Currencies not available on blockchain '".concat(params.blockchain, "': ").concat(notAllowed.join(', ')));
+                }
+                params.supportedCurrencies = normalizedCurrencies;
+            }
             // Vérification des paramètres interdits pour certains types de projets
             if (isCryptoPayment || isGasStation) {
                 if (params.methodSmartContract || params.abiSmartContract) {
@@ -412,6 +447,8 @@ var Projects = /** @class */ (function () {
                     }
                 }
             }
+            // Re-attach normalized params
+            data.parameters = params;
             return true;
         };
         this.secretsString = secretsString;
