@@ -214,20 +214,39 @@ function resolveBlockchainForCurrency(currency, preferred) {
 }
 // Utility helpers for UI
 function listBlockchains(modules) {
-    var set = new Set();
+    // Build full set from currencyNetworkMap
+    var allSet = new Set();
     for (var _i = 0, _a = Object.values(exports.currencyNetworkMap); _i < _a.length; _i++) {
         var entries = _a[_i];
         for (var _b = 0, entries_1 = entries; _b < entries_1.length; _b++) {
             var e = entries_1[_b];
             if (e === null || e === void 0 ? void 0 : e.name)
-                set.add(e.name);
+                allSet.add(e.name);
         }
     }
-    var all = Array.from(set.values()).sort(function (a, b) { return a.localeCompare(b); });
-    if (!modules || (Array.isArray(modules) && modules.length === 0))
-        return all;
-    var mods = new Set((Array.isArray(modules) ? modules : [modules]).map(function (m) { return String(m).toLowerCase(); }));
-    return all.filter(function (b) { return mods.has(b.toLowerCase()); });
+    var all = Array.from(allSet.values());
+    // If no module filter, return all sorted
+    var normalized = Array.isArray(modules) ? modules : (modules ? [modules] : []);
+    if (normalized.length === 0)
+        return all.sort(function (a, b) { return a.localeCompare(b); });
+    // Filter blockchains by modules declared in currencyNetworkMap entries
+    var wanted = new Set(normalized.map(function (x) { return String(x).toLowerCase(); }));
+    var keep = new Set();
+    for (var _c = 0, _d = Object.values(exports.currencyNetworkMap); _c < _d.length; _c++) {
+        var entries = _d[_c];
+        for (var _e = 0, _f = entries; _e < _f.length; _e++) {
+            var e = _f[_e];
+            var mods = Array.isArray(e === null || e === void 0 ? void 0 : e.modules) ? e.modules.map(function (m) { return String(m).toLowerCase(); }) : [];
+            if (mods.length === 0)
+                continue; // if no module info, skip filtering to avoid false positives
+            if (mods.some(function (m) { return wanted.has(m); })) {
+                if (e === null || e === void 0 ? void 0 : e.name)
+                    keep.add(e.name);
+            }
+        }
+    }
+    var arr = Array.from(keep.values());
+    return (arr.length ? arr : all).sort(function (a, b) { return a.localeCompare(b); });
 }
 function listCurrenciesForBlockchain(blockchain) {
     var targets = Array.isArray(blockchain)

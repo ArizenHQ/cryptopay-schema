@@ -211,18 +211,30 @@ export const blockchainNames = [
 
   // Utility helpers for UI
   export function listBlockchains(modules?: string | string[]) {
-    const set = new Set<string>();
+    // Build full set from currencyNetworkMap
+    const allSet = new Set<string>();
     for (const entries of Object.values(currencyNetworkMap)) {
-      for (const e of entries) {
-        if (e?.name) set.add(e.name);
+      for (const e of entries) if (e?.name) allSet.add(e.name);
+    }
+    const all = Array.from(allSet.values());
+    // If no module filter, return all sorted
+    const normalized = Array.isArray(modules) ? modules : (modules ? [modules] : []);
+    if (normalized.length === 0) return all.sort((a, b) => a.localeCompare(b));
+
+    // Filter blockchains by modules declared in currencyNetworkMap entries
+    const wanted = new Set(normalized.map((x) => String(x).toLowerCase()));
+    const keep = new Set<string>();
+    for (const entries of Object.values(currencyNetworkMap)) {
+      for (const e of entries as Array<any>) {
+        const mods: string[] = Array.isArray(e?.modules) ? e.modules.map((m: any) => String(m).toLowerCase()) : [];
+        if (mods.length === 0) continue; // if no module info, skip filtering to avoid false positives
+        if (mods.some((m) => wanted.has(m))) {
+          if (e?.name) keep.add(e.name);
+        }
       }
     }
-    const all = Array.from(set.values()).sort((a, b) => a.localeCompare(b));
-    if (!modules || (Array.isArray(modules) && modules.length === 0)) return all;
-    const mods = new Set(
-      (Array.isArray(modules) ? modules : [modules]).map((m) => String(m).toLowerCase())
-    );
-    return all.filter((b) => mods.has(b.toLowerCase()));
+    const arr = Array.from(keep.values());
+    return (arr.length ? arr : all).sort((a, b) => a.localeCompare(b));
   }
 
   export function listCurrenciesForBlockchain(blockchain?: string | string[]) {
