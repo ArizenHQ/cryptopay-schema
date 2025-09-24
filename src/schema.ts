@@ -1,3 +1,5 @@
+import { blockchainNames } from "./blockchains";
+
 const Match = {
   uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
   email:
@@ -152,7 +154,7 @@ const Schema = {
             type: String,
             enum: ["mainnet", "mumbai", "goerli", "ghost", "sepolia"],
           },
-          blockchain: { type: String, enum: ["ethereum", "polygon", "tezos"] },
+          blockchain: { type: String, enum: {...blockchainNames} },
           gasStation: {
             type: Object,
             default: {},
@@ -181,7 +183,7 @@ const Schema = {
       accountId: { type: String, required: true },
       typeOrder: { type: String, required: true, enum: ["card", "crypto"] },
       currency: { type: String, enum: ["ETH", "POL", "MATIC", "EUR", "USDT", "USDC", "BTC", "SOL", "AVAX"] },
-      blockchain: { type: String, enum: ["ethereum", "polygon", "arbitrum", "solana", "avalanche", "base", "bitcoin", "bnb"] },
+      blockchain: { type: String, enum: {...blockchainNames} },
       amount: { type: Number, required: true },
       euroAmount: { type: Number },
       quoteAmount: { type: Number},
@@ -431,7 +433,7 @@ const Schema = {
         type: String,
         enum: ["mainnet", "mumbai", "goerli", "ghost", "sepolia"],
       },
-      blockchain: { type: String, enum: ["ethereum", "polygon", "tezos"] },
+      blockchain: { type: String, enum: {...blockchainNames} },
       tx_date: { type: String },
       tx_hash: { type: String },
       statusOrder: { type: String, default: "CREATED" },
