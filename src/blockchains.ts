@@ -113,18 +113,36 @@ export const blockchainNames = [
     ]
   };
   
+  function isTestnetAlias(value?: string) {
+    const v = String(value || '').toLowerCase();
+    return [
+      'test', 'testnet',
+      // Common names
+      'sepolia', 'goerli', 'holesky', 'mumbai', 'amoy', 'ghost', 'fuji', 'devnet', 'testnet3', 'nile', 'preprod', 'westend'
+    ].includes(v);
+  }
+  
+  function isMainnetAlias(value?: string) {
+    const v = String(value || '').toLowerCase();
+    return ['main', 'mainnet', 'prod', 'production', 'livenet'].includes(v);
+  }
+  
   export function resolveNetworkForCurrency(currency?: string, preferred?: string) {
     const key = String(currency || '').toUpperCase();
     const entries = currencyNetworkMap[key];
     if (!entries || !entries.length) return key;
     if (preferred) {
       const p = String(preferred).toLowerCase();
+      // Direct match on chain name or full network labels
       const found = entries.find(e =>
         e.mainnet.toLowerCase() === p ||
         e.testnet.toLowerCase() === p ||
         (e.name && e.name.toLowerCase() === p)
       );
       if (found) return isNonProd ? found.testnet : found.mainnet;
+      // Legacy aliases: mainnet/testnet or specific testnet names
+      if (isMainnetAlias(p)) return entries[0].mainnet;
+      if (isTestnetAlias(p)) return entries[0].testnet;
     }
     const first = entries[0];
     return isNonProd ? first.testnet : first.mainnet;
@@ -150,6 +168,14 @@ export const blockchainNames = [
         (e.name && e.name.toLowerCase() === p)
       );
       if (found && found.alchemy) return found.alchemy[envKey];
+      if (isMainnetAlias(p)) {
+        const f = entries.find(e => !!e.alchemy);
+        return f && f.alchemy ? f.alchemy.mainnet : undefined;
+      }
+      if (isTestnetAlias(p)) {
+        const f = entries.find(e => !!e.alchemy);
+        return f && f.alchemy ? f.alchemy.testnet : undefined;
+      }
     }
     const first = entries.find((e): e is Entry & { alchemy: { mainnet: string; testnet: string } } => !!e.alchemy);
     if (!first) return undefined;
@@ -162,4 +188,36 @@ export const blockchainNames = [
     if (!entries || !entries.length) return [];
     const envKey = isNonProd ? 'testnet' : 'mainnet';
     return entries.map(e => (e.alchemy ? e.alchemy[envKey] : undefined)).filter(Boolean) as string[];
+  }
+
+  // Derive blockchain name for a currency based on a preferred hint
+  export function resolveBlockchainForCurrency(currency?: string, preferred?: string) {
+    const key = String(currency || '').toUpperCase();
+    const entries = currencyNetworkMap[key];
+    if (!entries || !entries.length) return undefined;
+    if (preferred) {
+      const p = String(preferred).toLowerCase();
+      const found = entries.find(e =>
+        e.mainnet.toLowerCase() === p ||
+        e.testnet.toLowerCase() === p ||
+        (e.name && e.name.toLowerCase() === p)
+      );
+      if (found) return found.name;
+      if (isMainnetAlias(p) || isTestnetAlias(p)) return entries[0].name;
+    }
+    return entries[0].name;
+  }
+
+  // Utility helpers for UI
+  export function listBlockchains() {
+    return [...blockchainNames];
+  }
+
+  export function listCurrenciesForBlockchain(blockchain?: string) {
+    const b = String(blockchain || '').toLowerCase();
+    const result: string[] = [];
+    for (const [cur, nets] of Object.entries(currencyNetworkMap)) {
+      if (nets.some(e => e.name.toLowerCase() === b)) result.push(cur);
+    }
+    return result.sort();
   }

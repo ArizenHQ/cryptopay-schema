@@ -9,6 +9,7 @@ import retrieveSecrets from "./utils/retrieveSecrets";
 import { Projects } from "./projects.model";
 import { Accounts } from "./accounts.model";
 import { paginateModel } from './utils/paginateModel';
+import { resolveNetworkForCurrency, resolveBlockchainForCurrency } from './blockchains';
 
 export class Orders {
   Crypto: any;
@@ -91,6 +92,9 @@ export class Orders {
         webhookUrl: order.webhookUrl || project.parameters?.webhookUrl,
         currency: order.currency?.toUpperCase(),
         customerAddress: order.customerAddress?.toLowerCase(),
+        // Backward-compatible defaulting for blockchain/network
+        blockchain: order.blockchain || project?.parameters?.blockchain || resolveBlockchainForCurrency(order.currency, project?.parameters?.network || project?.parameters?.blockchain),
+        network: order.network || resolveNetworkForCurrency(order.currency, project?.parameters?.network || project?.parameters?.blockchain),
         applicationInfo: {
           externalPlatform: {
             integrator: account.name,

@@ -66,21 +66,22 @@ var client = new Dynamo_1.Dynamo({
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var paginateModel_1 = require("./utils/paginateModel");
+var blockchains_1 = require("./blockchains");
 var Orders = /** @class */ (function () {
     function Orders(secretsString) {
         var _this = this;
         this.insert = function (accountId, order) { return __awaiter(_this, void 0, void 0, function () {
             var project, account, orderData, createdOrder, fieldsToRemove, error_1;
-            var _b, _c, _d, _e;
-            return __generator(this, function (_f) {
-                switch (_f.label) {
+            var _b, _c, _d, _e, _f, _g, _h, _j, _k;
+            return __generator(this, function (_l) {
+                switch (_l.label) {
                     case 0:
-                        _f.trys.push([0, 4, , 5]);
+                        _l.trys.push([0, 4, , 5]);
                         // Normaliser le code du projet
                         order.codeProject = order.projectCode || order.codeProject;
                         return [4 /*yield*/, this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true })];
                     case 1:
-                        project = _f.sent();
+                        project = _l.sent();
                         if (!Object.keys(project).length) {
                             throw new Error("Project not found! Please check your codeProject or API Key");
                         }
@@ -90,10 +91,12 @@ var Orders = /** @class */ (function () {
                         }
                         return [4 /*yield*/, this.Account.get({ pk: "account#".concat(accountId) })];
                     case 2:
-                        account = _f.sent();
+                        account = _l.sent();
                         // Configurer le contexte et les propriétés de base de l'ordre
                         this.table.setContext({ accountId: accountId });
-                        orderData = __assign(__assign({}, order), { accountId: accountId, codeProject: project.codeProject, autoConvert: project.autoConvert ? "enabled" : "disabled", urlsRedirect: order.urlsRedirect || project.parameters, webhookUrl: order.webhookUrl || ((_b = project.parameters) === null || _b === void 0 ? void 0 : _b.webhookUrl), currency: (_c = order.currency) === null || _c === void 0 ? void 0 : _c.toUpperCase(), customerAddress: (_d = order.customerAddress) === null || _d === void 0 ? void 0 : _d.toLowerCase(), applicationInfo: {
+                        orderData = __assign(__assign({}, order), { accountId: accountId, codeProject: project.codeProject, autoConvert: project.autoConvert ? "enabled" : "disabled", urlsRedirect: order.urlsRedirect || project.parameters, webhookUrl: order.webhookUrl || ((_b = project.parameters) === null || _b === void 0 ? void 0 : _b.webhookUrl), currency: (_c = order.currency) === null || _c === void 0 ? void 0 : _c.toUpperCase(), customerAddress: (_d = order.customerAddress) === null || _d === void 0 ? void 0 : _d.toLowerCase(), 
+                            // Backward-compatible defaulting for blockchain/network
+                            blockchain: order.blockchain || ((_e = project === null || project === void 0 ? void 0 : project.parameters) === null || _e === void 0 ? void 0 : _e.blockchain) || (0, blockchains_1.resolveBlockchainForCurrency)(order.currency, ((_f = project === null || project === void 0 ? void 0 : project.parameters) === null || _f === void 0 ? void 0 : _f.network) || ((_g = project === null || project === void 0 ? void 0 : project.parameters) === null || _g === void 0 ? void 0 : _g.blockchain)), network: order.network || (0, blockchains_1.resolveNetworkForCurrency)(order.currency, ((_h = project === null || project === void 0 ? void 0 : project.parameters) === null || _h === void 0 ? void 0 : _h.network) || ((_j = project === null || project === void 0 ? void 0 : project.parameters) === null || _j === void 0 ? void 0 : _j.blockchain)), applicationInfo: {
                                 externalPlatform: {
                                     integrator: account.name,
                                     name: project.name,
@@ -103,12 +106,12 @@ var Orders = /** @class */ (function () {
                                 },
                             } });
                         // Ajouter les paramètres de paiement physique si présents
-                        if (Object.keys(((_e = project === null || project === void 0 ? void 0 : project.parameters) === null || _e === void 0 ? void 0 : _e.physicalPayment) || {}).length > 0) {
+                        if (Object.keys(((_k = project === null || project === void 0 ? void 0 : project.parameters) === null || _k === void 0 ? void 0 : _k.physicalPayment) || {}).length > 0) {
                             orderData.physicalPaymentParams = project.parameters.physicalPayment;
                         }
                         return [4 /*yield*/, this.Order.create(orderData)];
                     case 3:
-                        createdOrder = _f.sent();
+                        createdOrder = _l.sent();
                         fieldsToRemove = [
                             'notificationFromAdyen', 'session', 'applicationInfo',
                             'audit', 'statusOrder', 'countryCode', 'typeOrder'
@@ -119,7 +122,7 @@ var Orders = /** @class */ (function () {
                                 return order;
                             }, createdOrder)];
                     case 4:
-                        error_1 = _f.sent();
+                        error_1 = _l.sent();
                         throw new Error("Error during add new order ".concat(error_1));
                     case 5: return [2 /*return*/];
                 }

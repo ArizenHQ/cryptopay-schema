@@ -10,3 +10,4 @@ export { RefreshToken } from './src/refresh.token.model';
 export { PasswordResetToken } from './src/password.reset.token.model';
 export { DocumentOrder } from './src/documents.order.model';
 export { PaymentLinks } from './src/paymentLink.model';
+export { blockchainNames, currencyNetworkMap, resolveNetworkForCurrency, listNetworksForCurrency, resolveAlchemyNetworkForCurrency, listAlchemyNetworksForCurrency, resolveBlockchainForCurrency, listBlockchains, listCurrenciesForBlockchain, } from './src/blockchains';

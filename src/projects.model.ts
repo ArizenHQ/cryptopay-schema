@@ -10,6 +10,7 @@ import {
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { randomBytes, createHash } from "crypto";
 import { paginateModel } from './utils/paginateModel';
+import { blockchainNames, listCurrenciesForBlockchain, currencyNetworkMap } from './blockchains';
 
 const client = new Dynamo({
   client: new DynamoDBClient({ region: "eu-west-1" }),
@@ -278,6 +279,42 @@ export class Projects {
     const isGasStation = data.typeProject === "gasStation";
     const params = data.parameters || {};
 
+    // Normalize/validate multi-blockchain parameters when provided (backward-compatible)
+    if (params.blockchain && typeof params.blockchain === 'string') {
+      const bc = String(params.blockchain).toLowerCase();
+      const isValid = (blockchainNames as readonly string[]).some((n) => n.toLowerCase() === bc);
+      if (!isValid) throw new Error(`Invalid blockchain '${params.blockchain}'.`);
+      // Persist normalized lowercase for consistency
+      params.blockchain = bc;
+    }
+
+    if (Array.isArray(params.blockchains)) {
+      const normalized = Array.from(new Set(params.blockchains.map((b: any) => String(b || '').toLowerCase()).filter(Boolean)));
+      const valid = normalized.filter((b) => (blockchainNames as readonly string[]).some((n) => n.toLowerCase() === b));
+      if (valid.length !== normalized.length) {
+        throw new Error(`Some provided blockchains are invalid`);
+      }
+      params.blockchains = valid;
+      // Ensure single blockchain is consistent with list if both present
+      if (params.blockchain && !valid.includes(params.blockchain)) params.blockchains.unshift(params.blockchain);
+    }
+
+    if (Array.isArray(params.supportedCurrencies)) {
+      const normalizedCurrencies: string[] = Array.from(
+        new Set(params.supportedCurrencies.map((c: any) => String(c || '').toUpperCase()).filter(Boolean))
+      );
+      const unknown = normalizedCurrencies.filter((c) => !(c in currencyNetworkMap));
+      if (unknown.length) throw new Error(`Unsupported currencies: ${unknown.join(', ')}`);
+
+      // If a specific blockchain is selected, ensure currencies are available on that blockchain
+      if (params.blockchain) {
+        const allowed = new Set(listCurrenciesForBlockchain(params.blockchain).map((c) => c.toUpperCase()));
+        const notAllowed = normalizedCurrencies.filter((c) => !allowed.has(c));
+        if (notAllowed.length) throw new Error(`Currencies not available on blockchain '${params.blockchain}': ${notAllowed.join(', ')}`);
+      }
+      params.supportedCurrencies = normalizedCurrencies;
+    }
+
     // Vérification des paramètres interdits pour certains types de projets
     if (isCryptoPayment || isGasStation) {
       if (params.methodSmartContract || params.abiSmartContract) {
@@ -336,6 +373,8 @@ export class Projects {
       }
     }
 
+    // Re-attach normalized params
+    data.parameters = params;
     return true;
   };
 }
