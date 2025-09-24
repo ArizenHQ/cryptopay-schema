@@ -24,7 +24,7 @@ exports.blockchainNames = [
 var isNonProd = ['development', 'staging'].includes(process.env.NODE_ENV || '');
 exports.currencyNetworkMap = {
     BTC: [
-        { name: 'bitcoin', mainnet: 'Bitcoin', testnet: 'BitcoinTestnet3' }
+        { name: 'bitcoin', mainnet: 'Bitcoin', testnet: 'BitcoinTestnet3', modules: ['cryptoPayment'] }
     ],
     LTC: [
         { name: 'litecoin', mainnet: 'Litecoin', testnet: 'LitecoinTestnet' }
@@ -36,40 +36,40 @@ exports.currencyNetworkMap = {
         { name: 'bitcoincash', mainnet: 'BitcoinCash', testnet: 'BitcoinCashTestnet' }
     ],
     POL: [
-        { name: 'polygon', mainnet: 'Polygon', testnet: 'PolygonAmoy', alchemy: { mainnet: 'MATIC_MAINNET', testnet: 'MATIC_AMOY' } }
+        { name: 'polygon', mainnet: 'Polygon', testnet: 'PolygonAmoy', alchemy: { mainnet: 'MATIC_MAINNET', testnet: 'MATIC_AMOY' }, modules: ['cryptoPayment'] }
     ],
     MATIC: [
-        { name: 'polygon', mainnet: 'Polygon', testnet: 'PolygonAmoy', alchemy: { mainnet: 'MATIC_MAINNET', testnet: 'MATIC_AMOY' } }
+        { name: 'polygon', mainnet: 'Polygon', testnet: 'PolygonAmoy', alchemy: { mainnet: 'MATIC_MAINNET', testnet: 'MATIC_AMOY' }, modules: ['cryptoPayment'] }
     ],
     ARB: [
-        { name: 'arbitrum', mainnet: 'ArbitrumOne', testnet: 'ArbitrumSepolia', alchemy: { mainnet: 'ARB_MAINNET', testnet: 'ARB_SEPOLIA' } }
+        { name: 'arbitrum', mainnet: 'ArbitrumOne', testnet: 'ArbitrumSepolia', alchemy: { mainnet: 'ARB_MAINNET', testnet: 'ARB_SEPOLIA' }, modules: ['cryptoPayment'] }
     ],
     BASE: [
-        { name: 'base', mainnet: 'Base', testnet: 'BaseSepolia', alchemy: { mainnet: 'BASE_MAINNET', testnet: 'BASE_SEPOLIA' } }
+        { name: 'base', mainnet: 'Base', testnet: 'BaseSepolia', alchemy: { mainnet: 'BASE_MAINNET', testnet: 'BASE_SEPOLIA' }, modules: ['cryptoPayment'] }
     ],
     BSC: [
-        { name: 'bsc', mainnet: 'Bsc', testnet: 'BscTestnet', alchemy: { mainnet: 'BNB_MAINNET', testnet: 'BNB_TESTNET' } }
+        { name: 'bsc', mainnet: 'Bsc', testnet: 'BscTestnet', alchemy: { mainnet: 'BNB_MAINNET', testnet: 'BNB_TESTNET' }, modules: ['cryptoPayment'] }
     ],
     BNB: [
-        { name: 'bsc', mainnet: 'Bsc', testnet: 'BscTestnet', alchemy: { mainnet: 'BNB_MAINNET', testnet: 'BNB_TESTNET' } }
+        { name: 'bsc', mainnet: 'Bsc', testnet: 'BscTestnet', alchemy: { mainnet: 'BNB_MAINNET', testnet: 'BNB_TESTNET' }, modules: ['cryptoPayment'] }
     ],
     OP: [
-        { name: 'optimism', mainnet: 'Optimism', testnet: 'OptimismSepolia', alchemy: { mainnet: 'OPT_MAINNET', testnet: 'OPT_SEPOLIA' } }
+        { name: 'optimism', mainnet: 'Optimism', testnet: 'OptimismSepolia', alchemy: { mainnet: 'OPT_MAINNET', testnet: 'OPT_SEPOLIA' }, modules: ['cryptoPayment'] }
     ],
     OPTIMISM: [
-        { name: 'optimism', mainnet: 'Optimism', testnet: 'OptimismSepolia', alchemy: { mainnet: 'OPT_MAINNET', testnet: 'OPT_SEPOLIA' } }
+        { name: 'optimism', mainnet: 'Optimism', testnet: 'OptimismSepolia', alchemy: { mainnet: 'OPT_MAINNET', testnet: 'OPT_SEPOLIA' }, modules: ['cryptoPayment'] }
     ],
     AVAX: [
-        { name: 'avalanche', mainnet: 'AvalancheC', testnet: 'AvalancheCFuji', alchemy: { mainnet: 'AVAX_MAINNET', testnet: 'AVAX_FUJI' } }
+        { name: 'avalanche', mainnet: 'AvalancheC', testnet: 'AvalancheCFuji', alchemy: { mainnet: 'AVAX_MAINNET', testnet: 'AVAX_FUJI' }, modules: ['cryptoPayment'] }
     ],
     CELO: [
         { name: 'celo', mainnet: 'Celo', testnet: 'CeloAlfajores', alchemy: { mainnet: 'CELO_MAINNET', testnet: 'CELO_ALFAJORES' } }
     ],
     FTM: [
-        { name: 'fantom', mainnet: 'FantomOpera', testnet: 'FantomTestnet', alchemy: { mainnet: 'FANTOM_MAINNET', testnet: 'FANTOM_TESTNET' } }
+        { name: 'fantom', mainnet: 'FantomOpera', testnet: 'FantomTestnet', alchemy: { mainnet: 'FANTOM_MAINNET', testnet: 'FANTOM_TESTNET' }, modules: ['cryptoPayment'] }
     ],
     SOL: [
-        { name: 'solana', mainnet: 'Solana', testnet: 'SolanaDevnet', alchemy: { mainnet: 'SOLANA_MAINNET', testnet: 'SOLANA_DEVNET' } }
+        { name: 'solana', mainnet: 'Solana', testnet: 'SolanaDevnet', alchemy: { mainnet: 'SOLANA_MAINNET', testnet: 'SOLANA_DEVNET' }, modules: ['cryptoPayment'] }
     ],
     XLM: [
         { name: 'stellar', mainnet: 'Stellar', testnet: 'StellarTestnet' }
@@ -114,11 +114,11 @@ exports.currencyNetworkMap = {
         { name: 'kusama', mainnet: 'Kusama', testnet: 'Westend' }
     ],
     ETH: [
-        { name: 'ethereum', mainnet: 'Ethereum', testnet: 'EthereumSepolia', alchemy: { mainnet: 'ETH_MAINNET', testnet: 'ETH_SEPOLIA' } },
-        { name: 'optimism', mainnet: 'Optimism', testnet: 'OptimismSepolia', alchemy: { mainnet: 'OPT_MAINNET', testnet: 'OPT_SEPOLIA' } },
-        { name: 'arbitrum', mainnet: 'ArbitrumOne', testnet: 'ArbitrumSepolia', alchemy: { mainnet: 'ARB_MAINNET', testnet: 'ARB_SEPOLIA' } },
-        { name: 'base', mainnet: 'Base', testnet: 'BaseSepolia', alchemy: { mainnet: 'BASE_MAINNET', testnet: 'BASE_SEPOLIA' } },
-        { name: 'polygon', mainnet: 'Polygon', testnet: 'PolygonAmoy', alchemy: { mainnet: 'MATIC_MAINNET', testnet: 'MATIC_AMOY' } }
+        { name: 'ethereum', mainnet: 'Ethereum', testnet: 'EthereumSepolia', alchemy: { mainnet: 'ETH_MAINNET', testnet: 'ETH_SEPOLIA' }, modules: ['cryptoPayment'] },
+        { name: 'optimism', mainnet: 'Optimism', testnet: 'OptimismSepolia', alchemy: { mainnet: 'OPT_MAINNET', testnet: 'OPT_SEPOLIA' }, modules: ['cryptoPayment'] },
+        { name: 'arbitrum', mainnet: 'ArbitrumOne', testnet: 'ArbitrumSepolia', alchemy: { mainnet: 'ARB_MAINNET', testnet: 'ARB_SEPOLIA' }, modules: ['cryptoPayment'] },
+        { name: 'base', mainnet: 'Base', testnet: 'BaseSepolia', alchemy: { mainnet: 'BASE_MAINNET', testnet: 'BASE_SEPOLIA' }, modules: ['cryptoPayment'] },
+        { name: 'polygon', mainnet: 'Polygon', testnet: 'PolygonAmoy', alchemy: { mainnet: 'MATIC_MAINNET', testnet: 'MATIC_AMOY' }, modules: ['cryptoPayment'] }
     ]
 };
 function isTestnetAlias(value) {
@@ -222,8 +222,8 @@ function resolveBlockchainForCurrency(currency, preferred) {
     return entries[0].name;
 }
 // Utility helpers for UI
-function listBlockchains() {
-    return __spreadArray([], exports.blockchainNames, true);
+function listBlockchains(modules) {
+    return __spreadArray([], exports.blockchainNames, true).filter(function (b) { return !modules || modules.includes(b); });
 }
 function listCurrenciesForBlockchain(blockchain) {
     var b = String(blockchain || '').toLowerCase();
