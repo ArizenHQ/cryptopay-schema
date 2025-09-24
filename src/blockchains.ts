@@ -221,3 +221,26 @@ export const blockchainNames = [
     }
     return result.sort();
   }
+
+  // Map blockchain -> default secret network label when not explicitly provided
+  // Used to compose secret keys like notification_crypto_pay_${blockchain}_${network}
+  export function resolveSecretNetworkLabel(blockchain?: string, preferred?: string) {
+    if (preferred) return String(preferred).toLowerCase();
+    const b = String(blockchain || '').toLowerCase();
+    if (!b) return isNonProd ? 'sepolia' : 'mainnet';
+    if (!isNonProd) return 'mainnet';
+    switch (b) {
+      case 'ethereum': return 'sepolia';
+      case 'polygon': return 'amoy'; // PolygonAmoy
+      case 'arbitrum': return 'sepolia';
+      case 'base': return 'sepolia';
+      case 'optimism': return 'sepolia';
+      case 'avalanche': return 'fuji';
+      case 'bsc':
+      case 'bnb': return 'testnet';
+      case 'celo': return 'alfajores';
+      case 'fantom': return 'testnet';
+      case 'tezos': return 'ghost';
+      default: return 'testnet';
+    }
+  }

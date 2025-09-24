@@ -17,6 +17,7 @@ exports.listAlchemyNetworksForCurrency = listAlchemyNetworksForCurrency;
 exports.resolveBlockchainForCurrency = resolveBlockchainForCurrency;
 exports.listBlockchains = listBlockchains;
 exports.listCurrenciesForBlockchain = listCurrenciesForBlockchain;
+exports.resolveSecretNetworkLabel = resolveSecretNetworkLabel;
 exports.blockchainNames = [
     "bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum"
 ];
@@ -233,5 +234,30 @@ function listCurrenciesForBlockchain(blockchain) {
             result.push(cur);
     }
     return result.sort();
+}
+// Map blockchain -> default secret network label when not explicitly provided
+// Used to compose secret keys like notification_crypto_pay_${blockchain}_${network}
+function resolveSecretNetworkLabel(blockchain, preferred) {
+    if (preferred)
+        return String(preferred).toLowerCase();
+    var b = String(blockchain || '').toLowerCase();
+    if (!b)
+        return isNonProd ? 'sepolia' : 'mainnet';
+    if (!isNonProd)
+        return 'mainnet';
+    switch (b) {
+        case 'ethereum': return 'sepolia';
+        case 'polygon': return 'amoy'; // PolygonAmoy
+        case 'arbitrum': return 'sepolia';
+        case 'base': return 'sepolia';
+        case 'optimism': return 'sepolia';
+        case 'avalanche': return 'fuji';
+        case 'bsc':
+        case 'bnb': return 'testnet';
+        case 'celo': return 'alfajores';
+        case 'fantom': return 'testnet';
+        case 'tezos': return 'ghost';
+        default: return 'testnet';
+    }
 }
 //# sourceMappingURL=blockchains.js.map
