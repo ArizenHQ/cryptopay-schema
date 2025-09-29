@@ -162,8 +162,6 @@ var Schema = {
                         type: String,
                         enum: ["mainnet", "mumbai", "goerli", "ghost", "sepolia"],
                     },
-                    // For backward-compat we keep 'blockchain' optional;
-                    // new projects should use 'blockchains' multi-select
                     blockchain: { type: String, enum: __assign({}, blockchains_1.blockchainNames) },
                     blockchains: { type: Array, default: [] },
                     supportedCurrencies: { type: Array, default: [] },
