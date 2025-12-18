@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var blockchains_1 = require("./blockchains");
 var Match = {
@@ -193,7 +182,7 @@ var Schema = {
             accountId: { type: String, required: true },
             typeOrder: { type: String, required: true, enum: ["card", "crypto"] },
             currency: { type: String, enum: ["ETH", "POL", "MATIC", "EUR", "USDT", "USDC", "BTC", "SOL", "AVAX"] },
-            blockchain: { type: String, enum: __assign({}, blockchains_1.blockchainNames) },
+            blockchain: { type: String, enum: blockchains_1.blockchainNames },
             network: { type: String },
             amount: { type: Number, required: true },
             euroAmount: { type: Number },
@@ -384,7 +373,7 @@ var Schema = {
             amount: { type: Number },
             fees: { type: Number },
             currency: { type: String },
-            blockchain: { type: String, enum: __assign({}, blockchains_1.blockchainNames) },
+            blockchain: { type: String, enum: blockchains_1.blockchainNames },
             network: { type: String },
             from: { type: String },
             to: { type: String },
@@ -446,7 +435,7 @@ var Schema = {
                 type: String,
                 enum: ["mainnet", "mumbai", "goerli", "ghost", "sepolia"],
             },
-            blockchain: { type: String, enum: __assign({}, blockchains_1.blockchainNames) },
+            blockchain: { type: String, enum: blockchains_1.blockchainNames },
             tx_date: { type: String },
             tx_hash: { type: String },
             statusOrder: { type: String, default: "CREATED" },
