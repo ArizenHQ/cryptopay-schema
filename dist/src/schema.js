@@ -162,7 +162,7 @@ var Schema = {
                         type: String,
                         enum: ["mainnet", "mumbai", "goerli", "ghost", "sepolia"],
                     },
-                    blockchain: { type: String, enum: __assign({}, blockchains_1.blockchainNames) },
+                    blockchain: { type: String, enum: blockchains_1.blockchainNames },
                     blockchains: { type: Array, default: [] },
                     supportedCurrencies: { type: Array, default: [] },
                     gasStation: {

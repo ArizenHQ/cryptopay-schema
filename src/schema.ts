@@ -154,7 +154,7 @@ const Schema = {
             type: String,
             enum: ["mainnet", "mumbai", "goerli", "ghost", "sepolia"],
           },
-          blockchain: { type: String, enum: {...blockchainNames} },
+          blockchain: { type: String, enum: blockchainNames },
           blockchains: { type: Array, default: [] },
           supportedCurrencies: { type: Array, default: [] },
           gasStation: {

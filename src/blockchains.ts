@@ -111,6 +111,21 @@ export const blockchainNames = [
       { name: 'arbitrum', mainnet: 'ArbitrumOne', testnet: 'ArbitrumSepolia', alchemy: { mainnet: 'ARB_MAINNET',  testnet: 'ARB_SEPOLIA' } , modules: ['cryptopayment'] },
       { name: 'base',     mainnet: 'Base',        testnet: 'BaseSepolia',     alchemy: { mainnet: 'BASE_MAINNET', testnet: 'BASE_SEPOLIA' } , modules: ['cryptopayment'] },
       { name: 'polygon',  mainnet: 'Polygon',     testnet: 'PolygonAmoy',     alchemy: { mainnet: 'MATIC_MAINNET', testnet: 'MATIC_AMOY' } , modules: ['cryptopayment'] }
+    ],
+    USDC: [
+      { name: 'ethereum', mainnet: 'Ethereum',    testnet: 'EthereumSepolia', alchemy: { mainnet: 'ETH_MAINNET',  testnet: 'ETH_SEPOLIA' } , modules: ['cryptopayment'] },
+      { name: 'polygon',  mainnet: 'Polygon',     testnet: 'PolygonAmoy',     alchemy: { mainnet: 'MATIC_MAINNET', testnet: 'MATIC_AMOY' } , modules: ['cryptopayment'] },
+      { name: 'arbitrum', mainnet: 'ArbitrumOne', testnet: 'ArbitrumSepolia', alchemy: { mainnet: 'ARB_MAINNET',  testnet: 'ARB_SEPOLIA' } , modules: ['cryptopayment'] },
+      { name: 'base',     mainnet: 'Base',        testnet: 'BaseSepolia',     alchemy: { mainnet: 'BASE_MAINNET', testnet: 'BASE_SEPOLIA' } , modules: ['cryptopayment'] },
+      { name: 'optimism', mainnet: 'Optimism',    testnet: 'OptimismSepolia', alchemy: { mainnet: 'OPT_MAINNET',  testnet: 'OPT_SEPOLIA' } , modules: ['cryptopayment'] }
+    ],
+    USDT: [
+      { name: 'ethereum', mainnet: 'Ethereum',    testnet: 'EthereumSepolia', alchemy: { mainnet: 'ETH_MAINNET',  testnet: 'ETH_SEPOLIA' } , modules: ['cryptopayment'] },
+      { name: 'polygon',  mainnet: 'Polygon',     testnet: 'PolygonAmoy',     alchemy: { mainnet: 'MATIC_MAINNET', testnet: 'MATIC_AMOY' } , modules: ['cryptopayment'] },
+      { name: 'arbitrum', mainnet: 'ArbitrumOne', testnet: 'ArbitrumSepolia', alchemy: { mainnet: 'ARB_MAINNET',  testnet: 'ARB_SEPOLIA' } , modules: ['cryptopayment'] },
+      { name: 'base',     mainnet: 'Base',        testnet: 'BaseSepolia',     alchemy: { mainnet: 'BASE_MAINNET', testnet: 'BASE_SEPOLIA' } , modules: ['cryptopayment'] },
+      { name: 'optimism', mainnet: 'Optimism',    testnet: 'OptimismSepolia', alchemy: { mainnet: 'OPT_MAINNET',  testnet: 'OPT_SEPOLIA' } , modules: ['cryptopayment'] },
+      { name: 'tron',     mainnet: 'Tron',        testnet: 'TronNile' }
     ]
   };
   
