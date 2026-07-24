@@ -1250,6 +1250,25 @@ declare const Schema: {
             readonly approvedAt: {
                 readonly type: StringConstructor;
             };
+            readonly travelRuleOwner: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["self", "third_party"];
+            };
+            readonly travelRuleOwnerType: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["person", "business"];
+            };
+            readonly travelRuleOwnerInfos: {
+                readonly type: ObjectConstructor;
+                readonly default: {};
+            };
+            readonly travelRuleHost: {
+                readonly type: StringConstructor;
+            };
+            readonly travelRuleHostType: {
+                readonly type: StringConstructor;
+                readonly enum: readonly ["platform", "wallet", "unknown"];
+            };
             readonly ulid: {
                 readonly type: StringConstructor;
                 readonly generate: "ulid";
