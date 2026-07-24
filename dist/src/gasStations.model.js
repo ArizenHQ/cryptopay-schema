@@ -101,7 +101,7 @@ var GasStations = /** @class */ (function () {
             });
         }); };
         this.isGasStationAvailable = function (accountId, projectId, amount) { return __awaiter(_this, void 0, void 0, function () {
-            var dateYeasterday, dateISOYesterday, listGasStationForToday, sum_1, project, limit, e_1;
+            var dateYeasterday, dateISOYesterday, result, listGasStationForToday, sum_1, project, limit, e_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -110,10 +110,11 @@ var GasStations = /** @class */ (function () {
                         dateISOYesterday = new Date(dateYeasterday).toISOString();
                         return [4 /*yield*/, this.list(accountId, projectId, { where: "${dateCreated} >= {" + dateISOYesterday + "}" })];
                     case 1:
-                        listGasStationForToday = _b.sent();
-                        sum_1 = amount;
-                        listGasStationForToday.map(function (gas) {
-                            sum_1 = sum_1 + gas.amount;
+                        result = _b.sent();
+                        listGasStationForToday = Array.isArray(result) ? result : (result === null || result === void 0 ? void 0 : result.items) || [];
+                        sum_1 = Number(amount);
+                        listGasStationForToday.forEach(function (gas) {
+                            sum_1 += Number(gas.amount);
                         });
                         return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 2:

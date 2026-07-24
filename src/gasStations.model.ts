@@ -121,14 +121,15 @@ export class GasStations {
         new Date().getTime() - 24 * 60 * 60 * 1000
       );
       const dateISOYesterday: String = new Date(dateYeasterday).toISOString();
-      const listGasStationForToday: any = await this.list(
+      const result: any = await this.list(
         accountId,
         projectId,
         { where: "${dateCreated} >= {" + dateISOYesterday + "}" }
       );
-      let sum: Number = amount;
-      listGasStationForToday.map((gas: any) => {
-        sum = sum + gas.amount;
+      const listGasStationForToday: any[] = Array.isArray(result) ? result : result?.items || [];
+      let sum: number = Number(amount);
+      listGasStationForToday.forEach((gas: any) => {
+        sum += Number(gas.amount);
       });
       const project = await this.Project.get(
         { id: projectId },
