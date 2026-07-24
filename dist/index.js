@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listCurrenciesForBlockchain = exports.listBlockchains = exports.resolveBlockchainForCurrency = exports.listAlchemyNetworksForCurrency = exports.resolveAlchemyNetworkForCurrency = exports.listNetworksForCurrency = exports.resolveNetworkForCurrency = exports.currencyNetworkMap = exports.blockchainNames = exports.PaymentLinks = exports.DocumentOrder = exports.PasswordResetToken = exports.RefreshToken = exports.Conversions = exports.GasStations = exports.Kyts = exports.Payments = exports.Orders = exports.Projects = exports.Users = exports.Accounts = void 0;
+exports.listCurrenciesForBlockchain = exports.listBlockchains = exports.resolveBlockchainForCurrency = exports.listAlchemyNetworksForCurrency = exports.resolveAlchemyNetworkForCurrency = exports.listNetworksForCurrency = exports.resolveNetworkForCurrency = exports.currencyNetworkMap = exports.blockchainNames = exports.PaymentLinks = exports.DocumentOrder = exports.PasswordResetToken = exports.RefreshToken = exports.Conversions = exports.GasStationStatements = exports.GasStations = exports.Kyts = exports.Payments = exports.Orders = exports.Projects = exports.Users = exports.Accounts = void 0;
 var accounts_model_1 = require("./src/accounts.model");
 Object.defineProperty(exports, "Accounts", { enumerable: true, get: function () { return accounts_model_1.Accounts; } });
 var users_model_1 = require("./src/users.model");
@@ -15,6 +15,8 @@ var kyts_model_1 = require("./src/kyts.model");
 Object.defineProperty(exports, "Kyts", { enumerable: true, get: function () { return kyts_model_1.Kyts; } });
 var gasStations_model_1 = require("./src/gasStations.model");
 Object.defineProperty(exports, "GasStations", { enumerable: true, get: function () { return gasStations_model_1.GasStations; } });
+var gasStationStatements_model_1 = require("./src/gasStationStatements.model");
+Object.defineProperty(exports, "GasStationStatements", { enumerable: true, get: function () { return gasStationStatements_model_1.GasStationStatements; } });
 var conversions_model_1 = require("./src/conversions.model");
 Object.defineProperty(exports, "Conversions", { enumerable: true, get: function () { return conversions_model_1.Conversions; } });
 var refresh_token_model_1 = require("./src/refresh.token.model");

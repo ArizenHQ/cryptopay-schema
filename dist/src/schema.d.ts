@@ -388,6 +388,27 @@ declare const Schema: {
                             readonly limitPer24H: {
                                 readonly type: NumberConstructor;
                             };
+                            readonly approvalThresholdEur: {
+                                readonly type: NumberConstructor;
+                            };
+                            readonly commissionRate: {
+                                readonly type: NumberConstructor;
+                            };
+                            readonly destinationMode: {
+                                readonly type: StringConstructor;
+                                readonly enum: readonly ["whitelist", "free"];
+                            };
+                            readonly allowedAddresses: {
+                                readonly type: ArrayConstructor;
+                                readonly default: readonly [];
+                            };
+                            readonly tokenPriceOverrides: {
+                                readonly type: ObjectConstructor;
+                                readonly default: {};
+                            };
+                            readonly treasuryWalletId: {
+                                readonly type: StringConstructor;
+                            };
                         };
                     };
                 };
@@ -1189,7 +1210,7 @@ declare const Schema: {
                 readonly validate: RegExp;
             };
             readonly amount: {
-                readonly type: NumberConstructor;
+                readonly type: StringConstructor;
                 readonly required: true;
             };
             readonly audit: {
@@ -1199,29 +1220,142 @@ declare const Schema: {
             readonly fees: {
                 readonly type: NumberConstructor;
             };
+            readonly quoteEurAtSendTime: {
+                readonly type: NumberConstructor;
+            };
+            readonly commissionRate: {
+                readonly type: NumberConstructor;
+            };
+            readonly feeAmountEur: {
+                readonly type: NumberConstructor;
+            };
+            readonly billingMonth: {
+                readonly type: StringConstructor;
+            };
+            readonly statementId: {
+                readonly type: StringConstructor;
+            };
+            readonly kytRating: {
+                readonly type: StringConstructor;
+            };
+            readonly kytId: {
+                readonly type: StringConstructor;
+            };
+            readonly approvalRequired: {
+                readonly type: BooleanConstructor;
+            };
+            readonly approvedBy: {
+                readonly type: StringConstructor;
+            };
+            readonly approvedAt: {
+                readonly type: StringConstructor;
+            };
             readonly ulid: {
                 readonly type: StringConstructor;
                 readonly generate: "ulid";
             };
             readonly gs1pk: {
                 readonly type: StringConstructor;
-                readonly value: "getStation#";
+                readonly value: "gasStation#";
             };
             readonly gs1sk: {
                 readonly type: StringConstructor;
-                readonly value: "getStation#${id}";
+                readonly value: "gasStation#${id}";
             };
             readonly gs2sk: {
                 readonly type: StringConstructor;
-                readonly value: "getStation#${codeProject}";
+                readonly value: "gasStation#${projectId}";
             };
             readonly gs3sk: {
                 readonly type: StringConstructor;
-                readonly value: "order#${statusOrder}";
+                readonly value: "gasStation#${statusOrder}";
             };
             readonly gs4sk: {
                 readonly type: StringConstructor;
-                readonly value: "getStation#${ulid}";
+                readonly value: "gasStation#${ulid}";
+            };
+            readonly gs5pk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStation#billing";
+            };
+            readonly gs5sk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStation#${billingMonth}#${projectId}";
+            };
+        };
+        readonly GasStationStatement: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "account#${accountId}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStationStatement#${id}";
+            };
+            readonly id: {
+                readonly type: StringConstructor;
+                readonly generate: "ulid";
+            };
+            readonly accountId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly projectId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly month: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly lineItems: {
+                readonly type: ArrayConstructor;
+                readonly default: readonly [];
+            };
+            readonly totalFeeEur: {
+                readonly type: NumberConstructor;
+            };
+            readonly status: {
+                readonly type: StringConstructor;
+                readonly default: "DRAFT";
+                readonly enum: readonly ["DRAFT", "VALIDATED", "SENT"];
+            };
+            readonly validatedBy: {
+                readonly type: StringConstructor;
+            };
+            readonly validatedAt: {
+                readonly type: StringConstructor;
+            };
+            readonly pdfUrl: {
+                readonly type: StringConstructor;
+            };
+            readonly audit: {
+                readonly type: ArrayConstructor;
+                readonly default: readonly [];
+            };
+            readonly ulid: {
+                readonly type: StringConstructor;
+                readonly generate: "ulid";
+            };
+            readonly gs1pk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStationStatement#";
+            };
+            readonly gs1sk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStationStatement#${id}";
+            };
+            readonly gs2sk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStationStatement#${projectId}";
+            };
+            readonly gs3sk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStationStatement#${month}#${projectId}";
+            };
+            readonly gs4sk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStationStatement#${ulid}";
             };
         };
         readonly RefreshToken: {
