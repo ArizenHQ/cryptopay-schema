@@ -490,7 +490,7 @@ var Schema = {
             },
             validatedBy: { type: String },
             validatedAt: { type: String },
-            pdfUrl: { type: String },
+            pdfUrl: { type: String, validate: Match.url },
             audit: { type: Array, default: [] },
             ulid: { type: String, generate: "ulid" },
             gs1pk: { type: String, value: "gasStationStatement#" },

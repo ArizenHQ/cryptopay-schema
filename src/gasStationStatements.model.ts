@@ -44,8 +44,15 @@ export class GasStationStatements {
       const project = await this.Project.get({ id: data.projectId }, { index: "gs2", follow: true });
       if (!project) throw new Error(`Project not found: ${data.projectId}`);
       this.table.setContext({ accountId: project.accountId });
-      data.accountId = project.accountId;
-      return await this.GasStationStatement.create(data);
+      const safe = {
+        projectId: data.projectId,
+        accountId: project.accountId,
+        month: data.month,
+        lineItems: data.lineItems || [],
+        totalFeeEur: data.totalFeeEur,
+        status: "DRAFT" as const,
+      };
+      return await this.GasStationStatement.create(safe);
     } catch (error) {
       throw new Error(`Error during insert GasStationStatement: ${error}`);
     }

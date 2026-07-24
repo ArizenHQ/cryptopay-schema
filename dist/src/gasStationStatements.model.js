@@ -57,7 +57,7 @@ var GasStationStatements = /** @class */ (function () {
     function GasStationStatements(secretsString) {
         var _this = this;
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
-            var project, error_1;
+            var project, safe, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -68,8 +68,15 @@ var GasStationStatements = /** @class */ (function () {
                         if (!project)
                             throw new Error("Project not found: ".concat(data.projectId));
                         this.table.setContext({ accountId: project.accountId });
-                        data.accountId = project.accountId;
-                        return [4 /*yield*/, this.GasStationStatement.create(data)];
+                        safe = {
+                            projectId: data.projectId,
+                            accountId: project.accountId,
+                            month: data.month,
+                            lineItems: data.lineItems || [],
+                            totalFeeEur: data.totalFeeEur,
+                            status: "DRAFT",
+                        };
+                        return [4 /*yield*/, this.GasStationStatement.create(safe)];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         error_1 = _b.sent();

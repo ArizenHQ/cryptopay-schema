@@ -1328,6 +1328,7 @@ declare const Schema: {
             };
             readonly pdfUrl: {
                 readonly type: StringConstructor;
+                readonly validate: RegExp;
             };
             readonly audit: {
                 readonly type: ArrayConstructor;
