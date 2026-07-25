@@ -250,7 +250,7 @@ var GasStations = /** @class */ (function () {
                     case 3: return [2 /*return*/, _b.sent()];
                     case 4:
                         err_2 = _b.sent();
-                        throw new Error("GasStation ".concat(id, " is not reservable for transfer (already reserved or past CREATED): ").concat(err_2.message));
+                        throw new Error("GasStation ".concat(id, " is not reservable for transfer: it is no longer in CREATED status (already reserved, sent, or otherwise moved on)."));
                     case 5: return [2 /*return*/];
                 }
             });

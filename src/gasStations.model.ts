@@ -222,7 +222,7 @@ export class GasStations {
         { where: "${statusOrder} = {CREATED}", return: "get" }
       );
     } catch (err: any) {
-      throw new Error(`GasStation ${id} is not reservable for transfer (already reserved or past CREATED): ${err.message}`);
+      throw new Error(`GasStation ${id} is not reservable for transfer: it is no longer in CREATED status (already reserved, sent, or otherwise moved on).`);
     }
   };
 
