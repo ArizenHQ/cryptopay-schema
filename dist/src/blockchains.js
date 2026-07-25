@@ -9,6 +9,7 @@ exports.resolveBlockchainForCurrency = resolveBlockchainForCurrency;
 exports.listBlockchains = listBlockchains;
 exports.listCurrenciesForBlockchain = listCurrenciesForBlockchain;
 exports.resolveNativeWalletCurrency = resolveNativeWalletCurrency;
+exports.supportsTransferMemo = supportsTransferMemo;
 exports.resolveSecretNetworkLabel = resolveSecretNetworkLabel;
 exports.blockchainNames = [
     "bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum", "ton", "near", "cosmos"
@@ -330,6 +331,14 @@ function resolveNativeWalletCurrency(currency, preferred) {
         return key;
     var resolvedNetwork = resolveNetworkForCurrency(currency, preferred);
     return NATIVE_CURRENCY_BY_NETWORK[resolvedNetwork] || key;
+}
+// Chains that support a memo / destination tag on transfers (DFNS: "memo or
+// destination tag, supported networks only"). Sending memo for unsupported
+// chains (EVM, Bitcoin...) causes coinhouse-wallet-service's transfer request
+// to be rejected by DFNS validation.
+var MEMO_SUPPORTED_CURRENCIES = new Set(['XRP', 'XLM', 'XTZ']);
+function supportsTransferMemo(currency) {
+    return MEMO_SUPPORTED_CURRENCIES.has(String(currency || '').toUpperCase());
 }
 // Map blockchain -> default secret network label when not explicitly provided
 // Used to compose secret keys like notification_crypto_pay_${blockchain}_${network}

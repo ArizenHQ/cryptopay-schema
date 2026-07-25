@@ -319,6 +319,16 @@ export const blockchainNames = [
     return NATIVE_CURRENCY_BY_NETWORK[resolvedNetwork] || key;
   }
 
+  // Chains that support a memo / destination tag on transfers (DFNS: "memo or
+  // destination tag, supported networks only"). Sending memo for unsupported
+  // chains (EVM, Bitcoin...) causes coinhouse-wallet-service's transfer request
+  // to be rejected by DFNS validation.
+  const MEMO_SUPPORTED_CURRENCIES = new Set(['XRP', 'XLM', 'XTZ']);
+
+  export function supportsTransferMemo(currency?: string) {
+    return MEMO_SUPPORTED_CURRENCIES.has(String(currency || '').toUpperCase());
+  }
+
   // Map blockchain -> default secret network label when not explicitly provided
   // Used to compose secret keys like notification_crypto_pay_${blockchain}_${network}
   export function resolveSecretNetworkLabel(blockchain?: string, preferred?: string) {

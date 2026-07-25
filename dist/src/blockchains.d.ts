@@ -19,5 +19,6 @@ export declare function resolveBlockchainForCurrency(currency?: string, preferre
 export declare function listBlockchains(modules?: string | string[]): string[];
 export declare function listCurrenciesForBlockchain(blockchain?: string | string[]): string[];
 export declare function resolveNativeWalletCurrency(currency?: string, preferred?: string): string;
+export declare function supportsTransferMemo(currency?: string): boolean;
 export declare function resolveSecretNetworkLabel(blockchain?: string, preferred?: string): string;
 export {};

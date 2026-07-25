@@ -20,6 +20,7 @@ export {
   listAlchemyNetworksForCurrency,
   resolveBlockchainForCurrency,
   resolveNativeWalletCurrency,
+  supportsTransferMemo,
   listBlockchains,
   listCurrenciesForBlockchain,
 } from './src/blockchains';
