@@ -21,6 +21,7 @@ export declare class GasStations {
     findByTxHash: (txHash: string) => Promise<any>;
     list: (accountId: string, projectId: string, query: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     patchById: (id: string, data: any) => Promise<any>;
+    reserveForTransfer: (id: string) => Promise<any>;
     removeById: (id: string) => Promise<any>;
 }
 export default GasStations;

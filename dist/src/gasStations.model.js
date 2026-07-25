@@ -227,6 +227,34 @@ var GasStations = /** @class */ (function () {
                 }
             });
         }); };
+        // Atomic, condition-checked transition used right before sending the on-chain
+        // transfer. Only succeeds if statusOrder is still CREATED — a concurrent caller
+        // that already reserved (or moved past) this GasStation gets a rejection instead
+        // of silently re-sending the transfer. This is independent from any Temporal
+        // workflowId uniqueness, so it also protects against callers outside the
+        // normal workflow path.
+        this.reserveForTransfer = function (id) { return __awaiter(_this, void 0, void 0, function () {
+            var gasStation, err_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.GasStation.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1:
+                        gasStation = _b.sent();
+                        if (!gasStation)
+                            throw new Error("no gasStation found for id: ".concat(id));
+                        this.table.setContext({ accountId: gasStation.accountId });
+                        _b.label = 2;
+                    case 2:
+                        _b.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, this.GasStation.update({ id: id, statusOrder: "SENDING" }, { where: "${statusOrder} = {CREATED}", return: "get" })];
+                    case 3: return [2 /*return*/, _b.sent()];
+                    case 4:
+                        err_2 = _b.sent();
+                        throw new Error("GasStation ".concat(id, " is not reservable for transfer (already reserved or past CREATED): ").concat(err_2.message));
+                    case 5: return [2 /*return*/];
+                }
+            });
+        }); };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             var gasStation;
             return __generator(this, function (_b) {

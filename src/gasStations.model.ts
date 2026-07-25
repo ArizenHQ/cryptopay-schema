@@ -203,6 +203,29 @@ export class GasStations {
     }
   };
 
+  // Atomic, condition-checked transition used right before sending the on-chain
+  // transfer. Only succeeds if statusOrder is still CREATED — a concurrent caller
+  // that already reserved (or moved past) this GasStation gets a rejection instead
+  // of silently re-sending the transfer. This is independent from any Temporal
+  // workflowId uniqueness, so it also protects against callers outside the
+  // normal workflow path.
+  reserveForTransfer = async (id: string) => {
+    let gasStation = await this.GasStation.get(
+      { id: id },
+      { index: "gs1", follow: true }
+    );
+    if (!gasStation) throw new Error(`no gasStation found for id: ${id}`);
+    this.table.setContext({ accountId: gasStation.accountId });
+    try {
+      return await this.GasStation.update(
+        { id, statusOrder: "SENDING" },
+        { where: "${statusOrder} = {CREATED}", return: "get" }
+      );
+    } catch (err: any) {
+      throw new Error(`GasStation ${id} is not reservable for transfer (already reserved or past CREATED): ${err.message}`);
+    }
+  };
+
   removeById = async (id: string) => {
     let gasStation = await this.GasStation.get(
       { id: id },
