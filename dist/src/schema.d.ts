@@ -367,7 +367,7 @@ declare const Schema: {
                     };
                     readonly blockchain: {
                         readonly type: StringConstructor;
-                        readonly enum: readonly ["bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum"];
+                        readonly enum: readonly ["bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum", "ton", "near", "cosmos"];
                     };
                     readonly blockchains: {
                         readonly type: ArrayConstructor;
@@ -485,7 +485,7 @@ declare const Schema: {
             };
             readonly blockchain: {
                 readonly type: StringConstructor;
-                readonly enum: readonly ["bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum"];
+                readonly enum: readonly ["bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum", "ton", "near", "cosmos"];
             };
             readonly network: {
                 readonly type: StringConstructor;
@@ -998,7 +998,7 @@ declare const Schema: {
             };
             readonly blockchain: {
                 readonly type: StringConstructor;
-                readonly enum: readonly ["bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum"];
+                readonly enum: readonly ["bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum", "ton", "near", "cosmos"];
             };
             readonly network: {
                 readonly type: StringConstructor;
@@ -1183,7 +1183,7 @@ declare const Schema: {
             };
             readonly blockchain: {
                 readonly type: StringConstructor;
-                readonly enum: readonly ["bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum"];
+                readonly enum: readonly ["bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum", "ton", "near", "cosmos"];
             };
             readonly tx_date: {
                 readonly type: StringConstructor;

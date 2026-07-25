@@ -1,4 +1,4 @@
-export declare const blockchainNames: readonly ["bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum"];
+export declare const blockchainNames: readonly ["bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum", "ton", "near", "cosmos"];
 type Entry = {
     name: typeof blockchainNames[number];
     mainnet: string;
@@ -15,7 +15,7 @@ export declare function resolveNetworkForCurrency(currency?: string, preferred?:
 export declare function listNetworksForCurrency(currency?: string): string[];
 export declare function resolveAlchemyNetworkForCurrency(currency?: string, preferred?: string): string | undefined;
 export declare function listAlchemyNetworksForCurrency(currency?: string): string[];
-export declare function resolveBlockchainForCurrency(currency?: string, preferred?: string): "bitcoin" | "litecoin" | "dogecoin" | "bitcoincash" | "polygon" | "arbitrum" | "base" | "bsc" | "optimism" | "avalanche" | "celo" | "fantom" | "solana" | "stellar" | "xrpl" | "cardano" | "kaspa" | "polkadot" | "sui" | "aptos" | "algorand" | "tron" | "tezos" | "internetcomputer" | "iota" | "polymesh" | "kusama" | "ethereum" | undefined;
+export declare function resolveBlockchainForCurrency(currency?: string, preferred?: string): "bitcoin" | "litecoin" | "dogecoin" | "bitcoincash" | "polygon" | "arbitrum" | "base" | "bsc" | "optimism" | "avalanche" | "celo" | "fantom" | "solana" | "stellar" | "xrpl" | "cardano" | "kaspa" | "polkadot" | "sui" | "aptos" | "algorand" | "tron" | "tezos" | "internetcomputer" | "iota" | "polymesh" | "kusama" | "ethereum" | "ton" | "near" | "cosmos" | undefined;
 export declare function listBlockchains(modules?: string | string[]): string[];
 export declare function listCurrenciesForBlockchain(blockchain?: string | string[]): string[];
 export declare function resolveNativeWalletCurrency(currency?: string, preferred?: string): string;

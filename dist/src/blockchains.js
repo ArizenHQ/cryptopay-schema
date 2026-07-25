@@ -11,7 +11,7 @@ exports.listCurrenciesForBlockchain = listCurrenciesForBlockchain;
 exports.resolveNativeWalletCurrency = resolveNativeWalletCurrency;
 exports.resolveSecretNetworkLabel = resolveSecretNetworkLabel;
 exports.blockchainNames = [
-    "bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum"
+    "bitcoin", "litecoin", "dogecoin", "bitcoincash", "polygon", "arbitrum", "base", "bsc", "optimism", "avalanche", "celo", "fantom", "solana", "stellar", "xrpl", "cardano", "kaspa", "polkadot", "sui", "aptos", "algorand", "tron", "tezos", "internetcomputer", "iota", "polymesh", "kusama", "ethereum", "ton", "near", "cosmos"
 ];
 var isNonProd = ['development', 'staging'].includes(process.env.NODE_ENV || '');
 exports.currencyNetworkMap = {
@@ -126,6 +126,15 @@ exports.currencyNetworkMap = {
         { name: 'base', mainnet: 'Base', testnet: 'BaseSepolia', alchemy: { mainnet: 'BASE_MAINNET', testnet: 'BASE_SEPOLIA' }, modules: ['cryptopayment'] },
         { name: 'optimism', mainnet: 'Optimism', testnet: 'OptimismSepolia', alchemy: { mainnet: 'OPT_MAINNET', testnet: 'OPT_SEPOLIA' }, modules: ['cryptopayment'] },
         { name: 'tron', mainnet: 'Tron', testnet: 'TronNile' }
+    ],
+    TON: [
+        { name: 'ton', mainnet: 'Ton', testnet: 'TonTestnet' }
+    ],
+    NEAR: [
+        { name: 'near', mainnet: 'Near', testnet: 'NearTestnet' }
+    ],
+    ATOM: [
+        { name: 'cosmos', mainnet: 'CosmosHub4', testnet: 'CosmosIcsTestnet' }
     ]
 };
 function isTestnetAlias(value) {
@@ -294,11 +303,27 @@ var NATIVE_CURRENCY_BY_NETWORK = {
     OptimismSepolia: 'SepoliaETH',
     PolygonAmoy: 'AmoyPOL',
     BscTestnet: 'testBNB',
-    AvalancheCFuji: 'AVAX',
+    AvalancheCFuji: 'FujiAVAX',
     CeloAlfajores: 'testCELO',
     FantomTestnet: 'FTM',
+    BitcoinTestnet3: 'testBTC',
+    BitcoinSignet: 'testBTC',
+    LitecoinTestnet: 'testLTC',
+    DogecoinTestnet: 'testDOGE',
+    SuiTestnet: 'testSUI',
+    CardanoPreprod: 'testADA',
+    SolanaDevnet: 'testSOL',
+    XrpLedgerTestnet: 'testXRP',
+    TezosGhostnet: 'GhostXTZ',
+    StellarTestnet: 'testXLM',
+    TonTestnet: 'testGRAM',
+    NearTestnet: 'testNEAR',
+    CosmosIcsTestnet: 'testATOM',
 };
-var NATIVE_GAS_CURRENCIES = new Set(['ETH', 'BNB', 'POL', 'MATIC', 'AVAX', 'CELO', 'FTM']);
+var NATIVE_GAS_CURRENCIES = new Set([
+    'ETH', 'BNB', 'POL', 'MATIC', 'AVAX', 'CELO', 'FTM',
+    'BTC', 'LTC', 'DOGE', 'SUI', 'ADA', 'SOL', 'XRP', 'XTZ', 'XLM', 'TON', 'NEAR', 'ATOM',
+]);
 function resolveNativeWalletCurrency(currency, preferred) {
     var key = String(currency || '').toUpperCase();
     if (!NATIVE_GAS_CURRENCIES.has(key))

@@ -1,5 +1,5 @@
 export const blockchainNames = [
-    "bitcoin","litecoin","dogecoin","bitcoincash","polygon","arbitrum","base","bsc","optimism","avalanche","celo","fantom","solana","stellar","xrpl","cardano","kaspa","polkadot","sui","aptos","algorand","tron","tezos","internetcomputer","iota","polymesh","kusama","ethereum"
+    "bitcoin","litecoin","dogecoin","bitcoincash","polygon","arbitrum","base","bsc","optimism","avalanche","celo","fantom","solana","stellar","xrpl","cardano","kaspa","polkadot","sui","aptos","algorand","tron","tezos","internetcomputer","iota","polymesh","kusama","ethereum","ton","near","cosmos"
   ] as const;
   
   type Entry = {
@@ -126,6 +126,15 @@ export const blockchainNames = [
       { name: 'base',     mainnet: 'Base',        testnet: 'BaseSepolia',     alchemy: { mainnet: 'BASE_MAINNET', testnet: 'BASE_SEPOLIA' } , modules: ['cryptopayment'] },
       { name: 'optimism', mainnet: 'Optimism',    testnet: 'OptimismSepolia', alchemy: { mainnet: 'OPT_MAINNET',  testnet: 'OPT_SEPOLIA' } , modules: ['cryptopayment'] },
       { name: 'tron',     mainnet: 'Tron',        testnet: 'TronNile' }
+    ],
+    TON: [
+      { name: 'ton', mainnet: 'Ton', testnet: 'TonTestnet' }
+    ],
+    NEAR: [
+      { name: 'near', mainnet: 'Near', testnet: 'NearTestnet' }
+    ],
+    ATOM: [
+      { name: 'cosmos', mainnet: 'CosmosHub4', testnet: 'CosmosIcsTestnet' }
     ]
   };
   
@@ -280,12 +289,28 @@ export const blockchainNames = [
     OptimismSepolia: 'SepoliaETH',
     PolygonAmoy: 'AmoyPOL',
     BscTestnet: 'testBNB',
-    AvalancheCFuji: 'AVAX',
+    AvalancheCFuji: 'FujiAVAX',
     CeloAlfajores: 'testCELO',
     FantomTestnet: 'FTM',
+    BitcoinTestnet3: 'testBTC',
+    BitcoinSignet: 'testBTC',
+    LitecoinTestnet: 'testLTC',
+    DogecoinTestnet: 'testDOGE',
+    SuiTestnet: 'testSUI',
+    CardanoPreprod: 'testADA',
+    SolanaDevnet: 'testSOL',
+    XrpLedgerTestnet: 'testXRP',
+    TezosGhostnet: 'GhostXTZ',
+    StellarTestnet: 'testXLM',
+    TonTestnet: 'testGRAM',
+    NearTestnet: 'testNEAR',
+    CosmosIcsTestnet: 'testATOM',
   };
 
-  const NATIVE_GAS_CURRENCIES = new Set(['ETH', 'BNB', 'POL', 'MATIC', 'AVAX', 'CELO', 'FTM']);
+  const NATIVE_GAS_CURRENCIES = new Set([
+    'ETH', 'BNB', 'POL', 'MATIC', 'AVAX', 'CELO', 'FTM',
+    'BTC', 'LTC', 'DOGE', 'SUI', 'ADA', 'SOL', 'XRP', 'XTZ', 'XLM', 'TON', 'NEAR', 'ATOM',
+  ]);
 
   export function resolveNativeWalletCurrency(currency?: string, preferred?: string) {
     const key = String(currency || '').toUpperCase();
