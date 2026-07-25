@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listCurrenciesForBlockchain = exports.listBlockchains = exports.resolveBlockchainForCurrency = exports.listAlchemyNetworksForCurrency = exports.resolveAlchemyNetworkForCurrency = exports.listNetworksForCurrency = exports.resolveNetworkForCurrency = exports.currencyNetworkMap = exports.blockchainNames = exports.PaymentLinks = exports.DocumentOrder = exports.PasswordResetToken = exports.RefreshToken = exports.Conversions = exports.GasStationStatements = exports.GasStations = exports.Kyts = exports.Payments = exports.Orders = exports.Projects = exports.Users = exports.Accounts = void 0;
+exports.listCurrenciesForBlockchain = exports.listBlockchains = exports.resolveNativeWalletCurrency = exports.resolveBlockchainForCurrency = exports.listAlchemyNetworksForCurrency = exports.resolveAlchemyNetworkForCurrency = exports.listNetworksForCurrency = exports.resolveNetworkForCurrency = exports.currencyNetworkMap = exports.blockchainNames = exports.PaymentLinks = exports.DocumentOrder = exports.PasswordResetToken = exports.RefreshToken = exports.Conversions = exports.GasStationStatements = exports.GasStations = exports.Kyts = exports.Payments = exports.Orders = exports.Projects = exports.Users = exports.Accounts = void 0;
 var accounts_model_1 = require("./src/accounts.model");
 Object.defineProperty(exports, "Accounts", { enumerable: true, get: function () { return accounts_model_1.Accounts; } });
 var users_model_1 = require("./src/users.model");
@@ -35,6 +35,7 @@ Object.defineProperty(exports, "listNetworksForCurrency", { enumerable: true, ge
 Object.defineProperty(exports, "resolveAlchemyNetworkForCurrency", { enumerable: true, get: function () { return blockchains_1.resolveAlchemyNetworkForCurrency; } });
 Object.defineProperty(exports, "listAlchemyNetworksForCurrency", { enumerable: true, get: function () { return blockchains_1.listAlchemyNetworksForCurrency; } });
 Object.defineProperty(exports, "resolveBlockchainForCurrency", { enumerable: true, get: function () { return blockchains_1.resolveBlockchainForCurrency; } });
+Object.defineProperty(exports, "resolveNativeWalletCurrency", { enumerable: true, get: function () { return blockchains_1.resolveNativeWalletCurrency; } });
 Object.defineProperty(exports, "listBlockchains", { enumerable: true, get: function () { return blockchains_1.listBlockchains; } });
 Object.defineProperty(exports, "listCurrenciesForBlockchain", { enumerable: true, get: function () { return blockchains_1.listCurrenciesForBlockchain; } });
 //# sourceMappingURL=index.js.map

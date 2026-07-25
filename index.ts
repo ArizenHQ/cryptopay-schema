@@ -19,6 +19,7 @@ export {
   resolveAlchemyNetworkForCurrency,
   listAlchemyNetworksForCurrency,
   resolveBlockchainForCurrency,
+  resolveNativeWalletCurrency,
   listBlockchains,
   listCurrenciesForBlockchain,
 } from './src/blockchains';

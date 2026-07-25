@@ -18,5 +18,6 @@ export declare function listAlchemyNetworksForCurrency(currency?: string): strin
 export declare function resolveBlockchainForCurrency(currency?: string, preferred?: string): "bitcoin" | "litecoin" | "dogecoin" | "bitcoincash" | "polygon" | "arbitrum" | "base" | "bsc" | "optimism" | "avalanche" | "celo" | "fantom" | "solana" | "stellar" | "xrpl" | "cardano" | "kaspa" | "polkadot" | "sui" | "aptos" | "algorand" | "tron" | "tezos" | "internetcomputer" | "iota" | "polymesh" | "kusama" | "ethereum" | undefined;
 export declare function listBlockchains(modules?: string | string[]): string[];
 export declare function listCurrenciesForBlockchain(blockchain?: string | string[]): string[];
+export declare function resolveNativeWalletCurrency(currency?: string, preferred?: string): string;
 export declare function resolveSecretNetworkLabel(blockchain?: string, preferred?: string): string;
 export {};

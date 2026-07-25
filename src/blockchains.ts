@@ -265,6 +265,35 @@ export const blockchainNames = [
     return Array.from(result.values()).sort();
   }
 
+  // Map (currency, resolved network label) -> native currency symbol expected by
+  // coinhouse-wallet-service (its config/networkConfig.ts NetworkConfig.nativeCurrency).
+  // Wallet-service uses distinct testnet symbols for native gas assets (e.g. Sepolia's
+  // ETH is called 'SepoliaETH', not 'ETH') — tokens (USDC, USDT...) keep their symbol
+  // unchanged on every network. `network` accepts the same aliases as resolveNetworkForCurrency
+  // (chain name, mainnet/testnet label, or legacy alias like 'sepolia').
+  const NATIVE_CURRENCY_BY_NETWORK: Record<string, string> = {
+    EthereumSepolia: 'SepoliaETH',
+    EthereumGoerli: 'ETH',
+    EthereumHolesky: 'ETH',
+    BaseSepolia: 'SepoliaETH',
+    ArbitrumSepolia: 'ETH',
+    OptimismSepolia: 'ETH',
+    PolygonAmoy: 'POL',
+    BscTestnet: 'testBNB',
+    AvalancheCFuji: 'AVAX',
+    CeloAlfajores: 'testCELO',
+    FantomTestnet: 'FTM',
+  };
+
+  const NATIVE_GAS_CURRENCIES = new Set(['ETH', 'BNB', 'POL', 'MATIC', 'AVAX', 'CELO', 'FTM']);
+
+  export function resolveNativeWalletCurrency(currency?: string, preferred?: string) {
+    const key = String(currency || '').toUpperCase();
+    if (!NATIVE_GAS_CURRENCIES.has(key)) return key;
+    const resolvedNetwork = resolveNetworkForCurrency(currency, preferred);
+    return NATIVE_CURRENCY_BY_NETWORK[resolvedNetwork] || key;
+  }
+
   // Map blockchain -> default secret network label when not explicitly provided
   // Used to compose secret keys like notification_crypto_pay_${blockchain}_${network}
   export function resolveSecretNetworkLabel(blockchain?: string, preferred?: string) {
