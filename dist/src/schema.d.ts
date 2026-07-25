@@ -31,6 +31,11 @@ declare const Schema: {
             readonly sort: "gs5sk";
             readonly project: "all";
         };
+        readonly gs6: {
+            readonly hash: "gs6pk";
+            readonly sort: "gs6sk";
+            readonly project: "all";
+        };
     };
     readonly models: {
         readonly Partner: {
@@ -1300,6 +1305,14 @@ declare const Schema: {
             readonly gs5sk: {
                 readonly type: StringConstructor;
                 readonly value: "gasStation#${billingMonth}#${projectId}";
+            };
+            readonly gs6pk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStation#txHash";
+            };
+            readonly gs6sk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStation#${tx_hash}";
             };
         };
         readonly GasStationStatement: {

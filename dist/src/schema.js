@@ -22,6 +22,7 @@ var Schema = {
         gs3: { hash: "gs1pk", sort: "gs3sk", project: "all" },
         gs4: { hash: "gs1pk", sort: "gs4sk", project: "all" },
         gs5: { hash: "gs5pk", sort: "gs5sk", project: "all" },
+        gs6: { hash: "gs6pk", sort: "gs6sk", project: "all" },
     },
     models: {
         Partner: {
@@ -478,6 +479,8 @@ var Schema = {
             gs4sk: { type: String, value: "gasStation#${ulid}" },
             gs5pk: { type: String, value: "gasStation#billing" },
             gs5sk: { type: String, value: "gasStation#${billingMonth}#${projectId}" },
+            gs6pk: { type: String, value: "gasStation#txHash" },
+            gs6sk: { type: String, value: "gasStation#${tx_hash}" },
         },
         GasStationStatement: {
             pk: { type: String, value: "account#${accountId}" },

@@ -18,6 +18,7 @@ export declare class GasStations {
     findPublicById: (id: string) => Promise<any>;
     scan: (params?: any, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     getById: (id: string) => Promise<any>;
+    findByTxHash: (txHash: string) => Promise<any>;
     list: (accountId: string, projectId: string, query: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     patchById: (id: string, data: any) => Promise<any>;
     removeById: (id: string) => Promise<any>;

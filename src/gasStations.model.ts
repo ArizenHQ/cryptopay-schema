@@ -169,6 +169,15 @@ export class GasStations {
     );
   };
 
+  findByTxHash = async (txHash: string) => {
+    const result: any = await this.GasStation.find(
+      { gs6pk: "gasStation#txHash", gs6sk: `gasStation#${txHash}` },
+      { index: "gs6", follow: true }
+    );
+    const items = Array.isArray(result) ? result : result?.items || [];
+    return items[0] || null;
+  };
+
   list = async (accountId: string, projectId: string, query: any) => {
     const key: Key = {};
     if (accountId) key.pk = `account#${accountId}`;
