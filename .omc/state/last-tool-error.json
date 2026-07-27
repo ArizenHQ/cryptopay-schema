@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"gh pr view 174 --json state,mergedAt 2>&1\",\"description\":\"Check PR 174 merge status\"}",
-  "error": "Exit code 1\nGraphQL: Could not resolve to a PullRequest with the number of 174. (repository.pullRequest)",
-  "timestamp": "2026-07-25T16:11:58.589Z",
-  "retry_count": 1
-}
