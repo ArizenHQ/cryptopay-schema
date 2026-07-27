@@ -233,6 +233,21 @@ var GasStations = /** @class */ (function () {
         // of silently re-sending the transfer. This is independent from any Temporal
         // workflowId uniqueness, so it also protects against callers outside the
         // normal workflow path.
+        this.findByBillingMonth = function (billingMonth_1) {
+            var args_1 = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args_1[_i - 1] = arguments[_i];
+            }
+            return __awaiter(_this, __spreadArray([billingMonth_1], args_1, true), void 0, function (billingMonth, query) {
+                if (query === void 0) { query = {}; }
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.GasStation, 'find', { gs5pk: "gasStation#billing", gs5sk: { begins: "gasStation#".concat(billingMonth) } }, query, { index: 'gs5', follow: true })];
+                        case 1: return [2 /*return*/, _b.sent()];
+                    }
+                });
+            });
+        };
         this.reserveForTransfer = function (id) { return __awaiter(_this, void 0, void 0, function () {
             var gasStation, err_2;
             return __generator(this, function (_b) {

@@ -131,8 +131,29 @@ var GasStationStatements = /** @class */ (function () {
                 });
             });
         };
-        this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
+        this.deleteById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             var statement, err_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, this.GasStationStatement.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1:
+                        statement = _b.sent();
+                        if (!statement)
+                            throw new Error("GasStationStatement not found: ".concat(id));
+                        this.table.setContext({ accountId: statement.accountId });
+                        return [4 /*yield*/, this.GasStationStatement.remove({ pk: "account#".concat(statement.accountId), sk: "gasStationStatement#".concat(id) })];
+                    case 2: return [2 /*return*/, _b.sent()];
+                    case 3:
+                        err_1 = _b.sent();
+                        throw new Error("Error during delete GasStationStatement: ".concat(err_1));
+                    case 4: return [2 /*return*/];
+                }
+            });
+        }); };
+        this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
+            var statement, err_2;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -147,8 +168,8 @@ var GasStationStatements = /** @class */ (function () {
                         return [4 /*yield*/, this.GasStationStatement.update(data, { return: "get" })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
-                        err_1 = _b.sent();
-                        throw new Error("Error during update GasStationStatement: ".concat(err_1));
+                        err_2 = _b.sent();
+                        throw new Error("Error during update GasStationStatement: ".concat(err_2));
                     case 4: return [2 /*return*/];
                 }
             });

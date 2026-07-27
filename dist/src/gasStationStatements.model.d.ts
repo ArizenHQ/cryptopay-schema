@@ -13,6 +13,7 @@ export declare class GasStationStatements {
     findByProjectAndMonth: (projectId: string, month: string) => Promise<any>;
     listByProject: (projectId: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     listByMonth: (month: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
+    deleteById: (id: string) => Promise<any>;
     patchById: (id: string, data: any) => Promise<any>;
 }
 export default GasStationStatements;
