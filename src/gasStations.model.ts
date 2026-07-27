@@ -209,6 +209,16 @@ export class GasStations {
   // of silently re-sending the transfer. This is independent from any Temporal
   // workflowId uniqueness, so it also protects against callers outside the
   // normal workflow path.
+  findByBillingMonth = async (billingMonth: string, query: any = {}) => {
+    return await paginateModel(
+      this.GasStation,
+      'find',
+      { gs5pk: "gasStation#billing", gs5sk: { begins: `gasStation#${billingMonth}` } },
+      query,
+      { index: 'gs5', follow: true }
+    );
+  };
+
   reserveForTransfer = async (id: string) => {
     let gasStation = await this.GasStation.get(
       { id: id },
