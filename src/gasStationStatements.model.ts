@@ -89,6 +89,17 @@ export class GasStationStatements {
     );
   };
 
+  deleteById = async (id: string) => {
+    try {
+      const statement = await this.GasStationStatement.get({ id }, { index: "gs1", follow: true });
+      if (!statement) throw new Error(`GasStationStatement not found: ${id}`);
+      this.table.setContext({ accountId: statement.accountId });
+      return await this.GasStationStatement.remove({ pk: `account#${statement.accountId}`, sk: `gasStationStatement#${id}` });
+    } catch (err) {
+      throw new Error(`Error during delete GasStationStatement: ${err}`);
+    }
+  };
+
   patchById = async (id: string, data: any) => {
     try {
       const statement = await this.GasStationStatement.get({ id }, { index: "gs1", follow: true });
