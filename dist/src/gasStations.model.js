@@ -261,7 +261,7 @@ var GasStations = /** @class */ (function () {
                         _b.label = 2;
                     case 2:
                         _b.trys.push([2, 4, , 5]);
-                        return [4 /*yield*/, this.GasStation.update({ id: id, statusOrder: "SENDING" }, { where: "${statusOrder} = {CREATED}", return: "get" })];
+                        return [4 /*yield*/, this.GasStation.update({ id: id, statusOrder: "SENDING" }, { where: "${statusOrder} = {CREATED} or ${statusOrder} = {PENDING_APPROVAL}", return: "get" })];
                     case 3: return [2 /*return*/, _b.sent()];
                     case 4:
                         err_2 = _b.sent();
