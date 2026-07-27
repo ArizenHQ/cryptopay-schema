@@ -1391,6 +1391,67 @@ declare const Schema: {
                 readonly value: "gasStationStatement#${ulid}";
             };
         };
+        readonly AuditLog: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "account#${accountId}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "auditLog#${id}";
+            };
+            readonly id: {
+                readonly type: StringConstructor;
+                readonly generate: "ulid";
+            };
+            readonly accountId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly entityType: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly entityId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly action: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly by: {
+                readonly type: ObjectConstructor;
+            };
+            readonly at: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly meta: {
+                readonly type: ObjectConstructor;
+                readonly default: {};
+            };
+            readonly ulid: {
+                readonly type: StringConstructor;
+                readonly generate: "ulid";
+            };
+            readonly gs1pk: {
+                readonly type: StringConstructor;
+                readonly value: "auditLog#";
+            };
+            readonly gs1sk: {
+                readonly type: StringConstructor;
+                readonly value: "auditLog#${ulid}";
+            };
+            readonly gs5pk: {
+                readonly type: StringConstructor;
+                readonly value: "auditLog#${entityType}#${entityId}";
+            };
+            readonly gs5sk: {
+                readonly type: StringConstructor;
+                readonly value: "auditLog#${at}";
+            };
+        };
         readonly RefreshToken: {
             readonly pk: {
                 readonly type: StringConstructor;
