@@ -1250,7 +1250,7 @@ declare const Schema: {
                 readonly type: BooleanConstructor;
             };
             readonly approvedBy: {
-                readonly type: StringConstructor;
+                readonly type: ObjectConstructor;
             };
             readonly approvedAt: {
                 readonly type: StringConstructor;

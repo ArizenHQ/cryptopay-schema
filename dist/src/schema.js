@@ -464,7 +464,7 @@ var Schema = {
             kytRating: { type: String },
             kytId: { type: String },
             approvalRequired: { type: Boolean },
-            approvedBy: { type: String },
+            approvedBy: { type: Object },
             approvedAt: { type: String },
             travelRuleOwner: { type: String, enum: ["self", "third_party"] },
             travelRuleOwnerType: { type: String, enum: ["person", "business"] },
