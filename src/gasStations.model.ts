@@ -229,10 +229,10 @@ export class GasStations {
     try {
       return await this.GasStation.update(
         { id, statusOrder: "SENDING" },
-        { where: "${statusOrder} = {CREATED} or ${statusOrder} = {PENDING_APPROVAL}", return: "get" }
+        { where: "${statusOrder} = {CREATED} or ${statusOrder} = {PENDING_APPROVAL} or ${statusOrder} = {APPROVED}", return: "get" }
       );
     } catch (err: any) {
-      throw new Error(`GasStation ${id} is not reservable for transfer: it is no longer in CREATED status (already reserved, sent, or otherwise moved on).`);
+      throw new Error(`GasStation ${id} is not reservable for transfer: it is no longer in CREATED, PENDING_APPROVAL or APPROVED status (already reserved, sent, or otherwise moved on).`);
     }
   };
 
