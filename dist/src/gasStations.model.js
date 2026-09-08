@@ -261,11 +261,11 @@ var GasStations = /** @class */ (function () {
                         _b.label = 2;
                     case 2:
                         _b.trys.push([2, 4, , 5]);
-                        return [4 /*yield*/, this.GasStation.update({ id: id, statusOrder: "SENDING" }, { where: "${statusOrder} = {CREATED} or ${statusOrder} = {PENDING_APPROVAL}", return: "get" })];
+                        return [4 /*yield*/, this.GasStation.update({ id: id, statusOrder: "SENDING" }, { where: "${statusOrder} = {CREATED} or ${statusOrder} = {PENDING_APPROVAL} or ${statusOrder} = {APPROVED}", return: "get" })];
                     case 3: return [2 /*return*/, _b.sent()];
                     case 4:
                         err_2 = _b.sent();
-                        throw new Error("GasStation ".concat(id, " is not reservable for transfer: it is no longer in CREATED status (already reserved, sent, or otherwise moved on)."));
+                        throw new Error("GasStation ".concat(id, " is not reservable for transfer: it is no longer in CREATED, PENDING_APPROVAL or APPROVED status (already reserved, sent, or otherwise moved on)."));
                     case 5: return [2 /*return*/];
                 }
             });
