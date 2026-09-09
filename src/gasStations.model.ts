@@ -232,7 +232,15 @@ export class GasStations {
         { where: "${statusOrder} = {CREATED} or ${statusOrder} = {PENDING_APPROVAL} or ${statusOrder} = {APPROVED}", return: "get" }
       );
     } catch (err: any) {
-      throw new Error(`GasStation ${id} is not reservable for transfer: it is no longer in CREATED, PENDING_APPROVAL or APPROVED status (already reserved, sent, or otherwise moved on).`);
+      // Only a refused condition means "already reserved/sent". Callers treat that as
+      // final and must be able to tell it from a throttle or a timeout, which they retry.
+      if (err?.code === "ConditionalCheckFailedException") {
+        const refused: any = new Error(`GasStation ${id} is not reservable for transfer: it is no longer in CREATED, PENDING_APPROVAL or APPROVED status (already reserved, sent, or otherwise moved on).`);
+        refused.name = "GasStationNotReservableError";
+        refused.code = err.code;
+        throw refused;
+      }
+      throw err;
     }
   };
 
