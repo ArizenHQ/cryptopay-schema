@@ -249,7 +249,7 @@ var GasStations = /** @class */ (function () {
             });
         };
         this.reserveForTransfer = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            var gasStation, err_2;
+            var gasStation, err_2, refused;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.GasStation.get({ id: id }, { index: "gs1", follow: true })];
@@ -265,7 +265,15 @@ var GasStations = /** @class */ (function () {
                     case 3: return [2 /*return*/, _b.sent()];
                     case 4:
                         err_2 = _b.sent();
-                        throw new Error("GasStation ".concat(id, " is not reservable for transfer: it is no longer in CREATED, PENDING_APPROVAL or APPROVED status (already reserved, sent, or otherwise moved on)."));
+                        // Only a refused condition means "already reserved/sent". Callers treat that as
+                        // final and must be able to tell it from a throttle or a timeout, which they retry.
+                        if ((err_2 === null || err_2 === void 0 ? void 0 : err_2.code) === "ConditionalCheckFailedException") {
+                            refused = new Error("GasStation ".concat(id, " is not reservable for transfer: it is no longer in CREATED, PENDING_APPROVAL or APPROVED status (already reserved, sent, or otherwise moved on)."));
+                            refused.name = "GasStationNotReservableError";
+                            refused.code = err_2.code;
+                            throw refused;
+                        }
+                        throw err_2;
                     case 5: return [2 /*return*/];
                 }
             });
