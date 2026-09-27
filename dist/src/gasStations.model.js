@@ -85,6 +85,9 @@ var GasStations = /** @class */ (function () {
                             throw new Error("That project is not fine configured. Please update your project with paramaeters for project type gasStation");
                         if (!isPositiveAmount(gasStation.amount))
                             throw new Error("Amount propertie is incorrect. Please enter a value > 0");
+                        // The daily limit is in the project's currency: no other currency is sent.
+                        if (String(gasStation.currency).toUpperCase() !== String(project.parameters.gasStation.currency).toUpperCase())
+                            throw new Error("Currency not allowed for this project: only ".concat(project.parameters.gasStation.currency));
                         return [4 /*yield*/, this.isGasStationAvailable(project.accountId, project.id, gasStation.amount, gasStation.currency)];
                     case 2:
                         if (!(_b.sent()))
@@ -106,13 +109,15 @@ var GasStations = /** @class */ (function () {
             });
         }); };
         /**
-         * Whether a transfer keeps the project within its daily limit: the project's
-         * transfers of the last 24 hours in the same currency, FAILED ones excluded, plus
-         * this one, against parameters.gasStation.limitPer24H.
+         * Whether a transfer keeps the project within its daily limit, in the project's
+         * currency: the project's transfers of the last 24 hours in that currency, FAILED
+         * ones excluded, plus this one, against parameters.gasStation.limitPer24H.
          * @param accountId - The project's account.
          * @param projectId - The project.
          * @param amount - The new transfer's amount.
          * @param currency - Its currency; all currencies when absent.
+         * @returns Whether the transfer fits within the limit.
+         * @throws When the transfers or the project cannot be read.
          */
         this.isGasStationAvailable = function (accountId, projectId, amount, currency) { return __awaiter(_this, void 0, void 0, function () {
             var since, recent, counted, sum, project, e_1;

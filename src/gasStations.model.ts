@@ -91,6 +91,9 @@ export class GasStations {
           throw new Error(
             "Amount propertie is incorrect. Please enter a value > 0"
           );
+        // The daily limit is in the project's currency: no other currency is sent.
+        if (String(gasStation.currency).toUpperCase() !== String(project.parameters.gasStation.currency).toUpperCase())
+          throw new Error(`Currency not allowed for this project: only ${project.parameters.gasStation.currency}`);
         if (
           !(await this.isGasStationAvailable(
             project.accountId,
@@ -119,13 +122,15 @@ export class GasStations {
   };
 
   /**
-   * Whether a transfer keeps the project within its daily limit: the project's
-   * transfers of the last 24 hours in the same currency, FAILED ones excluded, plus
-   * this one, against parameters.gasStation.limitPer24H.
+   * Whether a transfer keeps the project within its daily limit, in the project's
+   * currency: the project's transfers of the last 24 hours in that currency, FAILED
+   * ones excluded, plus this one, against parameters.gasStation.limitPer24H.
    * @param accountId - The project's account.
    * @param projectId - The project.
    * @param amount - The new transfer's amount.
    * @param currency - Its currency; all currencies when absent.
+   * @returns Whether the transfer fits within the limit.
+   * @throws When the transfers or the project cannot be read.
    */
   isGasStationAvailable = async (accountId: string, projectId: string, amount: any, currency?: string) => {
     try {
