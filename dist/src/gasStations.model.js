@@ -55,6 +55,11 @@ var client = new Dynamo_1.Dynamo({
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var paginateModel_1 = require("./utils/paginateModel");
+// A transfer amount: a finite number above zero ("0.1", 0.1), never negative or text.
+var isPositiveAmount = function (amount) {
+    var value = Number(amount);
+    return amount !== null && amount !== "" && Number.isFinite(value) && value > 0;
+};
 var GasStations = /** @class */ (function () {
     function GasStations(secretsString) {
         var _this = this;
@@ -78,9 +83,9 @@ var GasStations = /** @class */ (function () {
                         if (!project.parameters.gasStation.currency ||
                             !project.parameters.gasStation.limitPer24H)
                             throw new Error("That project is not fine configured. Please update your project with paramaeters for project type gasStation");
-                        if (!gasStation.amount || gasStation.amount === 0)
+                        if (!isPositiveAmount(gasStation.amount))
                             throw new Error("Amount propertie is incorrect. Please enter a value > 0");
-                        return [4 /*yield*/, this.isGasStationAvailable(project.accountId, project.id, gasStation.amount)];
+                        return [4 /*yield*/, this.isGasStationAvailable(project.accountId, project.id, gasStation.amount, gasStation.currency)];
                     case 2:
                         if (!(_b.sent()))
                             throw new Error("The daily purchase limit has been exceeded. Please change amount");
@@ -100,31 +105,34 @@ var GasStations = /** @class */ (function () {
                 }
             });
         }); };
-        this.isGasStationAvailable = function (accountId, projectId, amount) { return __awaiter(_this, void 0, void 0, function () {
-            var dateYeasterday, dateISOYesterday, result, listGasStationForToday, sum_1, project, limit, e_1;
+        /**
+         * Whether a transfer keeps the project within its daily limit: the project's
+         * transfers of the last 24 hours in the same currency, FAILED ones excluded, plus
+         * this one, against parameters.gasStation.limitPer24H.
+         * @param accountId - The project's account.
+         * @param projectId - The project.
+         * @param amount - The new transfer's amount.
+         * @param currency - Its currency; all currencies when absent.
+         */
+        this.isGasStationAvailable = function (accountId, projectId, amount, currency) { return __awaiter(_this, void 0, void 0, function () {
+            var since, recent, counted, sum, project, e_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
-                        dateYeasterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
-                        dateISOYesterday = new Date(dateYeasterday).toISOString();
-                        return [4 /*yield*/, this.list(accountId, projectId, { where: "${dateCreated} >= {" + dateISOYesterday + "}" })];
+                        since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+                        this.table.setContext({ accountId: accountId });
+                        return [4 /*yield*/, this.GasStation.find({ projectId: projectId }, { index: "gs2", where: "${dateCreated} >= {" + since + "}" })];
                     case 1:
-                        result = _b.sent();
-                        listGasStationForToday = Array.isArray(result) ? result : (result === null || result === void 0 ? void 0 : result.items) || [];
-                        sum_1 = Number(amount);
-                        listGasStationForToday.forEach(function (gas) {
-                            sum_1 += Number(gas.amount);
+                        recent = _b.sent();
+                        counted = (recent || []).filter(function (gas) {
+                            return gas.statusOrder !== "FAILED" && (!currency || String(gas.currency).toUpperCase() === String(currency).toUpperCase());
                         });
+                        sum = counted.reduce(function (total, gas) { return total + (isPositiveAmount(gas.amount) ? Number(gas.amount) : 0); }, Number(amount));
                         return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 2:
                         project = _b.sent();
-                        limit = project.parameters.gasStation.limitPer24H;
-                        if (limit >= sum_1)
-                            return [2 /*return*/, true];
-                        else
-                            return [2 /*return*/, false];
-                        return [3 /*break*/, 4];
+                        return [2 /*return*/, Number(project.parameters.gasStation.limitPer24H) >= sum];
                     case 3:
                         e_1 = _b.sent();
                         throw new Error("Error during isGasStationAvailable: ".concat(e_1.message));
