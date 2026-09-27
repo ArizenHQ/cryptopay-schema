@@ -652,12 +652,6 @@ declare const Schema: {
                 readonly type: StringConstructor;
                 readonly required: true;
             };
-            readonly eventCode: {
-                readonly type: StringConstructor;
-            };
-            readonly eventDate: {
-                readonly type: StringConstructor;
-            };
             readonly statusDetail: {
                 readonly type: StringConstructor;
             };
@@ -668,22 +662,11 @@ declare const Schema: {
             readonly success: {
                 readonly type: BooleanConstructor;
             };
-            readonly tokenId: {
-                readonly type: NumberConstructor;
-            };
             readonly tx_date: {
                 readonly type: StringConstructor;
             };
             readonly tx_hash: {
                 readonly type: StringConstructor;
-            };
-            readonly notificationFromAdyen: {
-                readonly type: ObjectConstructor;
-                readonly default: {};
-            };
-            readonly session: {
-                readonly type: ObjectConstructor;
-                readonly default: {};
             };
             readonly urlsRedirect: {
                 readonly type: ObjectConstructor;
