@@ -373,8 +373,9 @@ export class Projects {
       }
     }
 
-    // Re-attach normalized params
-    data.parameters = params;
+    // Re-attach normalized params, only when given: an update without parameters must
+    // leave the stored ones untouched (an empty object would replace them).
+    if (data.parameters !== undefined) data.parameters = params;
     return true;
   };
 }
