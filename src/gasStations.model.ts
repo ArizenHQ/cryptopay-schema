@@ -7,6 +7,12 @@ const client = new Dynamo({
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from './utils/paginateModel';
+// A transfer amount: a finite number above zero ("0.1", 0.1), never negative or text.
+const isPositiveAmount = (amount: any): boolean => {
+  const value = Number(amount);
+  return amount !== null && amount !== "" && Number.isFinite(value) && value > 0;
+};
+
 export class GasStations {
   Crypto: any;
   table: Table;
@@ -81,15 +87,19 @@ export class GasStations {
           throw new Error(
             "That project is not fine configured. Please update your project with paramaeters for project type gasStation"
           );
-        if (!gasStation.amount || gasStation.amount === 0)
+        if (!isPositiveAmount(gasStation.amount))
           throw new Error(
             "Amount propertie is incorrect. Please enter a value > 0"
           );
+        // The daily limit is in the project's currency: no other currency is sent.
+        if (String(gasStation.currency).toUpperCase() !== String(project.parameters.gasStation.currency).toUpperCase())
+          throw new Error(`Currency not allowed for this project: only ${project.parameters.gasStation.currency}`);
         if (
           !(await this.isGasStationAvailable(
             project.accountId,
             project.id,
-            gasStation.amount
+            gasStation.amount,
+            gasStation.currency
           ))
         )
           throw new Error(
@@ -111,33 +121,31 @@ export class GasStations {
     }
   };
 
-  isGasStationAvailable = async <Boolean>(
-    accountId: string,
-    projectId: string,
-    amount: Number
-  ) => {
+  /**
+   * Whether a transfer keeps the project within its daily limit, in the project's
+   * currency: the project's transfers of the last 24 hours in that currency, FAILED
+   * ones excluded, plus this one, against parameters.gasStation.limitPer24H.
+   * @param accountId - The project's account.
+   * @param projectId - The project.
+   * @param amount - The new transfer's amount.
+   * @param currency - Its currency; all currencies when absent.
+   * @returns Whether the transfer fits within the limit.
+   * @throws When the transfers or the project cannot be read.
+   */
+  isGasStationAvailable = async (accountId: string, projectId: string, amount: any, currency?: string) => {
     try {
-      const dateYeasterday: Date = new Date(
-        new Date().getTime() - 24 * 60 * 60 * 1000
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      this.table.setContext({ accountId });
+      // Every transfer of the project (gs2 = gasStation#<projectId>), all pages.
+      const recent: any[] = await this.GasStation.find(
+        { projectId },
+        { index: "gs2", where: "${dateCreated} >= {" + since + "}" }
       );
-      const dateISOYesterday: String = new Date(dateYeasterday).toISOString();
-      const result: any = await this.list(
-        accountId,
-        projectId,
-        { where: "${dateCreated} >= {" + dateISOYesterday + "}" }
-      );
-      const listGasStationForToday: any[] = Array.isArray(result) ? result : result?.items || [];
-      let sum: number = Number(amount);
-      listGasStationForToday.forEach((gas: any) => {
-        sum += Number(gas.amount);
-      });
-      const project = await this.Project.get(
-        { id: projectId },
-        { index: "gs2", follow: true }
-      );
-      const limit = project.parameters.gasStation.limitPer24H;
-      if (limit >= sum) return true;
-      else return false;
+      const counted = (recent || []).filter((gas: any) =>
+        gas.statusOrder !== "FAILED" && (!currency || String(gas.currency).toUpperCase() === String(currency).toUpperCase()));
+      const sum = counted.reduce((total: number, gas: any) => total + (isPositiveAmount(gas.amount) ? Number(gas.amount) : 0), Number(amount));
+      const project = await this.Project.get({ id: projectId }, { index: "gs2", follow: true });
+      return Number(project.parameters.gasStation.limitPer24H) >= sum;
     } catch (e: any) {
       throw new Error(`Error during isGasStationAvailable: ${e.message}`);
     }

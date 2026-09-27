@@ -163,7 +163,7 @@ const Schema = {
             default: {},
             schema: {
               currency: { type: String, enum: ["ETH", "POL", "MATIC", "XTZ"] },
-              limitPer24H: { type: Number },
+              limitPer24H: { type: Number }, // in `currency`, over the last 24 hours
               approvalThresholdEur: { type: Number },
               commissionRate: { type: Number },
               destinationMode: { type: String, enum: ["whitelist", "free"] },
