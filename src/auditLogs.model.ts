@@ -35,7 +35,15 @@ export class AuditLogs {
     return new AuditLogs(secretsString);
   };
 
+  /**
+   * Writes one audit entry. A caller-chosen `id` makes the write idempotent: the entry
+   * is created once, a second write with the same id fails its condition.
+   * @param params.id - Optional entry id; a ULID by default.
+   * @param params.at - Optional ISO time of the event; now by default.
+   */
   log = async (params: {
+    id?: string;
+    at?: string;
     accountId: string;
     entityType: string;
     entityId: string;
@@ -45,12 +53,13 @@ export class AuditLogs {
   }) => {
     this.table.setContext({ accountId: params.accountId });
     return await this.AuditLog.create({
+      ...(params.id ? { id: params.id } : {}),
       accountId: params.accountId,
       entityType: params.entityType,
       entityId: params.entityId,
       action: params.action,
       by: params.by || { system: "temporal" },
-      at: new Date().toISOString(),
+      at: params.at || new Date().toISOString(),
       meta: params.meta || {},
     });
   };
@@ -65,7 +74,8 @@ export class AuditLogs {
         gs5sk: { begins: "auditLog#" },
       },
       query,
-      { index: "gs5", follow: true }
+      // gs5 projects every attribute: no follow-up read per entry.
+      { index: "gs5" }
     );
   };
 

@@ -6,7 +6,15 @@ export declare class AuditLogs {
     secretsString: any;
     private constructor();
     static init: () => Promise<AuditLogs>;
+    /**
+     * Writes one audit entry. A caller-chosen `id` makes the write idempotent: the entry
+     * is created once, a second write with the same id fails its condition.
+     * @param params.id - Optional entry id; a ULID by default.
+     * @param params.at - Optional ISO time of the event; now by default.
+     */
     log: (params: {
+        id?: string;
+        at?: string;
         accountId: string;
         entityType: string;
         entityId: string;
