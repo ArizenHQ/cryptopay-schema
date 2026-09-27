@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -56,20 +67,18 @@ var paginateModel_1 = require("./utils/paginateModel");
 var AuditLogs = /** @class */ (function () {
     function AuditLogs(secretsString) {
         var _this = this;
+        /**
+         * Writes one audit entry. A caller-chosen `id` makes the write idempotent: the entry
+         * is created once, a second write with the same id fails its condition.
+         * @param params.id - Optional entry id; a ULID by default.
+         * @param params.at - Optional ISO time of the event; now by default.
+         */
         this.log = function (params) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         this.table.setContext({ accountId: params.accountId });
-                        return [4 /*yield*/, this.AuditLog.create({
-                                accountId: params.accountId,
-                                entityType: params.entityType,
-                                entityId: params.entityId,
-                                action: params.action,
-                                by: params.by || { system: "temporal" },
-                                at: new Date().toISOString(),
-                                meta: params.meta || {},
-                            })];
+                        return [4 /*yield*/, this.AuditLog.create(__assign(__assign({}, (params.id ? { id: params.id } : {})), { accountId: params.accountId, entityType: params.entityType, entityId: params.entityId, action: params.action, by: params.by || { system: "temporal" }, at: params.at || new Date().toISOString(), meta: params.meta || {} }))];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
@@ -88,7 +97,9 @@ var AuditLogs = /** @class */ (function () {
                             return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.AuditLog, "find", {
                                     gs5pk: "auditLog#".concat(entityType, "#").concat(entityId),
                                     gs5sk: { begins: "auditLog#" },
-                                }, query, { index: "gs5", follow: true })];
+                                }, query, 
+                                // gs5 projects every attribute: no follow-up read per entry.
+                                { index: "gs5" })];
                         case 1: return [2 /*return*/, _b.sent()];
                     }
                 });
