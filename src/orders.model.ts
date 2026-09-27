@@ -115,7 +115,7 @@ export class Orders {
       
       // Liste des champs à supprimer de la réponse
       const fieldsToRemove = [
-        'notificationFromAdyen', 'session', 'applicationInfo',
+        'applicationInfo',
         'audit', 'statusOrder', 'countryCode', 'typeOrder'
       ];
       

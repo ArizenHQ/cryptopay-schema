@@ -113,7 +113,7 @@ var Orders = /** @class */ (function () {
                     case 3:
                         createdOrder = _l.sent();
                         fieldsToRemove = [
-                            'notificationFromAdyen', 'session', 'applicationInfo',
+                            'applicationInfo',
                             'audit', 'statusOrder', 'countryCode', 'typeOrder'
                         ];
                         // Supprimer les champs non nécessaires
