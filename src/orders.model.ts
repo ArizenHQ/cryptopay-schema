@@ -175,6 +175,43 @@ export class Orders {
     }
   };
 
+  // A renewed quote is stored only while the order still waits for its payment, carries
+  // the quote the caller read and is not held: a payment, another renewal or a hold in
+  // between wins. Returns null when the condition refused the write.
+  patchQuoteIfCurrent = async (id: string, data: any, current: { dateQuote?: string | null; now: string }) => {
+    const order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
+    if (!order) throw new Error(`no order fund for id: ${id}`);
+    this.table.setContext({ accountId: order.accountId });
+    const sameQuote = current.dateQuote ? "${dateQuote} = @{dateQuote}" : "attribute_not_exists(${dateQuote})";
+    try {
+      return await this.Order.update(
+        { ...data, id },
+        {
+          where: `\${statusOrder} = {CREATED} and ${sameQuote} and (attribute_not_exists(\${quoteHeldUntil}) or \${quoteHeldUntil} < @{now})`,
+          substitutions: { dateQuote: current.dateQuote, now: current.now },
+          return: "get",
+        }
+      );
+    } catch (err: any) {
+      if (err?.code === "ConditionalCheckFailedException") return null;
+      throw err;
+    }
+  };
+
+  // Holds the quote until `until` while the order waits for its payment. Returns null
+  // when the order no longer does.
+  holdQuote = async (id: string, until: string) => {
+    const order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
+    if (!order) throw new Error(`no order fund for id: ${id}`);
+    this.table.setContext({ accountId: order.accountId });
+    try {
+      return await this.Order.update({ id, quoteHeldUntil: until }, { where: "${statusOrder} = {CREATED}", return: "get" });
+    } catch (err: any) {
+      if (err?.code === "ConditionalCheckFailedException") return null;
+      throw err;
+    }
+  };
+
   removeById = async (id: string) => {
     let order = await this.Order.get(
       { id: id },

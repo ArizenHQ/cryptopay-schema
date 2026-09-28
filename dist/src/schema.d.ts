@@ -521,6 +521,9 @@ declare const Schema: {
             readonly dateQuote: {
                 readonly type: StringConstructor;
             };
+            readonly quoteHeldUntil: {
+                readonly type: StringConstructor;
+            };
             readonly physicalPaymentParams: {
                 readonly type: ObjectConstructor;
                 readonly default: {};
