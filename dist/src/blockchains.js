@@ -17,7 +17,7 @@ exports.blockchainNames = [
 var isNonProd = ['development', 'staging'].includes(process.env.NODE_ENV || '');
 exports.currencyNetworkMap = {
     BTC: [
-        { name: 'bitcoin', mainnet: 'Bitcoin', testnet: 'BitcoinTestnet3', modules: ['cryptopayment'] }
+        { name: 'bitcoin', mainnet: 'Bitcoin', testnet: 'BitcoinSignet', modules: ['cryptopayment'] }
     ],
     LTC: [
         { name: 'litecoin', mainnet: 'Litecoin', testnet: 'LitecoinTestnet' }

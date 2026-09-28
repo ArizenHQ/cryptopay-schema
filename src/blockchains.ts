@@ -16,7 +16,7 @@ export const blockchainNames = [
   
   export const currencyNetworkMap: MapType = {
     BTC: [
-      { name: 'bitcoin', mainnet: 'Bitcoin', testnet: 'BitcoinTestnet3', modules: ['cryptopayment'] }
+      { name: 'bitcoin', mainnet: 'Bitcoin', testnet: 'BitcoinSignet', modules: ['cryptopayment'] }
     ],
     LTC: [
       { name: 'litecoin', mainnet: 'Litecoin', testnet: 'LitecoinTestnet' }
