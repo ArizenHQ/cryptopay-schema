@@ -22,7 +22,9 @@ export declare class Orders {
         dateQuote?: string | null;
         now: string;
     }) => Promise<any>;
-    holdQuote: (id: string, until: string) => Promise<any>;
+    holdQuote: (id: string, until: string, shown?: {
+        dateQuote?: string | null;
+    }) => Promise<any>;
     removeById: (id: string) => Promise<any>;
 }
 export default Orders;
