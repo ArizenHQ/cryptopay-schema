@@ -18,6 +18,11 @@ export declare class Orders {
     getById: (id: string) => Promise<any>;
     list: (accountId: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     patchById: (id: string, data: any) => Promise<any>;
+    patchQuoteIfCurrent: (id: string, data: any, current: {
+        dateQuote?: string | null;
+        now: string;
+    }) => Promise<any>;
+    holdQuote: (id: string, until: string) => Promise<any>;
     removeById: (id: string) => Promise<any>;
 }
 export default Orders;

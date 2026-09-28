@@ -216,6 +216,64 @@ var Orders = /** @class */ (function () {
                 }
             });
         }); };
+        // A renewed quote is stored only while the order still waits for its payment, carries
+        // the quote the caller read and is not held: a payment, another renewal or a hold in
+        // between wins. Returns null when the condition refused the write.
+        this.patchQuoteIfCurrent = function (id, data, current) { return __awaiter(_this, void 0, void 0, function () {
+            var order, sameQuote, err_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1:
+                        order = _b.sent();
+                        if (!order)
+                            throw new Error("no order fund for id: ".concat(id));
+                        this.table.setContext({ accountId: order.accountId });
+                        sameQuote = current.dateQuote ? "${dateQuote} = @{dateQuote}" : "attribute_not_exists(${dateQuote})";
+                        _b.label = 2;
+                    case 2:
+                        _b.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, this.Order.update(__assign(__assign({}, data), { id: id }), {
+                                where: "${statusOrder} = {CREATED} and ".concat(sameQuote, " and (attribute_not_exists(${quoteHeldUntil}) or ${quoteHeldUntil} < @{now})"),
+                                substitutions: { dateQuote: current.dateQuote, now: current.now },
+                                return: "get",
+                            })];
+                    case 3: return [2 /*return*/, _b.sent()];
+                    case 4:
+                        err_2 = _b.sent();
+                        if ((err_2 === null || err_2 === void 0 ? void 0 : err_2.code) === "ConditionalCheckFailedException")
+                            return [2 /*return*/, null];
+                        throw err_2;
+                    case 5: return [2 /*return*/];
+                }
+            });
+        }); };
+        // Holds the quote until `until` while the order waits for its payment. Returns null
+        // when the order no longer does.
+        this.holdQuote = function (id, until) { return __awaiter(_this, void 0, void 0, function () {
+            var order, err_3;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1:
+                        order = _b.sent();
+                        if (!order)
+                            throw new Error("no order fund for id: ".concat(id));
+                        this.table.setContext({ accountId: order.accountId });
+                        _b.label = 2;
+                    case 2:
+                        _b.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, this.Order.update({ id: id, quoteHeldUntil: until }, { where: "${statusOrder} = {CREATED}", return: "get" })];
+                    case 3: return [2 /*return*/, _b.sent()];
+                    case 4:
+                        err_3 = _b.sent();
+                        if ((err_3 === null || err_3 === void 0 ? void 0 : err_3.code) === "ConditionalCheckFailedException")
+                            return [2 /*return*/, null];
+                        throw err_3;
+                    case 5: return [2 /*return*/];
+                }
+            });
+        }); };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             var order;
             return __generator(this, function (_b) {

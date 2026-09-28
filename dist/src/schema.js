@@ -199,6 +199,8 @@ var Schema = {
             amountToClaim: { type: Number },
             quoteId: { type: String },
             dateQuote: { type: String },
+            // Until when the quote may not be renewed: the payer is confirming or has sent.
+            quoteHeldUntil: { type: String },
             physicalPaymentParams: { type: Object, default: {}, schema: {
                     logo: { type: String },
                     logoInverse: { type: String },
