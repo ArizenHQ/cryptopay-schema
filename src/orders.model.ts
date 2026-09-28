@@ -198,14 +198,23 @@ export class Orders {
     }
   };
 
-  // Holds the quote until `until` while the order waits for its payment. Returns null
-  // when the order no longer does.
-  holdQuote = async (id: string, until: string) => {
+  // Holds the quote the payer is shown until `until`, while the order waits for its
+  // payment: refused when that quote was renewed meanwhile, and never shortens a longer
+  // hold. Returns null when refused.
+  holdQuote = async (id: string, until: string, shown: { dateQuote?: string | null } = {}) => {
     const order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
     if (!order) throw new Error(`no order fund for id: ${id}`);
     this.table.setContext({ accountId: order.accountId });
+    const sameQuote = shown.dateQuote ? "${dateQuote} = @{dateQuote}" : "attribute_not_exists(${dateQuote})";
     try {
-      return await this.Order.update({ id, quoteHeldUntil: until }, { where: "${statusOrder} = {CREATED}", return: "get" });
+      return await this.Order.update(
+        { id, quoteHeldUntil: until },
+        {
+          where: `\${statusOrder} = {CREATED} and ${sameQuote} and (attribute_not_exists(\${quoteHeldUntil}) or \${quoteHeldUntil} < @{until})`,
+          substitutions: { dateQuote: shown.dateQuote, until },
+          return: "get",
+        }
+      );
     } catch (err: any) {
       if (err?.code === "ConditionalCheckFailedException") return null;
       throw err;
