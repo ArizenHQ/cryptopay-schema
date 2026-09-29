@@ -411,9 +411,6 @@ declare const Schema: {
                                 readonly type: ObjectConstructor;
                                 readonly default: {};
                             };
-                            readonly treasuryWalletId: {
-                                readonly type: StringConstructor;
-                            };
                         };
                     };
                 };
@@ -1170,7 +1167,6 @@ declare const Schema: {
             };
             readonly network: {
                 readonly type: StringConstructor;
-                readonly enum: readonly ["mainnet", "mumbai", "goerli", "ghost", "sepolia"];
             };
             readonly blockchain: {
                 readonly type: StringConstructor;
