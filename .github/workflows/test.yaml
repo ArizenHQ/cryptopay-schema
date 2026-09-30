@@ -25,6 +25,11 @@ jobs:
           node-version: 20
           cache: yarn
       - run: yarn install --frozen-lockfile
-      - run: yarn test
+      - name: Run tests
+        run: yarn jest --ci --verbose --json --outputFile=jest-results.json
         env:
           DYNAMODB_ENDPOINT: http://localhost:8000
+      # One table per test file on the run page, failures included.
+      - name: Test summary
+        if: always()
+        run: node .github/scripts/jest-summary.js jest-results.json
