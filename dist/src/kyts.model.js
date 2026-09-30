@@ -82,9 +82,7 @@ var Kyts = /** @class */ (function () {
                         kyt = _b.sent();
                         _b.label = 5;
                     case 5:
-                        param = { context: context };
-                        if (incrementCount)
-                            param = { add: { calls: 1 }, context: context };
+                        param = incrementCount ? { add: { calls: 1 }, context: context } : { context: context };
                         if (kyt) {
                             data.id = kyt.id;
                             return [2 /*return*/, this.Kyt.update(data, param).then(function (_kyt) { return __awaiter(_this, void 0, void 0, function () {

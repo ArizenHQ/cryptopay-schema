@@ -12,7 +12,7 @@ if (!fs.existsSync(resultsFile)) {
 }
 const results = JSON.parse(fs.readFileSync(resultsFile, "utf8"));
 const icon = { passed: "✅", failed: "❌", pending: "⏭️", skipped: "⏭️", todo: "📝" };
-const cell = (text) => String(text).replace(/\|/g, "\\|").replace(/\n/g, " ");
+const cell = (text) => String(text).replace(/\\/g, "\\\\").replace(/\|/g, "\\|").replace(/\n/g, " ");
 
 const lines = [
   `## Tests: ${results.numPassedTests} passed, ${results.numFailedTests} failed, ${results.numTotalTests} total`,

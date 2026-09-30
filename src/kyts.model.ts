@@ -63,8 +63,7 @@ export class Kyts {
       } else {
         kyt = await this.Kyt.get({ address: data.address }, { index: "gs2", follow: true, context })
       }
-      let param: any = { context }
-      if(incrementCount) param = { add: { calls: 1 }, context };
+      const param: any = incrementCount ? { add: { calls: 1 }, context } : { context };
 
       if (kyt) {
         data.id = kyt.id

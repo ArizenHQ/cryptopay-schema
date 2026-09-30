@@ -198,3 +198,23 @@ test("a reset token created for one user leaves the next lookup unfiltered", asy
   const query = last("QueryCommand");
   expect(JSON.stringify(query.ExpressionAttributeNames || {})).not.toContain("userId");
 });
+
+test("a user patch keeps the user's account whatever the data says", async () => {
+  const { Users } = await import("../src/users.model");
+  const model = await Users.init();
+  const user = { pk: `account#${A}`, sk: "user#u@t.local", id: "66666666-6666-4666-8666-666666666666", accountId: A, email: "u@t.local", name: "U", status: "active", permissionLevel: 16, password: "x" };
+  serve([user]);
+  await model.patchById(user.id, { accountId: B, email: user.email, name: "V" }).catch(() => {});
+  const write = sent.filter((c) => c.name === "UpdateItemCommand" || c.name === "TransactWriteItemsCommand").pop()!;
+  const update = write.name === "UpdateItemCommand" ? write.input : write.input.TransactItems.map((t: any) => t.Update).find(Boolean);
+  expect(update.Key.pk.S).toBe(`account#${A}`);
+  expect(JSON.stringify(update.ExpressionAttributeValues || {})).not.toContain(B);
+});
+
+test("a GasStation insert dates the transfer itself, whatever date the data carries", async () => {
+  const model = await GasStations.init();
+  serve([project]);
+  await model.insert({ amount: "1", currency: "ETH", internalRef: "r", dateCreated: "2000-01-01T00:00:00.000Z" }, P).catch(() => {});
+  const put = last("PutItemCommand");
+  expect(put.Item.dateCreated.S).not.toBe("2000-01-01T00:00:00.000Z");
+});
