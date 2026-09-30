@@ -5,6 +5,7 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from "./utils/paginateModel";
+import { withoutKeys } from "./utils/callerData";
 
 export class GasStationStatements {
   Crypto: any;
@@ -103,6 +104,7 @@ export class GasStationStatements {
 
   patchById = async (id: string, data: any) => {
     try {
+      data = withoutKeys(data);
       const statement = await this.GasStationStatement.get({ id }, { index: "gs1", follow: true });
       if (!statement) throw new Error(`GasStationStatement not found: ${id}`);
       data.id = id;

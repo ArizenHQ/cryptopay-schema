@@ -8,6 +8,7 @@ import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from "./utils/paginateModel";
 import { createHash } from "crypto";
+import { withoutKeys } from "./utils/callerData";
 
 export class Users {
   Crypto: any;
@@ -101,10 +102,11 @@ export class Users {
   };
 
   patchById = async (id: string, data: any) => {
+    data = withoutKeys(data);
     let user = await this.User.get({ id: id }, { index: "gs4", follow: true });
     const context = { accountId: user.accountId };
 
-    const account = await this.Account.get({ pk: `account#${user.accountId}` }, { context });
+    const account = await this.Account.get({ pk: `account#${user.accountId}` });
     if (!account) throw new Error("Account not found");
     
     // Déterminer le nouveau resellerAccountId

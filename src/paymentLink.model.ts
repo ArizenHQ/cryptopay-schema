@@ -5,6 +5,7 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from './utils/paginateModel';
+import { withoutKeys } from "./utils/callerData";
 
 export class PaymentLinks {
   Crypto: any;
@@ -52,6 +53,7 @@ export class PaymentLinks {
 
   insert = async (projectId: string, data: any, incrementCount: boolean) => {
     try {
+      data = withoutKeys(data, ["id"]);
       const project = await this.Project.get({ id: projectId }, { index: "gs2", follow: true });
       data.accountId = project.accountId;
       data.projectId = projectId;
@@ -86,6 +88,7 @@ export class PaymentLinks {
   
   patchById = async (id: string, data: any) => {
     try {
+      data = withoutKeys(data);
       let paymentLink = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
       if (!paymentLink) throw new Error(`no PaymentLink fund for id: ${id}`)
       data.id = id;

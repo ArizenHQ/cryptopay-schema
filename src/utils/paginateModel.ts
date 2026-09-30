@@ -35,10 +35,10 @@ export async function paginateModel(
     reverse = direction?.toLowerCase() === 'desc';
   }
 
-  // Merge final options avec reverse calculé dynamiquement
+  // The model's options (index, follow, account context) win over the query's.
   const finalOptions = {
-    ...options,
     ...query,
+    ...options,
     limit,
     reverse,
   };

@@ -53,6 +53,7 @@ var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient(
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var paginateModel_1 = require("./utils/paginateModel");
+var callerData_1 = require("./utils/callerData");
 var Payments = /** @class */ (function () {
     function Payments(secretsString) {
         var _this = this;
@@ -63,6 +64,7 @@ var Payments = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
+                        data = (0, callerData_1.withoutKeys)(data);
                         return [4 /*yield*/, this.Account.get({ pk: "account#".concat(accountId) })];
                     case 1:
                         account = _b.sent();
@@ -163,6 +165,7 @@ var Payments = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
+                        data = (0, callerData_1.withoutKeys)(data);
                         return [4 /*yield*/, this.Payment.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
                         payment = _b.sent();

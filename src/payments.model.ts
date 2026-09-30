@@ -5,6 +5,7 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from './utils/paginateModel';
+import { withoutKeys } from "./utils/callerData";
 export class Payments {
   Crypto: any;
   table: Table;
@@ -50,6 +51,7 @@ export class Payments {
 
   insert = async (accountId: string, data: any) => {
     try {
+      data = withoutKeys(data);
       const account = await this.Account.get({ pk: `account#${accountId}` });
       data.accountId = accountId;
       return await this.Payment.create(data, { context: { accountId } }).then(async (payment: any) => {
@@ -95,6 +97,7 @@ export class Payments {
 
   patchById = async (id: string, data: any) => {
     try {
+      data = withoutKeys(data);
       let payment = await this.Payment.get({ id: id }, { index: "gs1", follow: true });
       if (!payment) throw new Error(`no order fund for id: ${id}`)
       data.id = id;

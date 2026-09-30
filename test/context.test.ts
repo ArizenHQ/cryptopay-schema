@@ -116,3 +116,80 @@ test("audit reads stay scoped to the account asked for, and only that call", asy
   await model.log({ accountId: B, entityType: "Order", entityId: "o-1", action: "CREATED" });
   expect(accountOfWrite(last("PutItemCommand"))).toBe(B);
 });
+
+import { Accounts } from "../src/accounts.model";
+import { Projects } from "../src/projects.model";
+import { Kyts } from "../src/kyts.model";
+import { PasswordResetToken } from "../src/password.reset.token.model";
+
+const P = "33333333-3333-4333-8333-333333333333";
+const OTHER_P = "44444444-4444-4444-8444-444444444444";
+
+test("an account patch writes the account asked for, whatever id or keys the data carries", async () => {
+  const model = await Accounts.init();
+  serve([{ pk: `account#${A}`, sk: "account#", id: A, name: "A" }]);
+  await model.patchById(A, { id: B, pk: `account#${B}`, gs5pk: `reseller#${B}`, name: "renamed" });
+  // A unique field (name) makes OneTable write through a transaction.
+  const update = last("TransactWriteItemsCommand").TransactItems.map((t: any) => t.Update).find(Boolean);
+  expect(update.Key.pk.S).toBe(`account#${A}`);
+  expect(JSON.stringify(update.ExpressionAttributeValues || {})).not.toContain(B);
+});
+
+test("a project patch keeps its own keys and refuses another account", async () => {
+  const model = await Projects.init();
+  serve([project]);
+  await model.patchById(P, { pk: `account#${B}`, sk: `project#${OTHER_P}`, name: "x" }).catch(() => {});
+  const update = last("UpdateItemCommand");
+  expect(update.Key.pk.S).toBe(`account#${A}`);
+  expect(update.Key.sk.S).toBe(`project#${P}`);
+  await expect(model.patchById(P, { accountId: B })).rejects.toThrow(/cannot change account/);
+});
+
+test("an order created with foreign keys in its data is written in its own account", async () => {
+  const model = await Orders.init();
+  serve([project]);
+  await model.insert(A, { pk: `account#${B}`, sk: "order#x", id: "x", amount: 1, internalRef: "r", codeProject: "c-1", typeOrder: "crypto", currency: "ETH" }).catch(() => {});
+  const put = last("PutItemCommand");
+  expect(put.Item.pk.S).toBe(`account#${A}`);
+  expect(put.Item.id.S).not.toBe("x");
+});
+
+test("a query cannot lift the account filter of an audit read", async () => {
+  const model = await AuditLogs.init();
+  serve([]);
+  await model.findByAccount(A, { limit: 10, page: 0, context: {} });
+  expect(Object.values(filterOf(last("QueryCommand")) || {})).toContainEqual({ S: A });
+});
+
+test("the 24h limit of a project reads that project's account only", async () => {
+  const model = await GasStations.init();
+  serve([project]);
+  await model.isGasStationAvailable(A, P, "1", "ETH");
+  const query = sent.find((c) => c.name === "QueryCommand" && JSON.stringify(c.input).includes("gasStation#"))!.input;
+  expect(Object.values(filterOf(query) || {})).toContainEqual({ S: A });
+});
+
+test("a KYT insert looks up the existing KYT in the project's account only", async () => {
+  const model = await Kyts.init();
+  serve([project]);
+  await model.insert(P, { address: "0xabc" }, false).catch(() => {});
+  const lookups = sent.filter((c) => c.name === "QueryCommand" && JSON.stringify(c.input).includes("0xabc"));
+  expect(lookups.length).toBeGreaterThan(0);
+  for (const q of lookups) expect(Object.values(filterOf(q.input) || {})).toContainEqual({ S: A });
+});
+
+test("a project's API key is stored on the project's own item", async () => {
+  const model = await Projects.init();
+  serve([]);
+  await model.createApiKey({ accountName: "A", project: { ...project, typeProject: "gasStation" } });
+  expect(last("UpdateItemCommand").Key.pk.S).toBe(`account#${A}`);
+});
+
+test("a reset token created for one user leaves the next lookup unfiltered", async () => {
+  const model = await PasswordResetToken.init();
+  serve([]);
+  await model.create({ userId: "user-1", token: "t1", expiresAt: new Date(Date.now() + 60000) }).catch(() => {});
+  await model.findByToken("t2");
+  const query = last("QueryCommand");
+  expect(JSON.stringify(query.ExpressionAttributeNames || {})).not.toContain("userId");
+});

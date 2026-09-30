@@ -10,6 +10,7 @@ import { Projects } from "./projects.model";
 import { Accounts } from "./accounts.model";
 import { paginateModel } from './utils/paginateModel';
 import { resolveNetworkForCurrency, resolveBlockchainForCurrency } from './blockchains';
+import { withoutKeys } from "./utils/callerData";
 
 export class Orders {
   Crypto: any;
@@ -56,6 +57,7 @@ export class Orders {
 
   insert = async (accountId: string, order: any) => {
     try {
+      order = withoutKeys(order, ["id"]);
       // Normaliser le code du projet
       order.codeProject = order.projectCode || order.codeProject;
 
@@ -159,6 +161,7 @@ export class Orders {
 
   patchById = async (id: string, data: any) => {
     try {
+      data = withoutKeys(data);
       let order = await this.Order.get(
         { id: id },
         { index: "gs1", follow: true }
@@ -180,7 +183,7 @@ export class Orders {
     const sameQuote = current.dateQuote ? "${dateQuote} = @{dateQuote}" : "attribute_not_exists(${dateQuote})";
     try {
       return await this.Order.update(
-        { ...data, id },
+        { ...withoutKeys(data), id },
         {
           where: `\${statusOrder} = {CREATED} and ${sameQuote} and (attribute_not_exists(\${quoteHeldUntil}) or \${quoteHeldUntil} < @{now})`,
           substitutions: { dateQuote: current.dateQuote, now: current.now },

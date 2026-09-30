@@ -11,6 +11,7 @@ import retrieveSecrets from "./utils/retrieveSecrets";
 import { randomBytes, createHash } from "crypto";
 import { paginateModel } from './utils/paginateModel';
 import { blockchainNames, listCurrenciesForBlockchain, currencyNetworkMap } from './blockchains';
+import { withoutKeys } from "./utils/callerData";
 
 const client = new Dynamo({
   client: new DynamoDBClient({ region: "eu-west-1" }),
@@ -179,6 +180,7 @@ export class Projects {
   };
 
   patchById = async (id: string, data: any) => {
+    data = withoutKeys(data);
     let project = await this.Project.get(
       { id: id },
       { index: "gs2", follow: true }
@@ -186,20 +188,9 @@ export class Projects {
     const context = { accountId: project.accountId };
     data.id = id;
 
-    // Si le projet change de compte, mettre à jour resellerAccountId
+    // A project stays in its account: the write always goes to the stored one.
     if (data.accountId && data.accountId !== project.accountId) {
-      const account = await this.Account.get({ pk: `account#${data.accountId}` }, { context });
-      if (!account) throw new Error("Account not found");
-      
-      // Déterminer le nouveau resellerAccountId
-      let resellerAccountId = null;
-      if (account.parentAccountId) {
-        resellerAccountId = account.parentAccountId;
-      }
-      
-      // Ajouter le resellerAccountId aux données de mise à jour
-      data.resellerAccountId = resellerAccountId;
-      data.gs5pk = resellerAccountId ? `reseller#${resellerAccountId}` : "standard#project";
+      throw new Error("A project cannot change account");
     }
     const controlData = this.checkData(data);
     if (controlData !== true) return controlData;

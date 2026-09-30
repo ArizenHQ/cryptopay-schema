@@ -55,6 +55,7 @@ var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var crypto_1 = require("crypto");
 var paginateModel_1 = require("./utils/paginateModel");
 var blockchains_1 = require("./blockchains");
+var callerData_1 = require("./utils/callerData");
 var client = new Dynamo_1.Dynamo({
     client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }),
 });
@@ -236,34 +237,25 @@ var Projects = /** @class */ (function () {
             });
         };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var project, context, account, resellerAccountId, controlData;
+            var project, context, controlData;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
+                    case 0:
+                        data = (0, callerData_1.withoutKeys)(data);
+                        return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();
                         context = { accountId: project.accountId };
                         data.id = id;
-                        if (!(data.accountId && data.accountId !== project.accountId)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(data.accountId) }, { context: context })];
-                    case 2:
-                        account = _b.sent();
-                        if (!account)
-                            throw new Error("Account not found");
-                        resellerAccountId = null;
-                        if (account.parentAccountId) {
-                            resellerAccountId = account.parentAccountId;
+                        // A project stays in its account: the write always goes to the stored one.
+                        if (data.accountId && data.accountId !== project.accountId) {
+                            throw new Error("A project cannot change account");
                         }
-                        // Ajouter le resellerAccountId aux données de mise à jour
-                        data.resellerAccountId = resellerAccountId;
-                        data.gs5pk = resellerAccountId ? "reseller#".concat(resellerAccountId) : "standard#project";
-                        _b.label = 3;
-                    case 3:
                         controlData = this.checkData(data);
                         if (controlData !== true)
                             return [2 /*return*/, controlData];
                         return [4 /*yield*/, this.Project.update(data, { return: "get", context: context })];
-                    case 4: return [2 /*return*/, _b.sent()];
+                    case 2: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };

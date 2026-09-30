@@ -67,6 +67,7 @@ var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var paginateModel_1 = require("./utils/paginateModel");
 var blockchains_1 = require("./blockchains");
+var callerData_1 = require("./utils/callerData");
 var Orders = /** @class */ (function () {
     function Orders(secretsString) {
         var _this = this;
@@ -77,6 +78,7 @@ var Orders = /** @class */ (function () {
                 switch (_l.label) {
                     case 0:
                         _l.trys.push([0, 4, , 5]);
+                        order = (0, callerData_1.withoutKeys)(order, ["id"]);
                         // Normaliser le code du projet
                         order.codeProject = order.projectCode || order.codeProject;
                         return [4 /*yield*/, this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true })];
@@ -198,6 +200,7 @@ var Orders = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
+                        data = (0, callerData_1.withoutKeys)(data);
                         return [4 /*yield*/, this.Order.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
                         order = _b.sent();
@@ -229,7 +232,7 @@ var Orders = /** @class */ (function () {
                         _b.label = 2;
                     case 2:
                         _b.trys.push([2, 4, , 5]);
-                        return [4 /*yield*/, this.Order.update(__assign(__assign({}, data), { id: id }), {
+                        return [4 /*yield*/, this.Order.update(__assign(__assign({}, (0, callerData_1.withoutKeys)(data)), { id: id }), {
                                 where: "${statusOrder} = {CREATED} and ".concat(sameQuote, " and (attribute_not_exists(${quoteHeldUntil}) or ${quoteHeldUntil} < @{now})"),
                                 substitutions: { dateQuote: current.dateQuote, now: current.now },
                                 return: "get",

@@ -5,6 +5,7 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from './utils/paginateModel';
+import { withoutKeys } from "./utils/callerData";
 
 export class Kyts {
   Crypto: any;
@@ -51,6 +52,7 @@ export class Kyts {
 
   insert = async (projectId: string, data: any, incrementCount: boolean) => {
     try {
+      data = withoutKeys(data, ["id"]);
       const project = await this.Project.get({ id: projectId }, { index: "gs2", follow: true });
       const context = { accountId: project.accountId };
       data.accountId = project.accountId;
@@ -114,6 +116,7 @@ export class Kyts {
 
   patchById = async (id: string, data: any) => {
     try {
+      data = withoutKeys(data);
       let kyt = await this.Kyt.get({ id: id }, { index: "gs1", follow: true });
       if (!kyt) throw new Error(`no kyt fund for id: ${id}`)
       data.id = id;

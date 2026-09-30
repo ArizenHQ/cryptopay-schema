@@ -72,7 +72,7 @@ function paginateModel(model_1, method_1) {
                         _e = sort.split(' '), field = _e[0], direction = _e[1];
                         reverse = (direction === null || direction === void 0 ? void 0 : direction.toLowerCase()) === 'desc';
                     }
-                    finalOptions = __assign(__assign(__assign({}, options), query), { limit: limit, reverse: reverse });
+                    finalOptions = __assign(__assign(__assign({}, query), options), { limit: limit, reverse: reverse });
                     // Decode base64 if next token is provided
                     if (next && typeof next === 'string') {
                         try {

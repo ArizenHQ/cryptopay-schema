@@ -7,6 +7,7 @@ const client = new Dynamo({
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from './utils/paginateModel';
+import { withoutKeys } from "./utils/callerData";
 // A transfer amount: a finite number above zero ("0.1", 0.1), never negative or text.
 const isPositiveAmount = (amount: any): boolean => {
   const value = Number(amount);
@@ -65,6 +66,7 @@ export class GasStations {
 
   insert = async (gasStation: any, projectId: String) => {
     try {
+      gasStation = withoutKeys(gasStation, ["id"]);
       const project = await this.Project.get(
         { id: projectId },
         { index: "gs2", follow: true }
@@ -197,6 +199,7 @@ export class GasStations {
 
   patchById = async (id: string, data: any) => {
     try {
+      data = withoutKeys(data);
       let gasStation = await this.GasStation.get(
         { id: id },
         { index: "gs1", follow: true }

@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -55,6 +66,7 @@ var client = new Dynamo_1.Dynamo({
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var paginateModel_1 = require("./utils/paginateModel");
+var callerData_1 = require("./utils/callerData");
 var Accounts = /** @class */ (function () {
     function Accounts(secretsString) {
         var _this = this;
@@ -92,7 +104,7 @@ var Accounts = /** @class */ (function () {
         this.getFullAccount = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.table.fetch(["Account", "User", "Project", "Partner", "Payment", "Conversion", "Kyt", "Order", "GasStation"], { pk: "account#".concat(id) }, { context: { id: id } })];
+                    case 0: return [4 /*yield*/, this.table.fetch(["Account", "User", "Project", "Partner", "Payment", "Conversion", "Kyt", "Order", "GasStation"], { pk: "account#".concat(id) })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
@@ -134,7 +146,10 @@ var Accounts = /** @class */ (function () {
             var currentAccount, updatedAccount;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.Account.get({ id: id })];
+                    case 0:
+                        // The account written is the one asked for, whatever id the data carries.
+                        data = __assign(__assign({}, (0, callerData_1.withoutKeys)(data, ["id"])), { id: id });
+                        return [4 /*yield*/, this.Account.get({ id: id })];
                     case 1:
                         currentAccount = _b.sent();
                         if (!currentAccount) {

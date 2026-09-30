@@ -5,6 +5,7 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from './utils/paginateModel';
+import { withoutKeys } from "./utils/callerData";
 
 export class DocumentOrder {
   Crypto: any;
@@ -56,6 +57,7 @@ export class DocumentOrder {
 
   insert = async (accountId: string, orderId: string, data: any) => {
     try {
+      data = withoutKeys(data, ["id"]);
       data.accountId = accountId;
       data.orderId = orderId;
       return await this.DocumentOrder.create(data, { context: { accountId } }).then(async (document: any) => {
@@ -92,6 +94,7 @@ export class DocumentOrder {
 
   patchById = async (id: string, data: any) => {
     try {
+      data = withoutKeys(data);
       let document = await this.DocumentOrder.get({ id: id }, { index: "gs1", follow: true });
       if (!document) throw new Error(`no document fund for id: ${id}`)
       data.id = id;
