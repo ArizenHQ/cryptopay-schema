@@ -51,9 +51,8 @@ export class Payments {
   insert = async (accountId: string, data: any) => {
     try {
       const account = await this.Account.get({ pk: `account#${accountId}` });
-      this.table.setContext({ accountId: accountId });
       data.accountId = accountId;
-      return await this.Payment.create(data).then(async (payment: any) => {
+      return await this.Payment.create(data, { context: { accountId } }).then(async (payment: any) => {
         return payment;
       })
     } catch (error) {
@@ -98,9 +97,8 @@ export class Payments {
     try {
       let payment = await this.Payment.get({ id: id }, { index: "gs1", follow: true });
       if (!payment) throw new Error(`no order fund for id: ${id}`)
-      this.table.setContext({ accountId: payment.accountId });
       data.id = id;
-      return await this.Payment.update(data, {return: 'get'});
+      return await this.Payment.update(data, { return: 'get', context: { accountId: payment.accountId } });
     } catch (err) {
       throw new Error(`Error during update order ${err}`);
     }

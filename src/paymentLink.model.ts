@@ -53,10 +53,9 @@ export class PaymentLinks {
   insert = async (projectId: string, data: any, incrementCount: boolean) => {
     try {
       const project = await this.Project.get({ id: projectId }, { index: "gs2", follow: true });
-      this.table.setContext({ accountId: project.accountId });
       data.accountId = project.accountId;
       data.projectId = projectId;
-      return await this.PaymentLink.create(data);
+      return await this.PaymentLink.create(data, { context: { accountId: project.accountId } });
     } catch (error) {
       console.error(error)
       throw new Error(`Error during add or update new PaymentLink ${error}`);
@@ -89,11 +88,10 @@ export class PaymentLinks {
     try {
       let paymentLink = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
       if (!paymentLink) throw new Error(`no PaymentLink fund for id: ${id}`)
-      this.table.setContext({ accountId: paymentLink.accountId });
       data.id = id;
       const currentDate = new Date();
       data.dateLastUpdated = currentDate.getTime();
-      return await this.PaymentLink.update(data, {return: 'get'});
+      return await this.PaymentLink.update(data, { return: 'get', context: { accountId: paymentLink.accountId } });
     } catch (err) {
       throw new Error(`Error during update PaymentLink ${err}`);
     }

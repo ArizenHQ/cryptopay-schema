@@ -77,7 +77,7 @@ export class Projects {
         resellerAccountId = account.parentAccountId;
       }
 
-      this.table.setContext({ accountId: data.accountId });
+      const context = { accountId: data.accountId };
       const isValid = this.checkData(data);
 
       if (isValid === true) {
@@ -98,7 +98,7 @@ export class Projects {
           projectData.gs5pk = `reseller#${resellerAccountId}`;
         }
 
-        return this.Project.create(projectData).then(async (project: any) => {
+        return this.Project.create(projectData, { context }).then(async (project: any) => {
           await this.createApiKey({
             accountName: account.name,
             project: project,
@@ -183,12 +183,12 @@ export class Projects {
       { id: id },
       { index: "gs2", follow: true }
     );
-    this.table.setContext({ accountId: project.accountId });
+    const context = { accountId: project.accountId };
     data.id = id;
 
     // Si le projet change de compte, mettre à jour resellerAccountId
     if (data.accountId && data.accountId !== project.accountId) {
-      const account = await this.Account.get({ pk: `account#${data.accountId}` });
+      const account = await this.Account.get({ pk: `account#${data.accountId}` }, { context });
       if (!account) throw new Error("Account not found");
       
       // Déterminer le nouveau resellerAccountId
@@ -203,7 +203,7 @@ export class Projects {
     }
     const controlData = this.checkData(data);
     if (controlData !== true) return controlData;
-    return await this.Project.update(data, { return: "get" });
+    return await this.Project.update(data, { return: "get", context });
   };
 
   removeById = async (id: string) => {
@@ -231,7 +231,7 @@ export class Projects {
             console.error(error);
             throw new Error(`Error during configure usage plan key ${error}`);
           });
-          await this.Project.update({ id: obj.project.id, apiKeyId: keyId });
+          await this.Project.update({ id: obj.project.id, apiKeyId: keyId }, { context: { accountId: obj.project.accountId } });
         })
         .catch((error) => {
           console.error(error);

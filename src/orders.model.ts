@@ -79,9 +79,6 @@ export class Orders {
       // Récupérer les informations du compte
       const account = await this.Account.get({ pk: `account#${accountId}` });
 
-      // Configurer le contexte et les propriétés de base de l'ordre
-      this.table.setContext({ accountId });
-      
       // Construire l'objet order avec les propriétés requises
       const orderData = {
         ...order,
@@ -111,7 +108,7 @@ export class Orders {
       }
 
       // Créer l'ordre et retourner une version nettoyée
-      const createdOrder = await this.Order.create(orderData);
+      const createdOrder = await this.Order.create(orderData, { context: { accountId } });
       
       // Liste des champs à supprimer de la réponse
       const fieldsToRemove = [
@@ -167,9 +164,8 @@ export class Orders {
         { index: "gs1", follow: true }
       );
       if (!order) throw new Error(`no order fund for id: ${id}`);
-      this.table.setContext({ accountId: order.accountId });
       data.id = id;
-      return await this.Order.update(data, { return: "get" });
+      return await this.Order.update(data, { return: "get", context: { accountId: order.accountId } });
     } catch (err) {
       throw new Error(`Error during update order ${err}`);
     }
@@ -181,7 +177,6 @@ export class Orders {
   patchQuoteIfCurrent = async (id: string, data: any, current: { dateQuote?: string | null; now: string }) => {
     const order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
     if (!order) throw new Error(`no order fund for id: ${id}`);
-    this.table.setContext({ accountId: order.accountId });
     const sameQuote = current.dateQuote ? "${dateQuote} = @{dateQuote}" : "attribute_not_exists(${dateQuote})";
     try {
       return await this.Order.update(
@@ -190,6 +185,7 @@ export class Orders {
           where: `\${statusOrder} = {CREATED} and ${sameQuote} and (attribute_not_exists(\${quoteHeldUntil}) or \${quoteHeldUntil} < @{now})`,
           substitutions: { dateQuote: current.dateQuote, now: current.now },
           return: "get",
+          context: { accountId: order.accountId },
         }
       );
     } catch (err: any) {
@@ -204,7 +200,6 @@ export class Orders {
   holdQuote = async (id: string, until: string, shown: { dateQuote?: string | null } = {}) => {
     const order = await this.Order.get({ id: id }, { index: "gs1", follow: true });
     if (!order) throw new Error(`no order fund for id: ${id}`);
-    this.table.setContext({ accountId: order.accountId });
     const sameQuote = shown.dateQuote ? "${dateQuote} = @{dateQuote}" : "attribute_not_exists(${dateQuote})";
     try {
       return await this.Order.update(
@@ -213,6 +208,7 @@ export class Orders {
           where: `\${statusOrder} = {CREATED} and ${sameQuote} and (attribute_not_exists(\${quoteHeldUntil}) or \${quoteHeldUntil} < @{until})`,
           substitutions: { dateQuote: shown.dateQuote, until },
           return: "get",
+          context: { accountId: order.accountId },
         }
       );
     } catch (err: any) {

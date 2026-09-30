@@ -76,9 +76,7 @@ var AuditLogs = /** @class */ (function () {
         this.log = function (params) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0:
-                        this.table.setContext({ accountId: params.accountId });
-                        return [4 /*yield*/, this.AuditLog.create(__assign(__assign({}, (params.id ? { id: params.id } : {})), { accountId: params.accountId, entityType: params.entityType, entityId: params.entityId, action: params.action, by: params.by || { system: "temporal" }, at: params.at || new Date().toISOString(), meta: params.meta || {} }))];
+                    case 0: return [4 /*yield*/, this.AuditLog.create(__assign(__assign({}, (params.id ? { id: params.id } : {})), { accountId: params.accountId, entityType: params.entityType, entityId: params.entityId, action: params.action, by: params.by || { system: "temporal" }, at: params.at || new Date().toISOString(), meta: params.meta || {} }), { context: { accountId: params.accountId } })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
@@ -92,14 +90,13 @@ var AuditLogs = /** @class */ (function () {
                 if (query === void 0) { query = {}; }
                 return __generator(this, function (_b) {
                     switch (_b.label) {
-                        case 0:
-                            this.table.setContext({ accountId: accountId });
-                            return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.AuditLog, "find", {
-                                    gs5pk: "auditLog#".concat(entityType, "#").concat(entityId),
-                                    gs5sk: { begins: "auditLog#" },
-                                }, query, 
-                                // gs5 projects every attribute: no follow-up read per entry.
-                                { index: "gs5" })];
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.AuditLog, "find", {
+                                gs5pk: "auditLog#".concat(entityType, "#").concat(entityId),
+                                gs5sk: { begins: "auditLog#" },
+                            }, query, 
+                            // gs5 projects every attribute: no follow-up read per entry. The account filter
+                            // keeps another account's entries out.
+                            { index: "gs5", context: { accountId: accountId } })];
                         case 1: return [2 /*return*/, _b.sent()];
                     }
                 });
@@ -114,9 +111,7 @@ var AuditLogs = /** @class */ (function () {
                 if (query === void 0) { query = {}; }
                 return __generator(this, function (_b) {
                     switch (_b.label) {
-                        case 0:
-                            this.table.setContext({ accountId: accountId });
-                            return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.AuditLog, "find", { gs1pk: "auditLog#" }, query, { index: "gs1", follow: true })];
+                        case 0: return [4 /*yield*/, (0, paginateModel_1.paginateModel)(this.AuditLog, "find", { gs1pk: "auditLog#" }, query, { index: "gs1", follow: true, context: { accountId: accountId } })];
                         case 1: return [2 /*return*/, _b.sent()];
                     }
                 });

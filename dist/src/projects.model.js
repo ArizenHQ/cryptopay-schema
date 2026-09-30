@@ -68,7 +68,7 @@ var Projects = /** @class */ (function () {
             return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex");
         };
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
-            var account_1, resellerAccountId, isValid, projectData, error_1;
+            var account_1, resellerAccountId, context, isValid, projectData, error_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -83,7 +83,7 @@ var Projects = /** @class */ (function () {
                         if (account_1.parentAccountId) {
                             resellerAccountId = account_1.parentAccountId;
                         }
-                        this.table.setContext({ accountId: data.accountId });
+                        context = { accountId: data.accountId };
                         isValid = this.checkData(data);
                         if (isValid === true) {
                             projectData = {
@@ -102,7 +102,7 @@ var Projects = /** @class */ (function () {
                             if (resellerAccountId) {
                                 projectData.gs5pk = "reseller#".concat(resellerAccountId);
                             }
-                            return [2 /*return*/, this.Project.create(projectData).then(function (project) { return __awaiter(_this, void 0, void 0, function () {
+                            return [2 /*return*/, this.Project.create(projectData, { context: context }).then(function (project) { return __awaiter(_this, void 0, void 0, function () {
                                     return __generator(this, function (_b) {
                                         switch (_b.label) {
                                             case 0: return [4 /*yield*/, this.createApiKey({
@@ -236,16 +236,16 @@ var Projects = /** @class */ (function () {
             });
         };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var project, account, resellerAccountId, controlData;
+            var project, context, account, resellerAccountId, controlData;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();
-                        this.table.setContext({ accountId: project.accountId });
+                        context = { accountId: project.accountId };
                         data.id = id;
                         if (!(data.accountId && data.accountId !== project.accountId)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(data.accountId) })];
+                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(data.accountId) }, { context: context })];
                     case 2:
                         account = _b.sent();
                         if (!account)
@@ -262,7 +262,7 @@ var Projects = /** @class */ (function () {
                         controlData = this.checkData(data);
                         if (controlData !== true)
                             return [2 /*return*/, controlData];
-                        return [4 /*yield*/, this.Project.update(data, { return: "get" })];
+                        return [4 /*yield*/, this.Project.update(data, { return: "get", context: context })];
                     case 4: return [2 /*return*/, _b.sent()];
                 }
             });
@@ -306,7 +306,7 @@ var Projects = /** @class */ (function () {
                                             })];
                                         case 1:
                                             _b.sent();
-                                            return [4 /*yield*/, this.Project.update({ id: obj.project.id, apiKeyId: keyId })];
+                                            return [4 /*yield*/, this.Project.update({ id: obj.project.id, apiKeyId: keyId }, { context: { accountId: obj.project.accountId } })];
                                         case 2:
                                             _b.sent();
                                             return [2 /*return*/];

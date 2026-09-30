@@ -77,7 +77,6 @@ var Users = /** @class */ (function () {
                             resellerAccountId = account.parentAccountId;
                             gs5pk = "reseller#".concat(resellerAccountId);
                         }
-                        this.table.setContext({ accountId: data.accountId });
                         return [4 /*yield*/, this.User.create({
                                 name: data.name,
                                 email: data.email,
@@ -87,7 +86,7 @@ var Users = /** @class */ (function () {
                                 mustResetPassword: data.mustResetPassword || false,
                                 apiKey: this.generateApiKey(),
                                 gs5pk: gs5pk,
-                            })];
+                            }, { context: { accountId: data.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                 }
             });
@@ -125,14 +124,14 @@ var Users = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var user, account, resellerAccountId;
+            var user, context, account, resellerAccountId;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4", follow: true })];
                     case 1:
                         user = _b.sent();
-                        this.table.setContext({ accountId: user.accountId });
-                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(user.accountId) })];
+                        context = { accountId: user.accountId };
+                        return [4 /*yield*/, this.Account.get({ pk: "account#".concat(user.accountId) }, { context: context })];
                     case 2:
                         account = _b.sent();
                         if (!account)
@@ -150,7 +149,7 @@ var Users = /** @class */ (function () {
                         if (data.password) {
                             delete data.password;
                         }
-                        return [4 /*yield*/, this.User.update(data, { return: "get" })];
+                        return [4 /*yield*/, this.User.update(data, { return: "get", context: context })];
                     case 3: return [2 /*return*/, _b.sent()];
                 }
             });

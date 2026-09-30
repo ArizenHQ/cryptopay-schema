@@ -65,10 +65,9 @@ var PaymentLinks = /** @class */ (function () {
                         return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();
-                        this.table.setContext({ accountId: project.accountId });
                         data.accountId = project.accountId;
                         data.projectId = projectId;
-                        return [4 /*yield*/, this.PaymentLink.create(data)];
+                        return [4 /*yield*/, this.PaymentLink.create(data, { context: { accountId: project.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         error_1 = _b.sent();
@@ -144,11 +143,10 @@ var PaymentLinks = /** @class */ (function () {
                         paymentLink = _b.sent();
                         if (!paymentLink)
                             throw new Error("no PaymentLink fund for id: ".concat(id));
-                        this.table.setContext({ accountId: paymentLink.accountId });
                         data.id = id;
                         currentDate = new Date();
                         data.dateLastUpdated = currentDate.getTime();
-                        return [4 /*yield*/, this.PaymentLink.update(data, { return: 'get' })];
+                        return [4 /*yield*/, this.PaymentLink.update(data, { return: 'get', context: { accountId: paymentLink.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();

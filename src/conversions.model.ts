@@ -55,9 +55,8 @@ export class Conversions {
   insert = async (accountId: string, data: any) => {
     try {
       const account = await this.Account.get({ pk: `account#${accountId}` });
-      this.table.setContext({ accountId: accountId });
       data.accountId = accountId;
-      return await this.Conversion.create(data).then(async (conversion: any) => {
+      return await this.Conversion.create(data, { context: { accountId } }).then(async (conversion: any) => {
         return conversion;
       })
     } catch (error) {
@@ -100,9 +99,8 @@ export class Conversions {
     try {
       let conversion = await this.Conversion.get({ id: id }, { index: "gs1", follow: true });
       if (!conversion) throw new Error(`no conversion fund for id: ${id}`)
-      this.table.setContext({ accountId: conversion.accountId });
       data.id = id;
-      return await this.Conversion.update(data, {return: 'get'});
+      return await this.Conversion.update(data, { return: 'get', context: { accountId: conversion.accountId } });
     } catch (err) {
       throw new Error(`Error during update conversion ${err}`);
     }

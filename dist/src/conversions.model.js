@@ -66,9 +66,8 @@ var Conversions = /** @class */ (function () {
                         return [4 /*yield*/, this.Account.get({ pk: "account#".concat(accountId) })];
                     case 1:
                         account = _b.sent();
-                        this.table.setContext({ accountId: accountId });
                         data.accountId = accountId;
-                        return [4 /*yield*/, this.Conversion.create(data).then(function (conversion) { return __awaiter(_this, void 0, void 0, function () {
+                        return [4 /*yield*/, this.Conversion.create(data, { context: { accountId: accountId } }).then(function (conversion) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_b) {
                                     return [2 /*return*/, conversion];
                                 });
@@ -166,9 +165,8 @@ var Conversions = /** @class */ (function () {
                         conversion = _b.sent();
                         if (!conversion)
                             throw new Error("no conversion fund for id: ".concat(id));
-                        this.table.setContext({ accountId: conversion.accountId });
                         data.id = id;
-                        return [4 /*yield*/, this.Conversion.update(data, { return: 'get' })];
+                        return [4 /*yield*/, this.Conversion.update(data, { return: 'get', context: { accountId: conversion.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();

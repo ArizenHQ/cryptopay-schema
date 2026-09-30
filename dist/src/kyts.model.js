@@ -57,7 +57,7 @@ var Kyts = /** @class */ (function () {
     function Kyts(secretsString) {
         var _this = this;
         this.insert = function (projectId, data, incrementCount) { return __awaiter(_this, void 0, void 0, function () {
-            var project, kyt, param, error_1;
+            var project, context, kyt, param, error_1;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -66,23 +66,23 @@ var Kyts = /** @class */ (function () {
                         return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();
-                        this.table.setContext({ accountId: project.accountId });
+                        context = { accountId: project.accountId };
                         data.accountId = project.accountId;
                         data.projectId = projectId;
                         kyt = null;
                         if (!data.orderId) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this.Kyt.get({ orderId: data.orderId }, { index: "gs5", follow: true })];
+                        return [4 /*yield*/, this.Kyt.get({ orderId: data.orderId }, { index: "gs5", follow: true, context: context })];
                     case 2:
                         kyt = _b.sent();
                         return [3 /*break*/, 5];
-                    case 3: return [4 /*yield*/, this.Kyt.get({ address: data.address }, { index: "gs2", follow: true })];
+                    case 3: return [4 /*yield*/, this.Kyt.get({ address: data.address }, { index: "gs2", follow: true, context: context })];
                     case 4:
                         kyt = _b.sent();
                         _b.label = 5;
                     case 5:
-                        param = {};
+                        param = { context: context };
                         if (incrementCount)
-                            param = { add: { calls: 1 } };
+                            param = { add: { calls: 1 }, context: context };
                         if (kyt) {
                             data.id = kyt.id;
                             return [2 /*return*/, this.Kyt.update(data, param).then(function (_kyt) { return __awaiter(_this, void 0, void 0, function () {
@@ -92,7 +92,7 @@ var Kyts = /** @class */ (function () {
                                 }); })];
                         }
                         else {
-                            return [2 /*return*/, this.Kyt.create(data).then(function (_kyt) { return __awaiter(_this, void 0, void 0, function () {
+                            return [2 /*return*/, this.Kyt.create(data, { context: context }).then(function (_kyt) { return __awaiter(_this, void 0, void 0, function () {
                                     return __generator(this, function (_b) {
                                         return [2 /*return*/, _kyt];
                                     });
@@ -192,11 +192,10 @@ var Kyts = /** @class */ (function () {
                         kyt = _b.sent();
                         if (!kyt)
                             throw new Error("no kyt fund for id: ".concat(id));
-                        this.table.setContext({ accountId: kyt.accountId });
                         data.id = id;
                         currentDate = new Date();
                         data.dateLastUpdated = currentDate.getTime();
-                        return [4 /*yield*/, this.Kyt.update(data, { return: 'get' })];
+                        return [4 /*yield*/, this.Kyt.update(data, { return: 'get', context: { accountId: kyt.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();

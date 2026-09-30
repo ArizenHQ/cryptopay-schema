@@ -92,8 +92,6 @@ var Orders = /** @class */ (function () {
                         return [4 /*yield*/, this.Account.get({ pk: "account#".concat(accountId) })];
                     case 2:
                         account = _l.sent();
-                        // Configurer le contexte et les propriétés de base de l'ordre
-                        this.table.setContext({ accountId: accountId });
                         orderData = __assign(__assign({}, order), { accountId: accountId, codeProject: project.codeProject, autoConvert: project.autoConvert ? "enabled" : "disabled", urlsRedirect: order.urlsRedirect || project.parameters, webhookUrl: order.webhookUrl || ((_b = project.parameters) === null || _b === void 0 ? void 0 : _b.webhookUrl), currency: (_c = order.currency) === null || _c === void 0 ? void 0 : _c.toUpperCase(), customerAddress: (_d = order.customerAddress) === null || _d === void 0 ? void 0 : _d.toLowerCase(), 
                             // Backward-compatible defaulting for blockchain/network
                             blockchain: order.blockchain || ((_e = project === null || project === void 0 ? void 0 : project.parameters) === null || _e === void 0 ? void 0 : _e.blockchain) || (0, blockchains_1.resolveBlockchainForCurrency)(order.currency, ((_f = project === null || project === void 0 ? void 0 : project.parameters) === null || _f === void 0 ? void 0 : _f.network) || ((_g = project === null || project === void 0 ? void 0 : project.parameters) === null || _g === void 0 ? void 0 : _g.blockchain)), network: order.network || (0, blockchains_1.resolveNetworkForCurrency)(order.currency, ((_h = project === null || project === void 0 ? void 0 : project.parameters) === null || _h === void 0 ? void 0 : _h.network) || ((_j = project === null || project === void 0 ? void 0 : project.parameters) === null || _j === void 0 ? void 0 : _j.blockchain)), applicationInfo: {
@@ -109,7 +107,7 @@ var Orders = /** @class */ (function () {
                         if (Object.keys(((_k = project === null || project === void 0 ? void 0 : project.parameters) === null || _k === void 0 ? void 0 : _k.physicalPayment) || {}).length > 0) {
                             orderData.physicalPaymentParams = project.parameters.physicalPayment;
                         }
-                        return [4 /*yield*/, this.Order.create(orderData)];
+                        return [4 /*yield*/, this.Order.create(orderData, { context: { accountId: accountId } })];
                     case 3:
                         createdOrder = _l.sent();
                         fieldsToRemove = [
@@ -205,9 +203,8 @@ var Orders = /** @class */ (function () {
                         order = _b.sent();
                         if (!order)
                             throw new Error("no order fund for id: ".concat(id));
-                        this.table.setContext({ accountId: order.accountId });
                         data.id = id;
-                        return [4 /*yield*/, this.Order.update(data, { return: "get" })];
+                        return [4 /*yield*/, this.Order.update(data, { return: "get", context: { accountId: order.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();
@@ -228,7 +225,6 @@ var Orders = /** @class */ (function () {
                         order = _b.sent();
                         if (!order)
                             throw new Error("no order fund for id: ".concat(id));
-                        this.table.setContext({ accountId: order.accountId });
                         sameQuote = current.dateQuote ? "${dateQuote} = @{dateQuote}" : "attribute_not_exists(${dateQuote})";
                         _b.label = 2;
                     case 2:
@@ -237,6 +233,7 @@ var Orders = /** @class */ (function () {
                                 where: "${statusOrder} = {CREATED} and ".concat(sameQuote, " and (attribute_not_exists(${quoteHeldUntil}) or ${quoteHeldUntil} < @{now})"),
                                 substitutions: { dateQuote: current.dateQuote, now: current.now },
                                 return: "get",
+                                context: { accountId: order.accountId },
                             })];
                     case 3: return [2 /*return*/, _b.sent()];
                     case 4:
@@ -266,7 +263,6 @@ var Orders = /** @class */ (function () {
                             order = _b.sent();
                             if (!order)
                                 throw new Error("no order fund for id: ".concat(id));
-                            this.table.setContext({ accountId: order.accountId });
                             sameQuote = shown.dateQuote ? "${dateQuote} = @{dateQuote}" : "attribute_not_exists(${dateQuote})";
                             _b.label = 2;
                         case 2:
@@ -275,6 +271,7 @@ var Orders = /** @class */ (function () {
                                     where: "${statusOrder} = {CREATED} and ".concat(sameQuote, " and (attribute_not_exists(${quoteHeldUntil}) or ${quoteHeldUntil} < @{until})"),
                                     substitutions: { dateQuote: shown.dateQuote, until: until },
                                     return: "get",
+                                    context: { accountId: order.accountId },
                                 })];
                         case 3: return [2 /*return*/, _b.sent()];
                         case 4:

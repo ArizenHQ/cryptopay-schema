@@ -76,7 +76,6 @@ var GasStations = /** @class */ (function () {
                         if (!(Object.keys(project).length > 0)) return [3 /*break*/, 3];
                         if (project.typeProject !== "gasStation")
                             throw new Error("That project is not configured for type gasStation. Please choose another one, create a new one or chnage this one for this kind of project. Be careful, if you change the project type, all your other instance could be impacted");
-                        this.table.setContext({ accountId: project.accountId });
                         gasStation.accountId = project.accountId;
                         gasStation.codeProject = project.codeProject;
                         gasStation.projectId = project.id;
@@ -94,7 +93,7 @@ var GasStations = /** @class */ (function () {
                             throw new Error("The daily purchase limit has been exceeded. Please change amount");
                         return [3 /*break*/, 4];
                     case 3: throw new Error("Project not found! Please check your codeProject or API Key");
-                    case 4: return [4 /*yield*/, this.GasStation.create(gasStation).then(function (gasStation) { return __awaiter(_this, void 0, void 0, function () {
+                    case 4: return [4 /*yield*/, this.GasStation.create(gasStation, { context: { accountId: gasStation.accountId } }).then(function (gasStation) { return __awaiter(_this, void 0, void 0, function () {
                             return __generator(this, function (_b) {
                                 delete gasStation.audit;
                                 return [2 /*return*/, gasStation];
@@ -120,21 +119,21 @@ var GasStations = /** @class */ (function () {
          * @throws When the transfers or the project cannot be read.
          */
         this.isGasStationAvailable = function (accountId, projectId, amount, currency) { return __awaiter(_this, void 0, void 0, function () {
-            var since, recent, counted, sum, project, e_1;
+            var since, context, recent, counted, sum, project, e_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
                         since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-                        this.table.setContext({ accountId: accountId });
-                        return [4 /*yield*/, this.GasStation.find({ projectId: projectId }, { index: "gs2", where: "${dateCreated} >= {" + since + "}" })];
+                        context = { accountId: accountId };
+                        return [4 /*yield*/, this.GasStation.find({ projectId: projectId }, { index: "gs2", where: "${dateCreated} >= {" + since + "}", context: context })];
                     case 1:
                         recent = _b.sent();
                         counted = (recent || []).filter(function (gas) {
                             return gas.statusOrder !== "FAILED" && (!currency || String(gas.currency).toUpperCase() === String(currency).toUpperCase());
                         });
                         sum = counted.reduce(function (total, gas) { return total + (isPositiveAmount(gas.amount) ? Number(gas.amount) : 0); }, Number(amount));
-                        return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
+                        return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true, context: context })];
                     case 2:
                         project = _b.sent();
                         return [2 /*return*/, Number(project.parameters.gasStation.limitPer24H) >= sum];
@@ -229,9 +228,8 @@ var GasStations = /** @class */ (function () {
                         gasStation = _b.sent();
                         if (!gasStation)
                             throw new Error("no gasStation fund for id: ".concat(id));
-                        this.table.setContext({ accountId: gasStation.accountId });
                         data.id = id;
-                        return [4 /*yield*/, this.GasStation.update(data, { return: "get" })];
+                        return [4 /*yield*/, this.GasStation.update(data, { return: "get", context: { accountId: gasStation.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();
@@ -270,11 +268,14 @@ var GasStations = /** @class */ (function () {
                         gasStation = _b.sent();
                         if (!gasStation)
                             throw new Error("no gasStation found for id: ".concat(id));
-                        this.table.setContext({ accountId: gasStation.accountId });
                         _b.label = 2;
                     case 2:
                         _b.trys.push([2, 4, , 5]);
-                        return [4 /*yield*/, this.GasStation.update({ id: id, statusOrder: "SENDING" }, { where: "${statusOrder} = {CREATED} or ${statusOrder} = {PENDING_APPROVAL} or ${statusOrder} = {APPROVED}", return: "get" })];
+                        return [4 /*yield*/, this.GasStation.update({ id: id, statusOrder: "SENDING" }, {
+                                where: "${statusOrder} = {CREATED} or ${statusOrder} = {PENDING_APPROVAL} or ${statusOrder} = {APPROVED}",
+                                return: "get",
+                                context: { accountId: gasStation.accountId },
+                            })];
                     case 3: return [2 /*return*/, _b.sent()];
                     case 4:
                         err_2 = _b.sent();

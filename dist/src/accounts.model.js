@@ -92,11 +92,7 @@ var Accounts = /** @class */ (function () {
         this.getFullAccount = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0:
-                        this.table.setContext({ id: id });
-                        return [4 /*yield*/, this.table.fetch(["Account", "User", "Project", "Partner", "Payment", "Conversion", "Kyt", "Order", "GasStation"], {
-                                pk: "account#".concat(id),
-                            })];
+                    case 0: return [4 /*yield*/, this.table.fetch(["Account", "User", "Project", "Partner", "Payment", "Conversion", "Kyt", "Order", "GasStation"], { pk: "account#".concat(id) }, { context: { id: id } })];
                     case 1: return [2 /*return*/, _b.sent()];
                 }
             });
