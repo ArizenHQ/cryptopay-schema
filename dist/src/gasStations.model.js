@@ -71,7 +71,7 @@ var GasStations = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 6, , 7]);
-                        gasStation = (0, callerData_1.withoutKeys)(gasStation, ["id"]);
+                        gasStation = (0, callerData_1.withoutKeys)(gasStation);
                         return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();

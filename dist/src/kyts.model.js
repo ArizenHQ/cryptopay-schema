@@ -64,7 +64,7 @@ var Kyts = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 6, , 7]);
-                        data = (0, callerData_1.withoutKeys)(data, ["id"]);
+                        data = (0, callerData_1.withoutKeys)(data);
                         return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();

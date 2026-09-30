@@ -66,7 +66,7 @@ export class GasStations {
 
   insert = async (gasStation: any, projectId: String) => {
     try {
-      gasStation = withoutKeys(gasStation, ["id"]);
+      gasStation = withoutKeys(gasStation);
       const project = await this.Project.get(
         { id: projectId },
         { index: "gs2", follow: true }

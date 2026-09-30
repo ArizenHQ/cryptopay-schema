@@ -148,10 +148,12 @@ test("a project patch keeps its own keys and refuses another account", async () 
 test("an order created with foreign keys in its data is written in its own account", async () => {
   const model = await Orders.init();
   serve([project]);
-  await model.insert(A, { pk: `account#${B}`, sk: "order#x", id: "x", amount: 1, internalRef: "r", codeProject: "c-1", typeOrder: "crypto", currency: "ETH" }).catch(() => {});
+  await model.insert(A, { pk: `account#${B}`, sk: "order#x", id: "55555555-5555-4555-8555-555555555555", amount: 1, internalRef: "r", codeProject: "c-1", typeOrder: "crypto", currency: "ETH" }).catch(() => {});
   const put = last("PutItemCommand");
   expect(put.Item.pk.S).toBe(`account#${A}`);
-  expect(put.Item.id.S).not.toBe("x");
+  // The id is the caller's to set (the API ties the order to its wallet by it); the keys follow it.
+  expect(put.Item.id.S).toBe("55555555-5555-4555-8555-555555555555");
+  expect(put.Item.sk.S).toBe("order#55555555-5555-4555-8555-555555555555");
 });
 
 test("a query cannot lift the account filter of an audit read", async () => {

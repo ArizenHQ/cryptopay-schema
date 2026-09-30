@@ -57,7 +57,7 @@ export class Orders {
 
   insert = async (accountId: string, order: any) => {
     try {
-      order = withoutKeys(order, ["id"]);
+      order = withoutKeys(order);
       // Normaliser le code du projet
       order.codeProject = order.projectCode || order.codeProject;
 

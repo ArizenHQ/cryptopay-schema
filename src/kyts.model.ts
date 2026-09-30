@@ -52,7 +52,7 @@ export class Kyts {
 
   insert = async (projectId: string, data: any, incrementCount: boolean) => {
     try {
-      data = withoutKeys(data, ["id"]);
+      data = withoutKeys(data);
       const project = await this.Project.get({ id: projectId }, { index: "gs2", follow: true });
       const context = { accountId: project.accountId };
       data.accountId = project.accountId;

@@ -78,7 +78,7 @@ var Orders = /** @class */ (function () {
                 switch (_l.label) {
                     case 0:
                         _l.trys.push([0, 4, , 5]);
-                        order = (0, callerData_1.withoutKeys)(order, ["id"]);
+                        order = (0, callerData_1.withoutKeys)(order);
                         // Normaliser le code du projet
                         order.codeProject = order.projectCode || order.codeProject;
                         return [4 /*yield*/, this.Project.get({ codeProject: order.codeProject }, { index: "gs1", follow: true })];
