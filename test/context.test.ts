@@ -143,6 +143,9 @@ test("a project patch keeps its own keys and refuses another account", async () 
   expect(update.Key.pk.S).toBe(`account#${A}`);
   expect(update.Key.sk.S).toBe(`project#${P}`);
   await expect(model.patchById(P, { accountId: B })).rejects.toThrow(/cannot change account/);
+  serve([project]);
+  await model.patchById(P, { resellerAccountId: B, name: "y" }).catch(() => {});
+  expect(JSON.stringify(last("UpdateItemCommand").ExpressionAttributeValues || {})).not.toContain(B);
 });
 
 test("an order created with foreign keys in its data is written in its own account", async () => {

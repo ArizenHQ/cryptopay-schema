@@ -241,7 +241,8 @@ var Projects = /** @class */ (function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        data = (0, callerData_1.withoutKeys)(data);
+                        // The reseller of a project follows its account (set at creation): never the caller's.
+                        data = (0, callerData_1.withoutKeys)(data, ["resellerAccountId"]);
                         return [4 /*yield*/, this.Project.get({ id: id }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();

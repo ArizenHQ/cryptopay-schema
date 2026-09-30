@@ -180,7 +180,8 @@ export class Projects {
   };
 
   patchById = async (id: string, data: any) => {
-    data = withoutKeys(data);
+    // The reseller of a project follows its account (set at creation): never the caller's.
+    data = withoutKeys(data, ["resellerAccountId"]);
     let project = await this.Project.get(
       { id: id },
       { index: "gs2", follow: true }
