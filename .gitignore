@@ -2,3 +2,4 @@ node_modules
 .vscode
 control.js.DS_Store
 .omc/
+jest-results.json

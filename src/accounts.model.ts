@@ -7,6 +7,7 @@ const client = new Dynamo({
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel, PaginatedResult } from './utils/paginateModel';
+import { withoutKeys } from "./utils/callerData";
 
 export class Accounts {
   Crypto: any;
@@ -71,10 +72,10 @@ export class Accounts {
   };
 
   getFullAccount = async (id: string) => {
-    this.table.setContext({ id: id });
-    return await this.table.fetch(["Account", "User", "Project", "Partner", "Payment", "Conversion", "Kyt", "Order", "GasStation"], {
-      pk: `account#${id}`,
-    });
+    return await this.table.fetch(
+      ["Account", "User", "Project", "Partner", "Payment", "Conversion", "Kyt", "Order", "GasStation"],
+      { pk: `account#${id}` }
+    );
   };
 
   list = async (query: any = {}) => {
@@ -89,6 +90,8 @@ export class Accounts {
   };
 
   patchById = async (id: string, data: any) => {
+    // The account written is the one asked for, whatever id the data carries.
+    data = { ...withoutKeys(data, ["id"]), id };
     // Récupérer le compte actuel
     const currentAccount = await this.Account.get({ id: id });
     if (!currentAccount) {

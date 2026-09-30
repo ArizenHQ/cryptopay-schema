@@ -53,6 +53,7 @@ var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient(
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var paginateModel_1 = require("./utils/paginateModel");
+var callerData_1 = require("./utils/callerData");
 var GasStationStatements = /** @class */ (function () {
     function GasStationStatements(secretsString) {
         var _this = this;
@@ -67,7 +68,6 @@ var GasStationStatements = /** @class */ (function () {
                         project = _b.sent();
                         if (!project)
                             throw new Error("Project not found: ".concat(data.projectId));
-                        this.table.setContext({ accountId: project.accountId });
                         safe = {
                             projectId: data.projectId,
                             accountId: project.accountId,
@@ -76,7 +76,7 @@ var GasStationStatements = /** @class */ (function () {
                             totalFeeEur: data.totalFeeEur,
                             status: "DRAFT",
                         };
-                        return [4 /*yield*/, this.GasStationStatement.create(safe)];
+                        return [4 /*yield*/, this.GasStationStatement.create(safe, { context: { accountId: project.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         error_1 = _b.sent();
@@ -142,8 +142,7 @@ var GasStationStatements = /** @class */ (function () {
                         statement = _b.sent();
                         if (!statement)
                             throw new Error("GasStationStatement not found: ".concat(id));
-                        this.table.setContext({ accountId: statement.accountId });
-                        return [4 /*yield*/, this.GasStationStatement.remove({ pk: "account#".concat(statement.accountId), sk: "gasStationStatement#".concat(id) })];
+                        return [4 /*yield*/, this.GasStationStatement.remove({ pk: "account#".concat(statement.accountId), sk: "gasStationStatement#".concat(id) }, { context: { accountId: statement.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();
@@ -158,14 +157,14 @@ var GasStationStatements = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
+                        data = (0, callerData_1.withoutKeys)(data);
                         return [4 /*yield*/, this.GasStationStatement.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
                         statement = _b.sent();
                         if (!statement)
                             throw new Error("GasStationStatement not found: ".concat(id));
-                        this.table.setContext({ accountId: statement.accountId });
                         data.id = id;
-                        return [4 /*yield*/, this.GasStationStatement.update(data, { return: "get" })];
+                        return [4 /*yield*/, this.GasStationStatement.update(data, { return: "get", context: { accountId: statement.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_2 = _b.sent();

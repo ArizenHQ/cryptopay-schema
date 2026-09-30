@@ -1,0 +1,35 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: jest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    # The isolation tests run the models against a real DynamoDB.
+    services:
+      dynamodb:
+        image: amazon/dynamodb-local@sha256:ff89bd48ff32cd8d9be5fee8873b65b8854dc408f1afe881be6eb00247bc0dab
+        ports:
+          - 8000:8000
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - name: Run tests
+        run: yarn jest --ci --verbose --json --outputFile=jest-results.json
+        env:
+          DYNAMODB_ENDPOINT: http://localhost:8000
+      # One table per test file on the run page, failures included.
+      - name: Test summary
+        if: always()
+        run: node .github/scripts/jest-summary.js jest-results.json

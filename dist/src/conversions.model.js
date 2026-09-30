@@ -53,6 +53,7 @@ var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient(
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var paginateModel_1 = require("./utils/paginateModel");
+var callerData_1 = require("./utils/callerData");
 var Conversions = /** @class */ (function () {
     function Conversions(secretsString) {
         var _this = this;
@@ -63,12 +64,12 @@ var Conversions = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
+                        data = (0, callerData_1.withoutKeys)(data);
                         return [4 /*yield*/, this.Account.get({ pk: "account#".concat(accountId) })];
                     case 1:
                         account = _b.sent();
-                        this.table.setContext({ accountId: accountId });
                         data.accountId = accountId;
-                        return [4 /*yield*/, this.Conversion.create(data).then(function (conversion) { return __awaiter(_this, void 0, void 0, function () {
+                        return [4 /*yield*/, this.Conversion.create(data, { context: { accountId: accountId } }).then(function (conversion) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_b) {
                                     return [2 /*return*/, conversion];
                                 });
@@ -161,14 +162,14 @@ var Conversions = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
+                        data = (0, callerData_1.withoutKeys)(data);
                         return [4 /*yield*/, this.Conversion.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
                         conversion = _b.sent();
                         if (!conversion)
                             throw new Error("no conversion fund for id: ".concat(id));
-                        this.table.setContext({ accountId: conversion.accountId });
                         data.id = id;
-                        return [4 /*yield*/, this.Conversion.update(data, { return: 'get' })];
+                        return [4 /*yield*/, this.Conversion.update(data, { return: 'get', context: { accountId: conversion.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();

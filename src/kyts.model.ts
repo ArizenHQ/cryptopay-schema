@@ -5,6 +5,7 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from './utils/paginateModel';
+import { withoutKeys } from "./utils/callerData";
 
 export class Kyts {
   Crypto: any;
@@ -51,18 +52,18 @@ export class Kyts {
 
   insert = async (projectId: string, data: any, incrementCount: boolean) => {
     try {
+      data = withoutKeys(data);
       const project = await this.Project.get({ id: projectId }, { index: "gs2", follow: true });
-      this.table.setContext({ accountId: project.accountId });
+      const context = { accountId: project.accountId };
       data.accountId = project.accountId;
       data.projectId = projectId;
       let kyt = null;
       if(data.orderId) {
-        kyt = await this.Kyt.get({ orderId: data.orderId }, { index: "gs5", follow: true })
+        kyt = await this.Kyt.get({ orderId: data.orderId }, { index: "gs5", follow: true, context })
       } else {
-        kyt = await this.Kyt.get({ address: data.address }, { index: "gs2", follow: true })
+        kyt = await this.Kyt.get({ address: data.address }, { index: "gs2", follow: true, context })
       }
-      let param = {}
-      if(incrementCount) param = { add: { calls: 1 } };
+      const param: any = incrementCount ? { add: { calls: 1 }, context } : { context };
 
       if (kyt) {
         data.id = kyt.id
@@ -70,7 +71,7 @@ export class Kyts {
           return _kyt;
         })
       } else {
-        return this.Kyt.create(data).then(async (_kyt: any) => {
+        return this.Kyt.create(data, { context }).then(async (_kyt: any) => {
           return _kyt;
         })
       }
@@ -114,13 +115,13 @@ export class Kyts {
 
   patchById = async (id: string, data: any) => {
     try {
+      data = withoutKeys(data);
       let kyt = await this.Kyt.get({ id: id }, { index: "gs1", follow: true });
       if (!kyt) throw new Error(`no kyt fund for id: ${id}`)
-      this.table.setContext({ accountId: kyt.accountId });
       data.id = id;
       const currentDate = new Date();
       data.dateLastUpdated = currentDate.getTime();
-      return await this.Kyt.update(data, {return: 'get'});
+      return await this.Kyt.update(data, { return: 'get', context: { accountId: kyt.accountId } });
     } catch (err) {
       throw new Error(`Error during update kyt ${err}`);
     }

@@ -51,7 +51,6 @@ export class AuditLogs {
     by?: object;
     meta?: object;
   }) => {
-    this.table.setContext({ accountId: params.accountId });
     return await this.AuditLog.create({
       ...(params.id ? { id: params.id } : {}),
       accountId: params.accountId,
@@ -61,11 +60,10 @@ export class AuditLogs {
       by: params.by || { system: "temporal" },
       at: params.at || new Date().toISOString(),
       meta: params.meta || {},
-    });
+    }, { context: { accountId: params.accountId } });
   };
 
   findByEntity = async (entityType: string, entityId: string, accountId: string, query: any = {}) => {
-    this.table.setContext({ accountId });
     return await paginateModel(
       this.AuditLog,
       "find",
@@ -74,19 +72,19 @@ export class AuditLogs {
         gs5sk: { begins: "auditLog#" },
       },
       query,
-      // gs5 projects every attribute: no follow-up read per entry.
-      { index: "gs5" }
+      // gs5 projects every attribute: no follow-up read per entry. The account filter
+      // keeps another account's entries out.
+      { index: "gs5", context: { accountId } }
     );
   };
 
   findByAccount = async (accountId: string, query: any = {}) => {
-    this.table.setContext({ accountId });
     return await paginateModel(
       this.AuditLog,
       "find",
       { gs1pk: "auditLog#" },
       query,
-      { index: "gs1", follow: true }
+      { index: "gs1", follow: true, context: { accountId } }
     );
   };
 }

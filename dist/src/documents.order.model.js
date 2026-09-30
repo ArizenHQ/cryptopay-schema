@@ -53,6 +53,7 @@ var client = new Dynamo_1.Dynamo({ client: new client_dynamodb_1.DynamoDBClient(
 var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var paginateModel_1 = require("./utils/paginateModel");
+var callerData_1 = require("./utils/callerData");
 var DocumentOrder = /** @class */ (function () {
     function DocumentOrder(secretsString) {
         var _this = this;
@@ -63,10 +64,10 @@ var DocumentOrder = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
-                        this.table.setContext({ accountId: accountId });
+                        data = (0, callerData_1.withoutKeys)(data, ["id"]);
                         data.accountId = accountId;
                         data.orderId = orderId;
-                        return [4 /*yield*/, this.DocumentOrder.create(data).then(function (document) { return __awaiter(_this, void 0, void 0, function () {
+                        return [4 /*yield*/, this.DocumentOrder.create(data, { context: { accountId: accountId } }).then(function (document) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_b) {
                                     return [2 /*return*/, document];
                                 });
@@ -140,14 +141,14 @@ var DocumentOrder = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
+                        data = (0, callerData_1.withoutKeys)(data);
                         return [4 /*yield*/, this.DocumentOrder.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
                         document_1 = _b.sent();
                         if (!document_1)
                             throw new Error("no document fund for id: ".concat(id));
-                        this.table.setContext({ accountId: document_1.accountId });
                         data.id = id;
-                        return [4 /*yield*/, this.DocumentOrder.update(data, { return: 'get' })];
+                        return [4 /*yield*/, this.DocumentOrder.update(data, { return: 'get', context: { accountId: document_1.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
                         err_1 = _b.sent();

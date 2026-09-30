@@ -5,6 +5,7 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from './schema'
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from './utils/paginateModel';
+import { withoutKeys } from "./utils/callerData";
 
 export class Conversions {
   Crypto: any;
@@ -54,10 +55,10 @@ export class Conversions {
 
   insert = async (accountId: string, data: any) => {
     try {
+      data = withoutKeys(data);
       const account = await this.Account.get({ pk: `account#${accountId}` });
-      this.table.setContext({ accountId: accountId });
       data.accountId = accountId;
-      return await this.Conversion.create(data).then(async (conversion: any) => {
+      return await this.Conversion.create(data, { context: { accountId } }).then(async (conversion: any) => {
         return conversion;
       })
     } catch (error) {
@@ -98,11 +99,11 @@ export class Conversions {
 
   patchById = async (id: string, data: any) => {
     try {
+      data = withoutKeys(data);
       let conversion = await this.Conversion.get({ id: id }, { index: "gs1", follow: true });
       if (!conversion) throw new Error(`no conversion fund for id: ${id}`)
-      this.table.setContext({ accountId: conversion.accountId });
       data.id = id;
-      return await this.Conversion.update(data, {return: 'get'});
+      return await this.Conversion.update(data, { return: 'get', context: { accountId: conversion.accountId } });
     } catch (err) {
       throw new Error(`Error during update conversion ${err}`);
     }

@@ -8,6 +8,7 @@ import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from "./utils/paginateModel";
 import { createHash } from "crypto";
+import { withoutKeys } from "./utils/callerData";
 
 export class Users {
   Crypto: any;
@@ -66,8 +67,6 @@ export class Users {
       gs5pk = `reseller#${resellerAccountId}`;
     }
 
-    this.table.setContext({ accountId: data.accountId });
-    
     return await this.User.create({
       name: data.name,
       email: data.email,
@@ -77,7 +76,7 @@ export class Users {
       mustResetPassword: data.mustResetPassword || false,
       apiKey: this.generateApiKey(),
       gs5pk: gs5pk,
-    });
+    }, { context: { accountId: data.accountId } });
   };
 
   findById = async (id: string) => {
@@ -103,9 +102,10 @@ export class Users {
   };
 
   patchById = async (id: string, data: any) => {
+    data = withoutKeys(data);
     let user = await this.User.get({ id: id }, { index: "gs4", follow: true });
-    this.table.setContext({ accountId: user.accountId });
-    
+    const context = { accountId: user.accountId };
+
     const account = await this.Account.get({ pk: `account#${user.accountId}` });
     if (!account) throw new Error("Account not found");
     
@@ -125,7 +125,7 @@ export class Users {
       delete data.password;
     }
 
-    return await this.User.update(data, { return: "get" });
+    return await this.User.update(data, { return: "get", context });
   };
 
 

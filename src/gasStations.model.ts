@@ -7,6 +7,7 @@ const client = new Dynamo({
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from './utils/paginateModel';
+import { withoutKeys } from "./utils/callerData";
 // A transfer amount: a finite number above zero ("0.1", 0.1), never negative or text.
 const isPositiveAmount = (amount: any): boolean => {
   const value = Number(amount);
@@ -65,6 +66,7 @@ export class GasStations {
 
   insert = async (gasStation: any, projectId: String) => {
     try {
+      gasStation = withoutKeys(gasStation);
       const project = await this.Project.get(
         { id: projectId },
         { index: "gs2", follow: true }
@@ -75,7 +77,6 @@ export class GasStations {
             "That project is not configured for type gasStation. Please choose another one, create a new one or chnage this one for this kind of project. Be careful, if you change the project type, all your other instance could be impacted"
           );
 
-        this.table.setContext({ accountId: project.accountId });
         gasStation.accountId = project.accountId;
         gasStation.codeProject = project.codeProject;
         gasStation.projectId = project.id;
@@ -110,7 +111,7 @@ export class GasStations {
           `Project not found! Please check your codeProject or API Key`
         );
       }
-      return await this.GasStation.create(gasStation).then(
+      return await this.GasStation.create(gasStation, { context: { accountId: gasStation.accountId } }).then(
         async (gasStation: any) => {
           delete gasStation.audit;
           return gasStation;
@@ -135,16 +136,16 @@ export class GasStations {
   isGasStationAvailable = async (accountId: string, projectId: string, amount: any, currency?: string) => {
     try {
       const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      this.table.setContext({ accountId });
+      const context = { accountId };
       // Every transfer of the project (gs2 = gasStation#<projectId>), all pages.
       const recent: any[] = await this.GasStation.find(
         { projectId },
-        { index: "gs2", where: "${dateCreated} >= {" + since + "}" }
+        { index: "gs2", where: "${dateCreated} >= {" + since + "}", context }
       );
       const counted = (recent || []).filter((gas: any) =>
         gas.statusOrder !== "FAILED" && (!currency || String(gas.currency).toUpperCase() === String(currency).toUpperCase()));
       const sum = counted.reduce((total: number, gas: any) => total + (isPositiveAmount(gas.amount) ? Number(gas.amount) : 0), Number(amount));
-      const project = await this.Project.get({ id: projectId }, { index: "gs2", follow: true });
+      const project = await this.Project.get({ id: projectId }, { index: "gs2", follow: true, context });
       return Number(project.parameters.gasStation.limitPer24H) >= sum;
     } catch (e: any) {
       throw new Error(`Error during isGasStationAvailable: ${e.message}`);
@@ -198,14 +199,14 @@ export class GasStations {
 
   patchById = async (id: string, data: any) => {
     try {
+      data = withoutKeys(data);
       let gasStation = await this.GasStation.get(
         { id: id },
         { index: "gs1", follow: true }
       );
       if (!gasStation) throw new Error(`no gasStation fund for id: ${id}`);
-      this.table.setContext({ accountId: gasStation.accountId });
       data.id = id;
-      return await this.GasStation.update(data, { return: "get" });
+      return await this.GasStation.update(data, { return: "get", context: { accountId: gasStation.accountId } });
     } catch (err) {
       throw new Error(`Error during update gasStation ${err}`);
     }
@@ -233,11 +234,14 @@ export class GasStations {
       { index: "gs1", follow: true }
     );
     if (!gasStation) throw new Error(`no gasStation found for id: ${id}`);
-    this.table.setContext({ accountId: gasStation.accountId });
     try {
       return await this.GasStation.update(
         { id, statusOrder: "SENDING" },
-        { where: "${statusOrder} = {CREATED} or ${statusOrder} = {PENDING_APPROVAL} or ${statusOrder} = {APPROVED}", return: "get" }
+        {
+          where: "${statusOrder} = {CREATED} or ${statusOrder} = {PENDING_APPROVAL} or ${statusOrder} = {APPROVED}",
+          return: "get",
+          context: { accountId: gasStation.accountId },
+        }
       );
     } catch (err: any) {
       // Only a refused condition means "already reserved/sent". Callers treat that as

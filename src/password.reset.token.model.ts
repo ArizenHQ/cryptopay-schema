@@ -44,14 +44,13 @@ export class PasswordResetToken {
     ip?: string;
     userAgent?: string;
   }) => {
-    this.table.setContext({ userId: userId });
     return await this.PasswordResetToken.create({
       userId,
       token,
       expiresAt,
       ip,
       userAgent
-    });
+    }, { context: { userId } });
   };
 
   findByToken = async (token: string) => {

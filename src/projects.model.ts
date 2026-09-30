@@ -11,6 +11,7 @@ import retrieveSecrets from "./utils/retrieveSecrets";
 import { randomBytes, createHash } from "crypto";
 import { paginateModel } from './utils/paginateModel';
 import { blockchainNames, listCurrenciesForBlockchain, currencyNetworkMap } from './blockchains';
+import { withoutKeys } from "./utils/callerData";
 
 const client = new Dynamo({
   client: new DynamoDBClient({ region: "eu-west-1" }),
@@ -77,7 +78,7 @@ export class Projects {
         resellerAccountId = account.parentAccountId;
       }
 
-      this.table.setContext({ accountId: data.accountId });
+      const context = { accountId: data.accountId };
       const isValid = this.checkData(data);
 
       if (isValid === true) {
@@ -98,7 +99,7 @@ export class Projects {
           projectData.gs5pk = `reseller#${resellerAccountId}`;
         }
 
-        return this.Project.create(projectData).then(async (project: any) => {
+        return this.Project.create(projectData, { context }).then(async (project: any) => {
           await this.createApiKey({
             accountName: account.name,
             project: project,
@@ -179,31 +180,22 @@ export class Projects {
   };
 
   patchById = async (id: string, data: any) => {
+    // The reseller of a project follows its account (set at creation): never the caller's.
+    data = withoutKeys(data, ["resellerAccountId"]);
     let project = await this.Project.get(
       { id: id },
       { index: "gs2", follow: true }
     );
-    this.table.setContext({ accountId: project.accountId });
+    const context = { accountId: project.accountId };
     data.id = id;
 
-    // Si le projet change de compte, mettre à jour resellerAccountId
+    // A project stays in its account: the write always goes to the stored one.
     if (data.accountId && data.accountId !== project.accountId) {
-      const account = await this.Account.get({ pk: `account#${data.accountId}` });
-      if (!account) throw new Error("Account not found");
-      
-      // Déterminer le nouveau resellerAccountId
-      let resellerAccountId = null;
-      if (account.parentAccountId) {
-        resellerAccountId = account.parentAccountId;
-      }
-      
-      // Ajouter le resellerAccountId aux données de mise à jour
-      data.resellerAccountId = resellerAccountId;
-      data.gs5pk = resellerAccountId ? `reseller#${resellerAccountId}` : "standard#project";
+      throw new Error("A project cannot change account");
     }
     const controlData = this.checkData(data);
     if (controlData !== true) return controlData;
-    return await this.Project.update(data, { return: "get" });
+    return await this.Project.update(data, { return: "get", context });
   };
 
   removeById = async (id: string) => {
@@ -231,7 +223,7 @@ export class Projects {
             console.error(error);
             throw new Error(`Error during configure usage plan key ${error}`);
           });
-          await this.Project.update({ id: obj.project.id, apiKeyId: keyId });
+          await this.Project.update({ id: obj.project.id, apiKeyId: keyId }, { context: { accountId: obj.project.accountId } });
         })
         .catch((error) => {
           console.error(error);

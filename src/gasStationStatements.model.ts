@@ -5,6 +5,7 @@ const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) 
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from "./utils/paginateModel";
+import { withoutKeys } from "./utils/callerData";
 
 export class GasStationStatements {
   Crypto: any;
@@ -43,7 +44,6 @@ export class GasStationStatements {
     try {
       const project = await this.Project.get({ id: data.projectId }, { index: "gs2", follow: true });
       if (!project) throw new Error(`Project not found: ${data.projectId}`);
-      this.table.setContext({ accountId: project.accountId });
       const safe = {
         projectId: data.projectId,
         accountId: project.accountId,
@@ -52,7 +52,7 @@ export class GasStationStatements {
         totalFeeEur: data.totalFeeEur,
         status: "DRAFT" as const,
       };
-      return await this.GasStationStatement.create(safe);
+      return await this.GasStationStatement.create(safe, { context: { accountId: project.accountId } });
     } catch (error) {
       throw new Error(`Error during insert GasStationStatement: ${error}`);
     }
@@ -93,8 +93,10 @@ export class GasStationStatements {
     try {
       const statement = await this.GasStationStatement.get({ id }, { index: "gs1", follow: true });
       if (!statement) throw new Error(`GasStationStatement not found: ${id}`);
-      this.table.setContext({ accountId: statement.accountId });
-      return await this.GasStationStatement.remove({ pk: `account#${statement.accountId}`, sk: `gasStationStatement#${id}` });
+      return await this.GasStationStatement.remove(
+        { pk: `account#${statement.accountId}`, sk: `gasStationStatement#${id}` },
+        { context: { accountId: statement.accountId } }
+      );
     } catch (err) {
       throw new Error(`Error during delete GasStationStatement: ${err}`);
     }
@@ -102,11 +104,11 @@ export class GasStationStatements {
 
   patchById = async (id: string, data: any) => {
     try {
+      data = withoutKeys(data);
       const statement = await this.GasStationStatement.get({ id }, { index: "gs1", follow: true });
       if (!statement) throw new Error(`GasStationStatement not found: ${id}`);
-      this.table.setContext({ accountId: statement.accountId });
       data.id = id;
-      return await this.GasStationStatement.update(data, { return: "get" });
+      return await this.GasStationStatement.update(data, { return: "get", context: { accountId: statement.accountId } });
     } catch (err) {
       throw new Error(`Error during update GasStationStatement: ${err}`);
     }
