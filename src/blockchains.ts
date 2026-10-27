@@ -152,25 +152,19 @@ export const blockchainNames = [
     return ['main', 'mainnet', 'prod', 'production', 'livenet'].includes(v);
   }
   
+  // The environment alone picks testnet or mainnet: `preferred` (a chain name, a network
+  // label or an alias) only picks among a currency's chains.
   export function resolveNetworkForCurrency(currency?: string, preferred?: string) {
     const key = String(currency || '').toUpperCase();
     const entries = currencyNetworkMap[key];
     if (!entries || !entries.length) return key;
-    if (preferred) {
-      const p = String(preferred).toLowerCase();
-      // Direct match on chain name or full network labels
-      const found = entries.find(e =>
-        e.mainnet.toLowerCase() === p ||
-        e.testnet.toLowerCase() === p ||
-        (e.name && e.name.toLowerCase() === p)
-      );
-      if (found) return isNonProd ? found.testnet : found.mainnet;
-      // Legacy aliases: mainnet/testnet or specific testnet names
-      if (isMainnetAlias(p)) return entries[0].mainnet;
-      if (isTestnetAlias(p)) return entries[0].testnet;
-    }
-    const first = entries[0];
-    return isNonProd ? first.testnet : first.mainnet;
+    const p = String(preferred || '').toLowerCase();
+    const found = entries.find(e =>
+      e.mainnet.toLowerCase() === p ||
+      e.testnet.toLowerCase() === p ||
+      (e.name && e.name.toLowerCase() === p)
+    ) || entries[0];
+    return isNonProd ? found.testnet : found.mainnet;
   }
   
   export function listNetworksForCurrency(currency?: string) {
@@ -180,6 +174,7 @@ export const blockchainNames = [
     return entries.map(e => (isNonProd ? e.testnet : e.mainnet));
   }
   
+  // As resolveNetworkForCurrency: the environment picks testnet or mainnet.
   export function resolveAlchemyNetworkForCurrency(currency?: string, preferred?: string) {
     const key = String(currency || '').toUpperCase();
     const entries = currencyNetworkMap[key];
@@ -193,14 +188,6 @@ export const blockchainNames = [
         (e.name && e.name.toLowerCase() === p)
       );
       if (found && found.alchemy) return found.alchemy[envKey];
-      if (isMainnetAlias(p)) {
-        const f = entries.find(e => !!e.alchemy);
-        return f && f.alchemy ? f.alchemy.mainnet : undefined;
-      }
-      if (isTestnetAlias(p)) {
-        const f = entries.find(e => !!e.alchemy);
-        return f && f.alchemy ? f.alchemy.testnet : undefined;
-      }
     }
     const first = entries.find((e): e is Entry & { alchemy: { mainnet: string; testnet: string } } => !!e.alchemy);
     if (!first) return undefined;
