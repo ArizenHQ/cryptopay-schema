@@ -150,29 +150,20 @@ function isMainnetAlias(value) {
     var v = String(value || '').toLowerCase();
     return ['main', 'mainnet', 'prod', 'production', 'livenet'].includes(v);
 }
+// The environment alone picks testnet or mainnet: `preferred` (a chain name, a network
+// label or an alias) only picks among a currency's chains.
 function resolveNetworkForCurrency(currency, preferred) {
     var key = String(currency || '').toUpperCase();
     var entries = exports.currencyNetworkMap[key];
     if (!entries || !entries.length)
         return key;
-    if (preferred) {
-        var p_1 = String(preferred).toLowerCase();
-        // Direct match on chain name or full network labels
-        var found = entries.find(function (e) {
-            return e.mainnet.toLowerCase() === p_1 ||
-                e.testnet.toLowerCase() === p_1 ||
-                (e.name && e.name.toLowerCase() === p_1);
-        });
-        if (found)
-            return isNonProd ? found.testnet : found.mainnet;
-        // Legacy aliases: mainnet/testnet or specific testnet names
-        if (isMainnetAlias(p_1))
-            return entries[0].mainnet;
-        if (isTestnetAlias(p_1))
-            return entries[0].testnet;
-    }
-    var first = entries[0];
-    return isNonProd ? first.testnet : first.mainnet;
+    var p = String(preferred || '').toLowerCase();
+    var found = entries.find(function (e) {
+        return e.mainnet.toLowerCase() === p ||
+            e.testnet.toLowerCase() === p ||
+            (e.name && e.name.toLowerCase() === p);
+    }) || entries[0];
+    return isNonProd ? found.testnet : found.mainnet;
 }
 function listNetworksForCurrency(currency) {
     var key = String(currency || '').toUpperCase();
@@ -181,6 +172,7 @@ function listNetworksForCurrency(currency) {
         return [];
     return entries.map(function (e) { return (isNonProd ? e.testnet : e.mainnet); });
 }
+// As resolveNetworkForCurrency: the environment picks testnet or mainnet.
 function resolveAlchemyNetworkForCurrency(currency, preferred) {
     var key = String(currency || '').toUpperCase();
     var entries = exports.currencyNetworkMap[key];
@@ -188,22 +180,14 @@ function resolveAlchemyNetworkForCurrency(currency, preferred) {
         return undefined;
     var envKey = isNonProd ? 'testnet' : 'mainnet';
     if (preferred) {
-        var p_2 = String(preferred).toLowerCase();
+        var p_1 = String(preferred).toLowerCase();
         var found = entries.find(function (e) {
-            return e.mainnet.toLowerCase() === p_2 ||
-                e.testnet.toLowerCase() === p_2 ||
-                (e.name && e.name.toLowerCase() === p_2);
+            return e.mainnet.toLowerCase() === p_1 ||
+                e.testnet.toLowerCase() === p_1 ||
+                (e.name && e.name.toLowerCase() === p_1);
         });
         if (found && found.alchemy)
             return found.alchemy[envKey];
-        if (isMainnetAlias(p_2)) {
-            var f = entries.find(function (e) { return !!e.alchemy; });
-            return f && f.alchemy ? f.alchemy.mainnet : undefined;
-        }
-        if (isTestnetAlias(p_2)) {
-            var f = entries.find(function (e) { return !!e.alchemy; });
-            return f && f.alchemy ? f.alchemy.testnet : undefined;
-        }
     }
     var first = entries.find(function (e) { return !!e.alchemy; });
     if (!first)
@@ -225,15 +209,15 @@ function resolveBlockchainForCurrency(currency, preferred) {
     if (!entries || !entries.length)
         return undefined;
     if (preferred) {
-        var p_3 = String(preferred).toLowerCase();
+        var p_2 = String(preferred).toLowerCase();
         var found = entries.find(function (e) {
-            return e.mainnet.toLowerCase() === p_3 ||
-                e.testnet.toLowerCase() === p_3 ||
-                (e.name && e.name.toLowerCase() === p_3);
+            return e.mainnet.toLowerCase() === p_2 ||
+                e.testnet.toLowerCase() === p_2 ||
+                (e.name && e.name.toLowerCase() === p_2);
         });
         if (found)
             return found.name;
-        if (isMainnetAlias(p_3) || isTestnetAlias(p_3))
+        if (isMainnetAlias(p_2) || isTestnetAlias(p_2))
             return entries[0].name;
     }
     return entries[0].name;
