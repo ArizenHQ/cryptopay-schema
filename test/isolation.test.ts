@@ -135,6 +135,16 @@ test("GasStations.findByBillingMonth and findById see every account", async () =
   expect((await m.gasStations.findById(aTransfer.id))?.accountId).toBe(acc.A);
 });
 
+test("GasStations.findByTransferId finds a transfer by its DFNS id, before and after its network hash", async () => {
+  const transfer = itemsOf(await m.gasStations.list(acc.A2, null, page))[0];
+  await m.gasStations.patchById(transfer.id, { transferId: "xfr-isolation", statusOrder: "PENDING" });
+  expect((await m.gasStations.findByTransferId("xfr-isolation"))?.id).toBe(transfer.id);
+  await m.gasStations.patchById(transfer.id, { tx_hash: "0xhash" });
+  const found = await m.gasStations.findByTransferId("xfr-isolation");
+  expect([found?.id, found?.tx_hash]).toEqual([transfer.id, "0xhash"]);
+  expect(await m.gasStations.findByTransferId("xfr-unknown")).toBeNull();
+});
+
 test("audit logs are read for the account asked for only", async () => {
   expect(scope(await m.audit.findByAccount(acc.A, page))).toEqual(["A"]);
   const aOrder = itemsOf(await m.orders.list(acc.A, page))[0];

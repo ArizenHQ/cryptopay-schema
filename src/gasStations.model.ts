@@ -178,9 +178,10 @@ export class GasStations {
     );
   };
 
-  findByTxHash = async (txHash: string) => {
+  // The GasStation transfer sent as this DFNS transfer.
+  findByTransferId = async (transferId: string) => {
     const result: any = await this.GasStation.find(
-      { gs6pk: "gasStation#txHash", gs6sk: `gasStation#${txHash}` },
+      { gs6pk: "gasStation#transferId", gs6sk: `gasStation#${transferId}` },
       { index: "gs6", follow: true }
     );
     const items = Array.isArray(result) ? result : result?.items || [];

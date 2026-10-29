@@ -437,7 +437,11 @@ var Schema = {
             network: { type: String },
             blockchain: { type: String, enum: blockchains_1.blockchainNames },
             tx_date: { type: String },
+            // The network hash of the transfer, once the network has it.
             tx_hash: { type: String },
+            // The DFNS transfer id, known as soon as the transfer is sent: the wallet-service's
+            // transfer events carry it, before and after the network hash.
+            transferId: { type: String },
             statusOrder: { type: String, default: "CREATED" },
             success: { type: Boolean },
             paymentId: { type: String },
@@ -472,8 +476,8 @@ var Schema = {
             gs4sk: { type: String, value: "gasStation#${ulid}" },
             gs5pk: { type: String, value: "gasStation#billing" },
             gs5sk: { type: String, value: "gasStation#${billingMonth}#${projectId}" },
-            gs6pk: { type: String, value: "gasStation#txHash" },
-            gs6sk: { type: String, value: "gasStation#${tx_hash}" },
+            gs6pk: { type: String, value: "gasStation#transferId" },
+            gs6sk: { type: String, value: "gasStation#${transferId}" },
         },
         GasStationStatement: {
             pk: { type: String, value: "account#${accountId}" },

@@ -189,11 +189,12 @@ var GasStations = /** @class */ (function () {
                 }
             });
         }); };
-        this.findByTxHash = function (txHash) { return __awaiter(_this, void 0, void 0, function () {
+        // The GasStation transfer sent as this DFNS transfer.
+        this.findByTransferId = function (transferId) { return __awaiter(_this, void 0, void 0, function () {
             var result, items;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.GasStation.find({ gs6pk: "gasStation#txHash", gs6sk: "gasStation#".concat(txHash) }, { index: "gs6", follow: true })];
+                    case 0: return [4 /*yield*/, this.GasStation.find({ gs6pk: "gasStation#transferId", gs6sk: "gasStation#".concat(transferId) }, { index: "gs6", follow: true })];
                     case 1:
                         result = _b.sent();
                         items = Array.isArray(result) ? result : (result === null || result === void 0 ? void 0 : result.items) || [];
