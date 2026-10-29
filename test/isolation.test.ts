@@ -135,6 +135,45 @@ test("GasStations.findByBillingMonth and findById see every account", async () =
   expect((await m.gasStations.findById(aTransfer.id))?.accountId).toBe(acc.A);
 });
 
+// A GasStation transfer in SENDING, as reserveForTransfer leaves it before the send.
+const sendingTransfer = async (ref: string) => {
+  const created = await m.gasStations.insert({ amount: "1", currency: "ETH", internalRef: ref }, project.A2.id);
+  await m.gasStations.reserveForTransfer(created.id);
+  return created;
+};
+
+test("GasStations.recordSent records the DFNS transfer id once, and findByTransferId finds the transfer by it before and after its hash", async () => {
+  const transfer = await sendingTransfer("t-sent");
+  const sent = await m.gasStations.recordSent(transfer.id, { transferId: "xfr-sent", txHash: null });
+  expect([sent.statusOrder, sent.transferId, sent.tx_hash]).toEqual(["PENDING", "xfr-sent", undefined]);
+  expect((await m.gasStations.findByTransferId("xfr-sent"))?.id).toBe(transfer.id);
+  await m.gasStations.patchById(transfer.id, { tx_hash: "0xhash" });
+  const found = await m.gasStations.findByTransferId("xfr-sent");
+  expect([found?.id, found?.tx_hash]).toEqual([transfer.id, "0xhash"]);
+  expect(await m.gasStations.findByTransferId("xfr-unknown")).toBeNull();
+});
+
+test("GasStations.recordSent gives a retry of the same send its record back, and refuses another transfer id or a transfer not SENDING", async () => {
+  const transfer = await sendingTransfer("t-retry");
+  await m.gasStations.recordSent(transfer.id, { transferId: "xfr-retry", txHash: "0xretry" });
+  expect((await m.gasStations.recordSent(transfer.id, { transferId: "xfr-retry", txHash: "0xretry" })).transferId).toBe("xfr-retry");
+  await expect(m.gasStations.recordSent(transfer.id, { transferId: "xfr-other" })).rejects.toMatchObject({ name: "GasStationNotSendableError" });
+  const created = await m.gasStations.insert({ amount: "1", currency: "ETH", internalRef: "t-created" }, project.A2.id);
+  await expect(m.gasStations.recordSent(created.id, { transferId: "xfr-early" })).rejects.toMatchObject({ name: "GasStationNotSendableError" });
+});
+
+test("the DFNS transfer id and the hash are never taken at creation, and the id never through patchById", async () => {
+  const created = await m.gasStations.insert({ amount: "1", currency: "ETH", internalRef: "t-forged", transferId: "xfr-forged", tx_hash: "0xforged" }, project.A2.id);
+  expect([created.transferId, created.tx_hash]).toEqual([undefined, undefined]);
+  const patched = await m.gasStations.patchById(created.id, { transferId: "xfr-forged" });
+  expect(patched.transferId).toBeUndefined();
+  expect(await m.gasStations.findByTransferId("xfr-forged")).toBeNull();
+});
+
+test("GasStations.findByTransferId refuses an empty id", async () => {
+  await expect(m.gasStations.findByTransferId("")).rejects.toThrow(/DFNS transfer id is required/);
+});
+
 test("audit logs are read for the account asked for only", async () => {
   expect(scope(await m.audit.findByAccount(acc.A, page))).toEqual(["A"]);
   const aOrder = itemsOf(await m.orders.list(acc.A, page))[0];

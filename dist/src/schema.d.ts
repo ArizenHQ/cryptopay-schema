@@ -1178,6 +1178,9 @@ declare const Schema: {
             readonly tx_hash: {
                 readonly type: StringConstructor;
             };
+            readonly transferId: {
+                readonly type: StringConstructor;
+            };
             readonly statusOrder: {
                 readonly type: StringConstructor;
                 readonly default: "CREATED";
@@ -1290,11 +1293,11 @@ declare const Schema: {
             };
             readonly gs6pk: {
                 readonly type: StringConstructor;
-                readonly value: "gasStation#txHash";
+                readonly value: "gasStation#transferId";
             };
             readonly gs6sk: {
                 readonly type: StringConstructor;
-                readonly value: "gasStation#${tx_hash}";
+                readonly value: "gasStation#${transferId}";
             };
         };
         readonly GasStationStatement: {

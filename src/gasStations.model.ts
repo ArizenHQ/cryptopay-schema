@@ -66,7 +66,9 @@ export class GasStations {
 
   insert = async (gasStation: any, projectId: String) => {
     try {
-      gasStation = withoutKeys(gasStation);
+      // Written by recordSent once the transfer is sent, never by the creator: transfer
+      // events are routed by them.
+      gasStation = withoutKeys(gasStation, ["transferId", "tx_hash"]);
       const project = await this.Project.get(
         { id: projectId },
         { index: "gs2", follow: true }
@@ -178,12 +180,16 @@ export class GasStations {
     );
   };
 
-  findByTxHash = async (txHash: string) => {
+  // The GasStation transfer sent as this DFNS transfer. A DFNS id names one transfer: two
+  // records under it are an inconsistency, never resolved by picking one.
+  findByTransferId = async (transferId: string) => {
+    if (!transferId) throw new Error("findByTransferId: a DFNS transfer id is required");
     const result: any = await this.GasStation.find(
-      { gs6pk: "gasStation#txHash", gs6sk: `gasStation#${txHash}` },
+      { gs6pk: "gasStation#transferId", gs6sk: `gasStation#${transferId}` },
       { index: "gs6", follow: true }
     );
     const items = Array.isArray(result) ? result : result?.items || [];
+    if (items.length > 1) throw new Error(`${items.length} GasStation transfers under DFNS transfer ${transferId}`);
     return items[0] || null;
   };
 
@@ -199,7 +205,8 @@ export class GasStations {
 
   patchById = async (id: string, data: any) => {
     try {
-      data = withoutKeys(data);
+      // The DFNS transfer id is written once, by recordSent.
+      data = withoutKeys(data, ["transferId"]);
       let gasStation = await this.GasStation.get(
         { id: id },
         { index: "gs1", follow: true }
@@ -212,12 +219,6 @@ export class GasStations {
     }
   };
 
-  // Atomic, condition-checked transition used right before sending the on-chain
-  // transfer. Only succeeds if statusOrder is still CREATED — a concurrent caller
-  // that already reserved (or moved past) this GasStation gets a rejection instead
-  // of silently re-sending the transfer. This is independent from any Temporal
-  // workflowId uniqueness, so it also protects against callers outside the
-  // normal workflow path.
   findByBillingMonth = async (billingMonth: string, query: any = {}) => {
     return await paginateModel(
       this.GasStation,
@@ -228,6 +229,12 @@ export class GasStations {
     );
   };
 
+  // Atomic, condition-checked transition used right before sending the on-chain
+  // transfer. Only succeeds if statusOrder is still CREATED, PENDING_APPROVAL or
+  // APPROVED — a concurrent caller that already reserved (or moved past) this GasStation
+  // gets a rejection instead of silently re-sending the transfer. This is independent
+  // from any Temporal workflowId uniqueness, so it also protects against callers outside
+  // the normal workflow path.
   reserveForTransfer = async (id: string) => {
     let gasStation = await this.GasStation.get(
       { id: id },
@@ -249,6 +256,34 @@ export class GasStations {
       if (err?.code === "ConditionalCheckFailedException") {
         const refused: any = new Error(`GasStation ${id} is not reservable for transfer: it is no longer in CREATED, PENDING_APPROVAL or APPROVED status (already reserved, sent, or otherwise moved on).`);
         refused.name = "GasStationNotReservableError";
+        refused.code = err.code;
+        throw refused;
+      }
+      throw err;
+    }
+  };
+
+  // The transfer is sent: SENDING → PENDING with its DFNS transfer id, written once, and
+  // its network hash when DFNS already has it. One conditional write; a retry of the same
+  // send (same transfer id) gets the record back, any other caller a rejection.
+  recordSent = async (id: string, { transferId, txHash }: { transferId: string; txHash?: string | null }) => {
+    if (!transferId) throw new Error("recordSent: a DFNS transfer id is required");
+    const gasStation = await this.GasStation.get({ id }, { index: "gs1", follow: true });
+    if (!gasStation) throw new Error(`no gasStation found for id: ${id}`);
+    if (gasStation.transferId === transferId) return gasStation;
+    try {
+      return await this.GasStation.update(
+        { id, statusOrder: "PENDING", transferId, tx_date: new Date().toISOString(), ...(txHash ? { tx_hash: txHash } : {}) },
+        {
+          where: "${statusOrder} = {SENDING} and attribute_not_exists(${transferId})",
+          return: "get",
+          context: { accountId: gasStation.accountId },
+        }
+      );
+    } catch (err: any) {
+      if (err?.code === "ConditionalCheckFailedException") {
+        const refused: any = new Error(`GasStation ${id} cannot record transfer ${transferId}: it is not SENDING, or already has a transfer id.`);
+        refused.name = "GasStationNotSendableError";
         refused.code = err.code;
         throw refused;
       }

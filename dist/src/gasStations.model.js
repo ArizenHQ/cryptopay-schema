@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -71,7 +82,9 @@ var GasStations = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 6, , 7]);
-                        gasStation = (0, callerData_1.withoutKeys)(gasStation);
+                        // Written by recordSent once the transfer is sent, never by the creator: transfer
+                        // events are routed by them.
+                        gasStation = (0, callerData_1.withoutKeys)(gasStation, ["transferId", "tx_hash"]);
                         return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();
@@ -189,14 +202,21 @@ var GasStations = /** @class */ (function () {
                 }
             });
         }); };
-        this.findByTxHash = function (txHash) { return __awaiter(_this, void 0, void 0, function () {
+        // The GasStation transfer sent as this DFNS transfer. A DFNS id names one transfer: two
+        // records under it are an inconsistency, never resolved by picking one.
+        this.findByTransferId = function (transferId) { return __awaiter(_this, void 0, void 0, function () {
             var result, items;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.GasStation.find({ gs6pk: "gasStation#txHash", gs6sk: "gasStation#".concat(txHash) }, { index: "gs6", follow: true })];
+                    case 0:
+                        if (!transferId)
+                            throw new Error("findByTransferId: a DFNS transfer id is required");
+                        return [4 /*yield*/, this.GasStation.find({ gs6pk: "gasStation#transferId", gs6sk: "gasStation#".concat(transferId) }, { index: "gs6", follow: true })];
                     case 1:
                         result = _b.sent();
                         items = Array.isArray(result) ? result : (result === null || result === void 0 ? void 0 : result.items) || [];
+                        if (items.length > 1)
+                            throw new Error("".concat(items.length, " GasStation transfers under DFNS transfer ").concat(transferId));
                         return [2 /*return*/, items[0] || null];
                 }
             });
@@ -225,7 +245,8 @@ var GasStations = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 3, , 4]);
-                        data = (0, callerData_1.withoutKeys)(data);
+                        // The DFNS transfer id is written once, by recordSent.
+                        data = (0, callerData_1.withoutKeys)(data, ["transferId"]);
                         return [4 /*yield*/, this.GasStation.get({ id: id }, { index: "gs1", follow: true })];
                     case 1:
                         gasStation = _b.sent();
@@ -241,12 +262,6 @@ var GasStations = /** @class */ (function () {
                 }
             });
         }); };
-        // Atomic, condition-checked transition used right before sending the on-chain
-        // transfer. Only succeeds if statusOrder is still CREATED — a concurrent caller
-        // that already reserved (or moved past) this GasStation gets a rejection instead
-        // of silently re-sending the transfer. This is independent from any Temporal
-        // workflowId uniqueness, so it also protects against callers outside the
-        // normal workflow path.
         this.findByBillingMonth = function (billingMonth_1) {
             var args_1 = [];
             for (var _i = 1; _i < arguments.length; _i++) {
@@ -262,6 +277,12 @@ var GasStations = /** @class */ (function () {
                 });
             });
         };
+        // Atomic, condition-checked transition used right before sending the on-chain
+        // transfer. Only succeeds if statusOrder is still CREATED, PENDING_APPROVAL or
+        // APPROVED — a concurrent caller that already reserved (or moved past) this GasStation
+        // gets a rejection instead of silently re-sending the transfer. This is independent
+        // from any Temporal workflowId uniqueness, so it also protects against callers outside
+        // the normal workflow path.
         this.reserveForTransfer = function (id) { return __awaiter(_this, void 0, void 0, function () {
             var gasStation, err_2, refused;
             return __generator(this, function (_b) {
@@ -291,6 +312,46 @@ var GasStations = /** @class */ (function () {
                             throw refused;
                         }
                         throw err_2;
+                    case 5: return [2 /*return*/];
+                }
+            });
+        }); };
+        // The transfer is sent: SENDING → PENDING with its DFNS transfer id, written once, and
+        // its network hash when DFNS already has it. One conditional write; a retry of the same
+        // send (same transfer id) gets the record back, any other caller a rejection.
+        this.recordSent = function (id_1, _b) { return __awaiter(_this, [id_1, _b], void 0, function (id, _c) {
+            var gasStation, err_3, refused;
+            var transferId = _c.transferId, txHash = _c.txHash;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        if (!transferId)
+                            throw new Error("recordSent: a DFNS transfer id is required");
+                        return [4 /*yield*/, this.GasStation.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1:
+                        gasStation = _d.sent();
+                        if (!gasStation)
+                            throw new Error("no gasStation found for id: ".concat(id));
+                        if (gasStation.transferId === transferId)
+                            return [2 /*return*/, gasStation];
+                        _d.label = 2;
+                    case 2:
+                        _d.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, this.GasStation.update(__assign({ id: id, statusOrder: "PENDING", transferId: transferId, tx_date: new Date().toISOString() }, (txHash ? { tx_hash: txHash } : {})), {
+                                where: "${statusOrder} = {SENDING} and attribute_not_exists(${transferId})",
+                                return: "get",
+                                context: { accountId: gasStation.accountId },
+                            })];
+                    case 3: return [2 /*return*/, _d.sent()];
+                    case 4:
+                        err_3 = _d.sent();
+                        if ((err_3 === null || err_3 === void 0 ? void 0 : err_3.code) === "ConditionalCheckFailedException") {
+                            refused = new Error("GasStation ".concat(id, " cannot record transfer ").concat(transferId, ": it is not SENDING, or already has a transfer id."));
+                            refused.name = "GasStationNotSendableError";
+                            refused.code = err_3.code;
+                            throw refused;
+                        }
+                        throw err_3;
                     case 5: return [2 /*return*/];
                 }
             });
