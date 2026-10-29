@@ -71,7 +71,9 @@ var GasStations = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 6, , 7]);
-                        gasStation = (0, callerData_1.withoutKeys)(gasStation);
+                        // Set by the worker once the transfer is sent, never by the creator: a transfer
+                        // event is routed by them.
+                        gasStation = (0, callerData_1.withoutKeys)(gasStation, ["transferId", "tx_hash"]);
                         return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();
@@ -189,15 +191,21 @@ var GasStations = /** @class */ (function () {
                 }
             });
         }); };
-        // The GasStation transfer sent as this DFNS transfer.
+        // The GasStation transfer sent as this DFNS transfer. A DFNS id names one transfer: two
+        // records under it are an inconsistency, never resolved by picking one.
         this.findByTransferId = function (transferId) { return __awaiter(_this, void 0, void 0, function () {
             var result, items;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.GasStation.find({ gs6pk: "gasStation#transferId", gs6sk: "gasStation#".concat(transferId) }, { index: "gs6", follow: true })];
+                    case 0:
+                        if (!transferId)
+                            return [2 /*return*/, null];
+                        return [4 /*yield*/, this.GasStation.find({ gs6pk: "gasStation#transferId", gs6sk: "gasStation#".concat(transferId) }, { index: "gs6", follow: true })];
                     case 1:
                         result = _b.sent();
                         items = Array.isArray(result) ? result : (result === null || result === void 0 ? void 0 : result.items) || [];
+                        if (items.length > 1)
+                            throw new Error("".concat(items.length, " GasStation transfers under DFNS transfer ").concat(transferId));
                         return [2 /*return*/, items[0] || null];
                 }
             });

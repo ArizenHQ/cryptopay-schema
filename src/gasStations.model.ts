@@ -66,7 +66,9 @@ export class GasStations {
 
   insert = async (gasStation: any, projectId: String) => {
     try {
-      gasStation = withoutKeys(gasStation);
+      // Set by the worker once the transfer is sent, never by the creator: a transfer
+      // event is routed by them.
+      gasStation = withoutKeys(gasStation, ["transferId", "tx_hash"]);
       const project = await this.Project.get(
         { id: projectId },
         { index: "gs2", follow: true }
@@ -178,13 +180,16 @@ export class GasStations {
     );
   };
 
-  // The GasStation transfer sent as this DFNS transfer.
+  // The GasStation transfer sent as this DFNS transfer. A DFNS id names one transfer: two
+  // records under it are an inconsistency, never resolved by picking one.
   findByTransferId = async (transferId: string) => {
+    if (!transferId) return null;
     const result: any = await this.GasStation.find(
       { gs6pk: "gasStation#transferId", gs6sk: `gasStation#${transferId}` },
       { index: "gs6", follow: true }
     );
     const items = Array.isArray(result) ? result : result?.items || [];
+    if (items.length > 1) throw new Error(`${items.length} GasStation transfers under DFNS transfer ${transferId}`);
     return items[0] || null;
   };
 

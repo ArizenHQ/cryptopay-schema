@@ -143,6 +143,10 @@ test("GasStations.findByTransferId finds a transfer by its DFNS id, before and a
   const found = await m.gasStations.findByTransferId("xfr-isolation");
   expect([found?.id, found?.tx_hash]).toEqual([transfer.id, "0xhash"]);
   expect(await m.gasStations.findByTransferId("xfr-unknown")).toBeNull();
+  // Given at creation, the routing ids are not taken.
+  const created = await m.gasStations.insert({ amount: "1", currency: "ETH", internalRef: "t-ids", transferId: "xfr-isolation", tx_hash: "0xforged" }, project.A2.id);
+  expect([created.transferId, created.tx_hash]).toEqual([undefined, undefined]);
+  expect((await m.gasStations.findByTransferId("xfr-isolation"))?.id).toBe(transfer.id);
 });
 
 test("audit logs are read for the account asked for only", async () => {
