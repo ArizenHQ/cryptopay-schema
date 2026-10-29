@@ -34,6 +34,10 @@ export declare class GasStations {
     patchById: (id: string, data: any) => Promise<any>;
     findByBillingMonth: (billingMonth: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     reserveForTransfer: (id: string) => Promise<any>;
+    recordSent: (id: string, { transferId, txHash }: {
+        transferId: string;
+        txHash?: string | null;
+    }) => Promise<any>;
     removeById: (id: string) => Promise<any>;
 }
 export default GasStations;
