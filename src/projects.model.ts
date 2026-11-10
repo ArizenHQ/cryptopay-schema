@@ -8,7 +8,7 @@ import {
   configureUsagePlanKey,
 } from "./utils/ApiGatewayCryptoPayment.js";
 import retrieveSecrets from "./utils/retrieveSecrets";
-import { randomBytes, createHash } from "crypto";
+import { randomBytes } from "crypto";
 import { paginateModel } from './utils/paginateModel';
 import { blockchainNames, listCurrenciesForBlockchain, currencyNetworkMap } from './blockchains';
 import { withoutKeys } from "./utils/callerData";
@@ -60,12 +60,13 @@ export class Projects {
     return new Projects(secretsString);
   };
 
+  // The key a project's webhooks are signed with.
   randomString = () => {
-    return randomBytes(5).toString("hex");
+    return randomBytes(32).toString("hex");
   };
 
   generateApiKey = () => {
-    return createHash("sha256").update(Math.random().toString()).digest("hex");
+    return randomBytes(32).toString("hex");
   };
 
   insert = async (data: any) => {

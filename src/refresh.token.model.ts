@@ -99,7 +99,9 @@ export class RefreshToken {
 
   revokeAll = async (userId: string) => {
     const tokens = await this.RefreshToken.find({ userId });
-    return Promise.all(tokens.map((t: any) => t.update({ revoked: true })));
+    // The whole token is written back: the index that finds a valid token is built from
+    // its user, its value and its revoked flag.
+    return Promise.all(tokens.map((t: any) => this.RefreshToken.update({ ...t, revoked: true })));
   };
 
   deleteExpired = async (now: Date = new Date()) => {
