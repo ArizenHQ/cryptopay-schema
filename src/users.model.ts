@@ -52,9 +52,6 @@ export class Users {
     );
     return new Users(secretsString);
   };
-  generateApiKey = () => {
-    return randomBytes(32).toString("hex");
-  };
   insert = async (data: any) => {
 
     const account = await this.Account.get({ pk: `account#${data.accountId}` });
@@ -74,7 +71,7 @@ export class Users {
       permissionLevel: data.permissionLevel,
       resellerAccountId: resellerAccountId,
       mustResetPassword: data.mustResetPassword || false,
-      apiKey: this.generateApiKey(),
+      apiKey: randomBytes(32).toString("hex"),
       gs5pk: gs5pk,
     }, { context: { accountId: data.accountId } });
   };

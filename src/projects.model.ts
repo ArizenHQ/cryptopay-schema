@@ -60,15 +60,6 @@ export class Projects {
     return new Projects(secretsString);
   };
 
-  // The key a project's webhooks are signed with.
-  randomString = () => {
-    return randomBytes(32).toString("hex");
-  };
-
-  generateApiKey = () => {
-    return randomBytes(32).toString("hex");
-  };
-
   insert = async (data: any) => {
     try {
       const account = await this.Account.get({ pk: `account#${data.accountId}` });
@@ -92,8 +83,8 @@ export class Projects {
           userIdCNHS: data.userIdCNHS || null,
           status: data.status,
           parameters: data.parameters,
-          apiKey: this.generateApiKey(),
-          hmacPassword: this.randomString(),
+          apiKey: randomBytes(32).toString("hex"),
+          hmacPassword: randomBytes(32).toString("hex"),
           resellerAccountId: resellerAccountId
         };
         if (resellerAccountId) {

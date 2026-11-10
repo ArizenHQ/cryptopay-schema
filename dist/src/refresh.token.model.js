@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -110,12 +121,15 @@ var RefreshToken = /** @class */ (function () {
         }); };
         this.revokeAll = function (userId) { return __awaiter(_this, void 0, void 0, function () {
             var tokens;
+            var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.RefreshToken.find({ userId: userId })];
                     case 1:
                         tokens = _b.sent();
-                        return [2 /*return*/, Promise.all(tokens.map(function (t) { return t.update({ revoked: true }); }))];
+                        // The whole token is written back: gs3sk, which finds a valid token, is built from
+                        // userId, tokenRefresh and revoked.
+                        return [2 /*return*/, Promise.all(tokens.map(function (t) { return _this.RefreshToken.update(__assign(__assign({}, t), { revoked: true })); }))];
                 }
             });
         }); };
@@ -126,17 +140,18 @@ var RefreshToken = /** @class */ (function () {
             }
             return __awaiter(_this, __spreadArray([], args_1, true), void 0, function (now) {
                 var expired;
+                var _this = this;
                 if (now === void 0) { now = new Date(); }
                 return __generator(this, function (_b) {
                     switch (_b.label) {
                         case 0: return [4 /*yield*/, this.RefreshToken.find({ gs1pk: "refreshToken#" }, {
-                                where: "expiresAt < :now",
-                                values: { now: now },
+                                where: "${expiresAt} < @{now}",
+                                substitutions: { now: now },
                                 index: "gs1",
                             })];
                         case 1:
                             expired = _b.sent();
-                            return [2 /*return*/, Promise.all(expired.map(function (t) { return t.remove(); }))];
+                            return [2 /*return*/, Promise.all(expired.map(function (t) { return _this.RefreshToken.remove(t); }))];
                     }
                 });
             });

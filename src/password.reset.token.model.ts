@@ -68,13 +68,13 @@ export class PasswordResetToken {
     const expired = await this.PasswordResetToken.find(
       { gs1pk: "resetToken#" },
       {
-        where: "expiresAt < :now",
-        values: { now },
+        where: "${expiresAt} < @{now}",
+        substitutions: { now },
         index: "gs1",
       }
     );
 
-    return Promise.all(expired.map((t: any) => t.remove()));
+    return Promise.all(expired.map((t: any) => this.PasswordResetToken.remove(t)));
   };
 }
 
