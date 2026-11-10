@@ -7,7 +7,7 @@ const client = new Dynamo({
 import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from "./utils/paginateModel";
-import { createHash } from "crypto";
+import { randomBytes } from "crypto";
 import { withoutKeys } from "./utils/callerData";
 
 export class Users {
@@ -52,9 +52,6 @@ export class Users {
     );
     return new Users(secretsString);
   };
-  generateApiKey = () => {
-    return createHash("sha256").update(Math.random().toString()).digest("hex");
-  };
   insert = async (data: any) => {
 
     const account = await this.Account.get({ pk: `account#${data.accountId}` });
@@ -74,7 +71,7 @@ export class Users {
       permissionLevel: data.permissionLevel,
       resellerAccountId: resellerAccountId,
       mustResetPassword: data.mustResetPassword || false,
-      apiKey: this.generateApiKey(),
+      apiKey: randomBytes(32).toString("hex"),
       gs5pk: gs5pk,
     }, { context: { accountId: data.accountId } });
   };
@@ -193,7 +190,6 @@ export class Users {
       for (const user of allUsers) {
         try {
           // Récupérer le compte associé
-          console.log(user);
           const account = await this.Account.get({ pk: `account#${user.accountId}` });
           if (!account) {
             console.warn(`Account not found for user ${user.id}`);

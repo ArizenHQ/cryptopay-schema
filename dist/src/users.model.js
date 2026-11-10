@@ -60,9 +60,6 @@ var callerData_1 = require("./utils/callerData");
 var Users = /** @class */ (function () {
     function Users(secretsString) {
         var _this = this;
-        this.generateApiKey = function () {
-            return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex");
-        };
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
             var account, resellerAccountId, gs5pk;
             return __generator(this, function (_b) {
@@ -85,7 +82,7 @@ var Users = /** @class */ (function () {
                                 permissionLevel: data.permissionLevel,
                                 resellerAccountId: resellerAccountId,
                                 mustResetPassword: data.mustResetPassword || false,
-                                apiKey: this.generateApiKey(),
+                                apiKey: (0, crypto_1.randomBytes)(32).toString("hex"),
                                 gs5pk: gs5pk,
                             }, { context: { accountId: data.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
@@ -277,8 +274,6 @@ var Users = /** @class */ (function () {
                         _b.label = 3;
                     case 3:
                         _b.trys.push([3, 7, , 8]);
-                        // Récupérer le compte associé
-                        console.log(user);
                         return [4 /*yield*/, this.Account.get({ pk: "account#".concat(user.accountId) })];
                     case 4:
                         account = _b.sent();

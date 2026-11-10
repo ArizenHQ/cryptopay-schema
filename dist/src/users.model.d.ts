@@ -11,7 +11,6 @@ export declare class Users {
     secretsString: any;
     private constructor();
     static init: () => Promise<Users>;
-    generateApiKey: () => string;
     insert: (data: any) => Promise<any>;
     findById: (id: string) => Promise<any>;
     findByApiKey: (apiKey: string) => Promise<any>;

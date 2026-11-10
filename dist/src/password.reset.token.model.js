@@ -102,17 +102,18 @@ var PasswordResetToken = /** @class */ (function () {
             }
             return __awaiter(_this, __spreadArray([], args_1, true), void 0, function (now) {
                 var expired;
+                var _this = this;
                 if (now === void 0) { now = new Date(); }
                 return __generator(this, function (_b) {
                     switch (_b.label) {
                         case 0: return [4 /*yield*/, this.PasswordResetToken.find({ gs1pk: "resetToken#" }, {
-                                where: "expiresAt < :now",
-                                values: { now: now },
+                                where: "${expiresAt} < @{now}",
+                                substitutions: { now: now.toISOString() },
                                 index: "gs1",
                             })];
                         case 1:
                             expired = _b.sent();
-                            return [2 /*return*/, Promise.all(expired.map(function (t) { return t.remove(); }))];
+                            return [2 /*return*/, Promise.all(expired.map(function (t) { return _this.PasswordResetToken.remove(t); }))];
                     }
                 });
             });

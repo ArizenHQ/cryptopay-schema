@@ -62,12 +62,6 @@ var client = new Dynamo_1.Dynamo({
 var Projects = /** @class */ (function () {
     function Projects(secretsString) {
         var _this = this;
-        this.randomString = function () {
-            return (0, crypto_1.randomBytes)(5).toString("hex");
-        };
-        this.generateApiKey = function () {
-            return (0, crypto_1.createHash)("sha256").update(Math.random().toString()).digest("hex");
-        };
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
             var account_1, resellerAccountId, context, isValid, projectData, error_1;
             var _this = this;
@@ -96,8 +90,8 @@ var Projects = /** @class */ (function () {
                                 userIdCNHS: data.userIdCNHS || null,
                                 status: data.status,
                                 parameters: data.parameters,
-                                apiKey: this.generateApiKey(),
-                                hmacPassword: this.randomString(),
+                                apiKey: (0, crypto_1.randomBytes)(32).toString("hex"),
+                                hmacPassword: (0, crypto_1.randomBytes)(32).toString("hex"),
                                 resellerAccountId: resellerAccountId
                             };
                             if (resellerAccountId) {
