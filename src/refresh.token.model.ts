@@ -101,7 +101,7 @@ export class RefreshToken {
     const tokens = await this.RefreshToken.find({ userId });
     // The whole token is written back: gs3sk, which finds a valid token, is built from
     // userId, tokenRefresh and revoked.
-    return Promise.all(tokens.map((t: any) => this.RefreshToken.update({ ...t, revoked: true })));
+    return Promise.all(tokens.filter((t: any) => !t.revoked).map((t: any) => this.RefreshToken.update({ ...t, revoked: true })));
   };
 
   deleteExpired = async (now: Date = new Date()) => {
@@ -109,7 +109,7 @@ export class RefreshToken {
       { gs1pk: "refreshToken#" },
       {
         where: "${expiresAt} < @{now}",
-        substitutions: { now },
+        substitutions: { now: now.toISOString() },
         index: "gs1",
       }
     );

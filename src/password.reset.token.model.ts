@@ -69,7 +69,7 @@ export class PasswordResetToken {
       { gs1pk: "resetToken#" },
       {
         where: "${expiresAt} < @{now}",
-        substitutions: { now },
+        substitutions: { now: now.toISOString() },
         index: "gs1",
       }
     );

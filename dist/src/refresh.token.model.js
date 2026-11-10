@@ -129,7 +129,7 @@ var RefreshToken = /** @class */ (function () {
                         tokens = _b.sent();
                         // The whole token is written back: gs3sk, which finds a valid token, is built from
                         // userId, tokenRefresh and revoked.
-                        return [2 /*return*/, Promise.all(tokens.map(function (t) { return _this.RefreshToken.update(__assign(__assign({}, t), { revoked: true })); }))];
+                        return [2 /*return*/, Promise.all(tokens.filter(function (t) { return !t.revoked; }).map(function (t) { return _this.RefreshToken.update(__assign(__assign({}, t), { revoked: true })); }))];
                 }
             });
         }); };
@@ -146,7 +146,7 @@ var RefreshToken = /** @class */ (function () {
                     switch (_b.label) {
                         case 0: return [4 /*yield*/, this.RefreshToken.find({ gs1pk: "refreshToken#" }, {
                                 where: "${expiresAt} < @{now}",
-                                substitutions: { now: now },
+                                substitutions: { now: now.toISOString() },
                                 index: "gs1",
                             })];
                         case 1:

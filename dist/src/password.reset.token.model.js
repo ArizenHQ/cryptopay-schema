@@ -108,7 +108,7 @@ var PasswordResetToken = /** @class */ (function () {
                     switch (_b.label) {
                         case 0: return [4 /*yield*/, this.PasswordResetToken.find({ gs1pk: "resetToken#" }, {
                                 where: "${expiresAt} < @{now}",
-                                substitutions: { now: now },
+                                substitutions: { now: now.toISOString() },
                                 index: "gs1",
                             })];
                         case 1:
