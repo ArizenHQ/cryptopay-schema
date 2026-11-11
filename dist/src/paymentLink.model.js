@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -155,6 +166,56 @@ var PaymentLinks = /** @class */ (function () {
                         err_1 = _b.sent();
                         throw new Error("Error during update PaymentLink ".concat(err_1));
                     case 4: return [2 /*return*/];
+                }
+            });
+        }); };
+        // Claims the activation of a link still pending until `until`, unless another claim
+        // runs past `now` (both ISO dates): two payers, on any task, never both turn the link
+        // into an order. Returns null when refused.
+        this.claimActivation = function (id, now, until) { return __awaiter(_this, void 0, void 0, function () {
+            var link;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.PaymentLink.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1:
+                        link = _b.sent();
+                        if (!link)
+                            throw new Error("no PaymentLink fund for id: ".concat(id));
+                        return [4 /*yield*/, this.conditionally(link, { set: { activationClaimedUntil: until } }, "${statusPaymentLink} = {pending} and (attribute_not_exists(${activationClaimedUntil}) or ${activationClaimedUntil} < @{now})", { now: now })];
+                    case 2: return [2 /*return*/, _b.sent()];
+                }
+            });
+        }); };
+        // Gives up the claim made until `until`, so that the payer can try again at once. A
+        // claim taken since is kept. Returns null when there was nothing to give up.
+        this.releaseActivation = function (id, until) { return __awaiter(_this, void 0, void 0, function () {
+            var link;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.PaymentLink.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1:
+                        link = _b.sent();
+                        if (!link)
+                            throw new Error("no PaymentLink fund for id: ".concat(id));
+                        return [4 /*yield*/, this.conditionally(link, { remove: ["activationClaimedUntil"] }, "${activationClaimedUntil} = @{until}", { until: until })];
+                    case 2: return [2 /*return*/, _b.sent()];
+                }
+            });
+        }); };
+        this.conditionally = function (link, change, where, substitutions) { return __awaiter(_this, void 0, void 0, function () {
+            var err_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.PaymentLink.update({ id: link.id }, __assign(__assign({}, change), { where: where, substitutions: substitutions, return: "get", context: { accountId: link.accountId } }))];
+                    case 1: return [2 /*return*/, _b.sent()];
+                    case 2:
+                        err_2 = _b.sent();
+                        if ((err_2 === null || err_2 === void 0 ? void 0 : err_2.code) === "ConditionalCheckFailedException")
+                            return [2 /*return*/, null];
+                        throw err_2;
+                    case 3: return [2 /*return*/];
                 }
             });
         }); };

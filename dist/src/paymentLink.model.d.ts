@@ -18,6 +18,9 @@ export declare class PaymentLinks {
     findByOrderId: (orderId: string) => Promise<any>;
     list: (accountId: string, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;
     patchById: (id: string, data: any) => Promise<any>;
+    claimActivation: (id: string, now: string, until: string) => Promise<any>;
+    releaseActivation: (id: string, until: string) => Promise<any>;
+    private conditionally;
     removeById: (id: string) => Promise<any>;
 }
 export default PaymentLinks;

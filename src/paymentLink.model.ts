@@ -100,6 +100,33 @@ export class PaymentLinks {
     }
   };
 
+  // Claims the activation of a link still pending until `until`, unless another claim
+  // runs past `now` (both ISO dates): two payers, on any task, never both turn the link
+  // into an order. Returns null when refused.
+  claimActivation = async (id: string, now: string, until: string) => {
+    const link = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
+    if (!link) throw new Error(`no PaymentLink fund for id: ${id}`);
+    return await this.conditionally(link, { set: { activationClaimedUntil: until } },
+      "${statusPaymentLink} = {pending} and (attribute_not_exists(${activationClaimedUntil}) or ${activationClaimedUntil} < @{now})", { now });
+  };
+
+  // Gives up the claim made until `until`, so that the payer can try again at once. A
+  // claim taken since is kept. Returns null when there was nothing to give up.
+  releaseActivation = async (id: string, until: string) => {
+    const link = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
+    if (!link) throw new Error(`no PaymentLink fund for id: ${id}`);
+    return await this.conditionally(link, { remove: ["activationClaimedUntil"] }, "${activationClaimedUntil} = @{until}", { until });
+  };
+
+  private conditionally = async (link: any, change: any, where: string, substitutions: any) => {
+    try {
+      return await this.PaymentLink.update({ id: link.id }, { ...change, where, substitutions, return: "get", context: { accountId: link.accountId } });
+    } catch (err: any) {
+      if (err?.code === "ConditionalCheckFailedException") return null;
+      throw err;
+    }
+  };
+
   removeById = async (id: string) => {
     let paymentLink = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
     if (!paymentLink) throw new Error(`PaymentLink not found`);
