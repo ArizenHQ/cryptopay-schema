@@ -21,6 +21,7 @@ export declare class PaymentLinks {
     claimActivation: (id: string, now: string, until: string) => Promise<any>;
     completeActivation: (id: string, until: string, orderId: string, params: any) => Promise<any>;
     releaseActivation: (id: string, until: string) => Promise<any>;
+    getCurrent: (id: string) => Promise<any>;
     private conditionally;
     removeById: (id: string) => Promise<any>;
 }

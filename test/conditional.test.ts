@@ -3,7 +3,7 @@
 // changed it since it was read.
 //
 // Needs DYNAMODB_ENDPOINT (e.g. http://localhost:8000); CI runs DynamoDB Local as a service.
-import { CreateTableCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { CreateTableCommand, DeleteTableCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
 const endpoint = process.env.DYNAMODB_ENDPOINT;
 if (!endpoint) throw new Error("DYNAMODB_ENDPOINT is required for the conditional write tests (DynamoDB Local)");
@@ -61,8 +61,12 @@ beforeAll(async () => {
   projectId = (await projects.insert({ accountId, name: "Project", status: "active", codeProject: "links", typeProject: "cryptoPayment", parameters: {} } as any)).id;
 });
 
+afterAll(async () => {
+  await new DynamoDBClient({ endpoint, region: "eu-west-1" }).send(new DeleteTableCommand({ TableName: TABLE }));
+});
+
 const at = (seconds: number) => new Date(Date.UTC(2026, 10, 11, 10, 0, seconds)).toISOString();
-const newLink = async () => links.insert(projectId, { type: "cryptoOrder", internalRef: "ref", expiresAt: new Date(Date.now() + 3600e3) }, false);
+const newLink = async () => links.insert(projectId, { type: "cryptoOrder", internalRef: "ref", expiresAt: new Date("2999-01-01T00:00:00.000Z") }, false);
 
 describe("payment link activation", () => {
   test("one claim at a time; an expired claim is taken over; a link no longer pending is not claimed", async () => {
@@ -97,9 +101,11 @@ describe("payment link completion", () => {
     expect(await links.completeActivation(link.id, at(120), "order-late", {})).toBeNull();
     expect((await links.getById(link.id)).statusPaymentLink).toBe("pending");
 
-    const done = await links.completeActivation(link.id, at(241), "order-1", { euroAmount: 5 });
-    expect(done).toMatchObject({ statusPaymentLink: "activated", orderId: "order-1", params: { euroAmount: 5 } });
+    const done = await links.completeActivation(link.id, at(241), "order-done", { euroAmount: 5 });
+    expect(done).toMatchObject({ statusPaymentLink: "activated", orderId: "order-done", params: { euroAmount: 5 } });
     expect(done.activationClaimedUntil).toBeUndefined();
+    expect((await links.findByOrderId("order-done")).map((l: any) => l.id)).toEqual([link.id]);
+    expect((await links.getCurrent(link.id)).statusPaymentLink).toBe("activated");
     expect(await links.completeActivation(link.id, at(241), "order-2", {})).toBeNull();
   });
 
@@ -110,6 +116,13 @@ describe("payment link completion", () => {
     const model = (links as any).PaymentLink;
     await model.remove({ pk: `account#${accountId}`, sk: `paymentLink#${link.id}` });
     await expect(links.completeActivation(link.id, at(120), "order-1", {})).rejects.toThrow(/no PaymentLink/);
+    expect(await links.getCurrent(link.id)).toBeFalsy();
+  });
+
+  test("an expired link is not claimed", async () => {
+    const link = await links.insert(projectId, { type: "cryptoOrder", internalRef: "ref", expiresAt: new Date(Date.UTC(2026, 10, 11, 10, 0, 30)) }, false);
+    expect(await links.claimActivation(link.id, at(31), at(151))).toBeNull();
+    expect(await links.claimActivation(link.id, at(29), at(149))).not.toBeNull();
   });
 });
 
