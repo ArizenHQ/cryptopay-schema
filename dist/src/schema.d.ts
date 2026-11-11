@@ -779,6 +779,9 @@ declare const Schema: {
                 readonly type: DateConstructor;
                 readonly required: true;
             };
+            readonly activationClaimedUntil: {
+                readonly type: StringConstructor;
+            };
             readonly ulid: {
                 readonly type: StringConstructor;
                 readonly generate: "ulid";

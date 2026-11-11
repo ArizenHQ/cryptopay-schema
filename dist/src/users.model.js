@@ -186,6 +186,51 @@ var Users = /** @class */ (function () {
                 });
             });
         };
+        // Replaces the password only if it is still the one the caller read: `seen` is the
+        // record's passwordLastUpdatedAt at that read, missing when it had none. Every password
+        // write sets that date, so a change made in between wins. Nothing else of the record is
+        // written. Returns null when refused.
+        this.replacePassword = function (id, password, seen) { return __awaiter(_this, void 0, void 0, function () {
+            var user, _b, _c, _d, err_1;
+            var _e, _f;
+            return __generator(this, function (_g) {
+                switch (_g.label) {
+                    case 0:
+                        if (!password || password.length < 8) {
+                            throw new Error("Password must be at least 8 characters long");
+                        }
+                        return [4 /*yield*/, this.User.get({ id: id }, { index: "gs4" })];
+                    case 1:
+                        user = _g.sent();
+                        if (!user) {
+                            throw new Error("User not found");
+                        }
+                        _g.label = 2;
+                    case 2:
+                        _g.trys.push([2, 5, , 6]);
+                        _c = (_b = this.User).update;
+                        _d = [{ pk: "account#".concat(user.accountId), sk: "user#".concat(user.email) }];
+                        _e = {};
+                        _f = {};
+                        return [4 /*yield*/, this.table.encrypt(password)];
+                    case 3: return [4 /*yield*/, _c.apply(_b, _d.concat([(_e.set = (_f.password = _g.sent(), _f.passwordLastUpdatedAt = new Date().toISOString(), _f),
+                                _e.where = seen ? "${passwordLastUpdatedAt} = @{seen}" : "attribute_not_exists(${passwordLastUpdatedAt})",
+                                _e.substitutions = seen ? { seen: new Date(seen).toISOString() } : {},
+                                _e.return = "get",
+                                _e)]))];
+                    case 4: 
+                    // Addressed by its primary key alone, so that the e-mail is not part of the write
+                    // and no uniqueness transaction runs.
+                    return [2 /*return*/, _g.sent()];
+                    case 5:
+                        err_1 = _g.sent();
+                        if ((err_1 === null || err_1 === void 0 ? void 0 : err_1.code) === "ConditionalCheckFailedException")
+                            return [2 /*return*/, null];
+                        throw err_1;
+                    case 6: return [2 /*return*/];
+                }
+            });
+        }); };
         this.scan = function () {
             var args_1 = [];
             for (var _i = 0; _i < arguments.length; _i++) {

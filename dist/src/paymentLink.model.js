@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -155,6 +166,88 @@ var PaymentLinks = /** @class */ (function () {
                         err_1 = _b.sent();
                         throw new Error("Error during update PaymentLink ".concat(err_1));
                     case 4: return [2 /*return*/];
+                }
+            });
+        }); };
+        // Writes a merchant's change to a link still pending that no payer holds at `now` (ISO).
+        // Returns null when refused.
+        this.patchIfFree = function (id, data, now) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.conditionally(id, (0, callerData_1.withoutKeys)(data), {}, "${statusPaymentLink} = {pending} and (attribute_not_exists(${activationClaimedUntil}) or ${activationClaimedUntil} < @{now})", { now: now })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
+            });
+        }); };
+        // Claims a pending, unexpired link until `until`, unless another claim runs past `now`
+        // (both ISO dates): two payers, on any task, never both turn the link into an order.
+        // Returns null when refused.
+        this.claimActivation = function (id, now, until) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.conditionally(id, { activationClaimedUntil: until }, {}, "${statusPaymentLink} = {pending} and ${expiresAt} > @{now} and (attribute_not_exists(${activationClaimedUntil}) or ${activationClaimedUntil} < @{now})", { now: now })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
+            });
+        }); };
+        // Turns the link claimed until `until` into the order created meanwhile. Refused, and
+        // null, when that claim lapsed and another was taken since.
+        this.completeActivation = function (id, until, orderId, params) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.conditionally(id, { statusPaymentLink: "activated", orderId: orderId, params: params }, { remove: ["activationClaimedUntil"] }, "${statusPaymentLink} = {pending} and ${activationClaimedUntil} = @{until}", { until: until })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
+            });
+        }); };
+        // Gives up the claim made until `until`, so that the payer can try again at once. A
+        // claim taken since is kept. Returns null when there was nothing to give up.
+        this.releaseActivation = function (id, until) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0: return [4 /*yield*/, this.conditionally(id, {}, { remove: ["activationClaimedUntil"] }, "${activationClaimedUntil} = @{until}", { until: until })];
+                case 1: return [2 /*return*/, _b.sent()];
+            }
+        }); }); };
+        // The link as last written, which an index read may not show yet.
+        this.getCurrent = function (id) { return __awaiter(_this, void 0, void 0, function () {
+            var link, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0: return [4 /*yield*/, this.PaymentLink.get({ id: id }, { index: "gs1" })];
+                    case 1:
+                        link = _c.sent();
+                        _b = link;
+                        if (!_b) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.PaymentLink.get({ pk: "account#".concat(link.accountId), sk: "paymentLink#".concat(id) }, { consistent: true })];
+                    case 2:
+                        _b = (_c.sent());
+                        _c.label = 3;
+                    case 3: return [2 /*return*/, _b];
+                }
+            });
+        }); };
+        // The changed fields go in the properties, so that the index keys built from them
+        // (gs2sk from orderId) are written too.
+        this.conditionally = function (id, fields, options, where, substitutions) { return __awaiter(_this, void 0, void 0, function () {
+            var link, err_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.PaymentLink.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1:
+                        link = _b.sent();
+                        if (!link)
+                            throw new Error("no PaymentLink found for id: ".concat(id));
+                        _b.label = 2;
+                    case 2:
+                        _b.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, this.PaymentLink.update(__assign(__assign({}, fields), { id: id }), __assign(__assign({}, options), { where: where, substitutions: substitutions, return: "get", context: { accountId: link.accountId } }))];
+                    case 3: return [2 /*return*/, _b.sent()];
+                    case 4:
+                        err_2 = _b.sent();
+                        if ((err_2 === null || err_2 === void 0 ? void 0 : err_2.code) === "ConditionalCheckFailedException")
+                            return [2 /*return*/, null];
+                        throw err_2;
+                    case 5: return [2 /*return*/];
                 }
             });
         }); };

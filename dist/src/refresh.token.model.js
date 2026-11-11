@@ -111,6 +111,35 @@ var RefreshToken = /** @class */ (function () {
                 }
             });
         }); };
+        // Revokes a live token in favour of `replacedByToken`: of two refreshes presenting the
+        // same token, one only gets it. Returns null when the token is unknown or already revoked.
+        this.rotate = function (tokenRefresh, replacedByToken) { return __awaiter(_this, void 0, void 0, function () {
+            var existing, err_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.findByToken(tokenRefresh)];
+                    case 1:
+                        existing = _b.sent();
+                        if (!existing)
+                            return [2 /*return*/, null];
+                        _b.label = 2;
+                    case 2:
+                        _b.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, this.RefreshToken.update(__assign(__assign({}, existing), { revoked: true, replacedByToken: replacedByToken }), {
+                                where: "${revoked} = @{live}",
+                                substitutions: { live: false },
+                                return: "get",
+                            })];
+                    case 3: return [2 /*return*/, _b.sent()];
+                    case 4:
+                        err_2 = _b.sent();
+                        if ((err_2 === null || err_2 === void 0 ? void 0 : err_2.code) === "ConditionalCheckFailedException")
+                            return [2 /*return*/, null];
+                        throw err_2;
+                    case 5: return [2 /*return*/];
+                }
+            });
+        }); };
         this.findValid = function (userId, tokenRefresh) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {

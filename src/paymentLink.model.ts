@@ -100,6 +100,49 @@ export class PaymentLinks {
     }
   };
 
+  // Writes a merchant's change to a link still pending that no payer holds at `now` (ISO).
+  // Returns null when refused.
+  patchIfFree = async (id: string, data: any, now: string) =>
+    await this.conditionally(id, withoutKeys(data), {},
+      "${statusPaymentLink} = {pending} and (attribute_not_exists(${activationClaimedUntil}) or ${activationClaimedUntil} < @{now})", { now });
+
+  // Claims a pending, unexpired link until `until`, unless another claim runs past `now`
+  // (both ISO dates): two payers, on any task, never both turn the link into an order.
+  // Returns null when refused.
+  claimActivation = async (id: string, now: string, until: string) =>
+    await this.conditionally(id, { activationClaimedUntil: until }, {},
+      "${statusPaymentLink} = {pending} and ${expiresAt} > @{now} and (attribute_not_exists(${activationClaimedUntil}) or ${activationClaimedUntil} < @{now})", { now });
+
+  // Turns the link claimed until `until` into the order created meanwhile. Refused, and
+  // null, when that claim lapsed and another was taken since.
+  completeActivation = async (id: string, until: string, orderId: string, params: any) =>
+    await this.conditionally(id, { statusPaymentLink: "activated", orderId, params }, { remove: ["activationClaimedUntil"] },
+      "${statusPaymentLink} = {pending} and ${activationClaimedUntil} = @{until}", { until });
+
+  // Gives up the claim made until `until`, so that the payer can try again at once. A
+  // claim taken since is kept. Returns null when there was nothing to give up.
+  releaseActivation = async (id: string, until: string) =>
+    await this.conditionally(id, {}, { remove: ["activationClaimedUntil"] }, "${activationClaimedUntil} = @{until}", { until });
+
+  // The link as last written, which an index read may not show yet.
+  getCurrent = async (id: string) => {
+    const link = await this.PaymentLink.get({ id: id }, { index: "gs1" });
+    return link && (await this.PaymentLink.get({ pk: `account#${link.accountId}`, sk: `paymentLink#${id}` }, { consistent: true }));
+  };
+
+  // The changed fields go in the properties, so that the index keys built from them
+  // (gs2sk from orderId) are written too.
+  private conditionally = async (id: string, fields: any, options: any, where: string, substitutions: any) => {
+    const link = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
+    if (!link) throw new Error(`no PaymentLink found for id: ${id}`);
+    try {
+      return await this.PaymentLink.update({ ...fields, id }, { ...options, where, substitutions, return: "get", context: { accountId: link.accountId } });
+    } catch (err: any) {
+      if (err?.code === "ConditionalCheckFailedException") return null;
+      throw err;
+    }
+  };
+
   removeById = async (id: string) => {
     let paymentLink = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
     if (!paymentLink) throw new Error(`PaymentLink not found`);

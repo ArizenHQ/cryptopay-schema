@@ -312,6 +312,7 @@ var Schema = {
             internalRef: { type: String, required: true },
             params: { type: Object, default: {} },
             expiresAt: { type: Date, required: true },
+            activationClaimedUntil: { type: String },
             ulid: { type: String, generate: "ulid" },
             gs1pk: { type: String, value: "paymentLink#" },
             gs1sk: { type: String, value: "paymentLink#${id}" },

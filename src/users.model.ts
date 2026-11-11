@@ -142,6 +142,33 @@ export class Users {
     });
   };
 
+  // Replaces the password only if it is still the one the caller read: `seen` is the
+  // record's passwordLastUpdatedAt at that read, missing when it had none. Every password
+  // write sets that date, so a change made in between wins. Nothing else of the record is
+  // written. Returns null when refused.
+  replacePassword = async (id: string, password: string, seen?: Date | string | null) => {
+    if (!password || password.length < 8) {
+      throw new Error("Password must be at least 8 characters long");
+    }
+    const user = await this.User.get({ id: id }, { index: "gs4" });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    try {
+      // Addressed by its primary key alone, so that the e-mail is not part of the write
+      // and no uniqueness transaction runs.
+      return await this.User.update({ pk: `account#${user.accountId}`, sk: `user#${user.email}` }, {
+        set: { password: await (this.table as any).encrypt(password), passwordLastUpdatedAt: new Date().toISOString() },
+        where: seen ? "${passwordLastUpdatedAt} = @{seen}" : "attribute_not_exists(${passwordLastUpdatedAt})",
+        substitutions: seen ? { seen: new Date(seen).toISOString() } : {},
+        return: "get",
+      });
+    } catch (err: any) {
+      if (err?.code === "ConditionalCheckFailedException") return null;
+      throw err;
+    }
+  };
+
   scan = async (query: any = {}) => {
     return await paginateModel(this.User, "scan", query, {
       index: "gs4",
