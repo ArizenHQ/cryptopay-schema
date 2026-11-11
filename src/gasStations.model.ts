@@ -8,6 +8,20 @@ import Schema from "./schema";
 import retrieveSecrets from "./utils/retrieveSecrets";
 import { paginateModel } from './utils/paginateModel';
 import { withoutKeys } from "./utils/callerData";
+import { randomUUID } from "crypto";
+
+// How long a created transfer stays listed with its project's limit, to cover the delay
+// of the index the daily total is read from; and how many times a creation that met
+// another one starts again, after a random wait that doubles each time.
+const RECENT_MS = 5 * 60 * 1000;
+const CREATION_ATTEMPTS = 10;
+const WAIT_MS = 20;
+
+// Whether a transaction was cancelled by another write to the same records, not by an
+// error of its own.
+const metAnotherWrite = (err: any): boolean =>
+  err?.code === "TransactionCanceledException" &&
+  (err.context?.err?.CancellationReasons || []).some((reason: any) => ["ConditionalCheckFailed", "TransactionConflict"].includes(reason?.Code));
 // A transfer amount: a finite number above zero ("0.1", 0.1), never negative or text.
 const isPositiveAmount = (amount: any): boolean => {
   const value = Number(amount);
@@ -22,6 +36,7 @@ export class GasStations {
   Account: any;
   Order: any;
   GasStation: any;
+  GasStationLimit: any;
   Payment: any;
   Kyt: any;
   secretsString: any;
@@ -55,6 +70,7 @@ export class GasStations {
     this.Payment = this.table.getModel("Payment");
     this.Kyt = this.table.getModel("Kyt");
     this.GasStation = this.table.getModel("GasStation");
+    this.GasStationLimit = this.table.getModel("GasStationLimit");
   }
 
   static init = async () => {
@@ -97,31 +113,50 @@ export class GasStations {
         // The daily limit is in the project's currency: no other currency is sent.
         if (String(gasStation.currency).toUpperCase() !== String(project.parameters.gasStation.currency).toUpperCase())
           throw new Error(`Currency not allowed for this project: only ${project.parameters.gasStation.currency}`);
-        if (
-          !(await this.isGasStationAvailable(
-            project.accountId,
-            project.id,
-            gasStation.amount,
-            gasStation.currency
-          ))
-        )
-          throw new Error(
-            "The daily purchase limit has been exceeded. Please change amount"
-          );
       } else {
         throw new Error(
           `Project not found! Please check your codeProject or API Key`
         );
       }
-      return await this.GasStation.create(gasStation, { context: { accountId: gasStation.accountId } }).then(
-        async (gasStation: any) => {
-          delete gasStation.audit;
-          return gasStation;
-        }
-      );
+      const created = await this.createWithinLimit(gasStation);
+      delete created.audit;
+      return created;
     } catch (error) {
       throw new Error(`Error during add new gasStation request ${error}`);
     }
+  };
+
+  // Creates the transfer if it keeps its project within the daily limit. The check and
+  // the creation are one transaction with the project's limit record, at the version
+  // read before the check: of two creations at once, the second starts again and counts
+  // the first.
+  private createWithinLimit = async (gasStation: any) => {
+    const { accountId, projectId } = gasStation;
+    const context = { accountId };
+    const key = { pk: `account#${accountId}`, sk: `gasStationLimit#${projectId}` };
+    for (let attempt = 0; attempt < CREATION_ATTEMPTS; attempt++) {
+      if (attempt) await new Promise((resolve) => setTimeout(resolve, Math.random() * WAIT_MS * 2 ** attempt));
+      const limit = await this.GasStationLimit.get(key, { consistent: true });
+      const now = Date.now();
+      const recent = (limit?.recent || []).filter((entry: any) => new Date(entry.dateCreated).getTime() > now - RECENT_MS);
+      if (!(await this.isGasStationAvailable(accountId, projectId, gasStation.amount, gasStation.currency, recent)))
+        throw new Error("The daily purchase limit has been exceeded. Please change amount");
+      const id = randomUUID();
+      const entry = { id, amount: gasStation.amount, currency: gasStation.currency, dateCreated: new Date(now).toISOString() };
+      const transaction = {};
+      const created = await this.GasStation.create({ ...gasStation, id }, { transaction, context });
+      await this.GasStationLimit.upsert(
+        { accountId, projectId, version: (limit?.version || 0) + 1, recent: [...recent, entry] },
+        { transaction, where: limit ? "${version} = @{version}" : "attribute_not_exists(${version})", substitutions: limit ? { version: limit.version } : {} }
+      );
+      try {
+        await this.table.transact("write", transaction);
+        return created;
+      } catch (err: any) {
+        if (!metAnotherWrite(err)) throw err;
+      }
+    }
+    throw new Error("Too many transfers are being created for this project. Please try again");
   };
 
   /**
@@ -132,19 +167,21 @@ export class GasStations {
    * @param projectId - The project.
    * @param amount - The new transfer's amount.
    * @param currency - Its currency; all currencies when absent.
+   * @param recent - Transfers just created, counted when the index does not show them yet.
    * @returns Whether the transfer fits within the limit.
    * @throws When the transfers or the project cannot be read.
    */
-  isGasStationAvailable = async (accountId: string, projectId: string, amount: any, currency?: string) => {
+  isGasStationAvailable = async (accountId: string, projectId: string, amount: any, currency?: string, recent: any[] = []) => {
     try {
       const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       const context = { accountId };
       // Every transfer of the project (gs2 = gasStation#<projectId>), all pages.
-      const recent: any[] = await this.GasStation.find(
+      const indexed: any[] = (await this.GasStation.find(
         { projectId },
         { index: "gs2", where: "${dateCreated} >= {" + since + "}", context }
-      );
-      const counted = (recent || []).filter((gas: any) =>
+      )) || [];
+      const seen = new Set(indexed.map((gas: any) => gas.id));
+      const counted = [...indexed, ...recent.filter((gas: any) => !seen.has(gas.id))].filter((gas: any) =>
         gas.statusOrder !== "FAILED" && (!currency || String(gas.currency).toUpperCase() === String(currency).toUpperCase()));
       const sum = counted.reduce((total: number, gas: any) => total + (isPositiveAmount(gas.amount) ? Number(gas.amount) : 0), Number(amount));
       const project = await this.Project.get({ id: projectId }, { index: "gs2", follow: true, context });

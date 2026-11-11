@@ -430,6 +430,17 @@ const Schema = {
       gs5pk: { type: String, value: "kyt#" },
       gs5sk: { type: String, value: "kyt#${orderId}" },
     },
+    // One per gas station project: what serialises its transfer creations. `version`
+    // changes at each creation, and `recent` lists the transfers created in the last
+    // minutes, which an index read may not show yet.
+    GasStationLimit: {
+      pk: { type: String, value: "account#${accountId}" },
+      sk: { type: String, value: "gasStationLimit#${projectId}" },
+      accountId: { type: String, required: true },
+      projectId: { type: String, required: true },
+      version: { type: Number, required: true },
+      recent: { type: Array, default: [] },
+    },
     GasStation: {
       pk: { type: String, value: "account#${accountId}" },
       sk: { type: String, value: "gasStation#${id}" },

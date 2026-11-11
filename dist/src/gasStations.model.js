@@ -67,6 +67,20 @@ var schema_1 = require("./schema");
 var retrieveSecrets_1 = require("./utils/retrieveSecrets");
 var paginateModel_1 = require("./utils/paginateModel");
 var callerData_1 = require("./utils/callerData");
+var crypto_1 = require("crypto");
+// How long a created transfer stays listed with its project's limit, to cover the delay
+// of the index the daily total is read from; and how many times a creation that met
+// another one starts again, after a random wait that doubles each time.
+var RECENT_MS = 5 * 60 * 1000;
+var CREATION_ATTEMPTS = 10;
+var WAIT_MS = 20;
+// Whether a transaction was cancelled by another write to the same records, not by an
+// error of its own.
+var metAnotherWrite = function (err) {
+    var _a, _b;
+    return (err === null || err === void 0 ? void 0 : err.code) === "TransactionCanceledException" &&
+        (((_b = (_a = err.context) === null || _a === void 0 ? void 0 : _a.err) === null || _b === void 0 ? void 0 : _b.CancellationReasons) || []).some(function (reason) { return ["ConditionalCheckFailed", "TransactionConflict"].includes(reason === null || reason === void 0 ? void 0 : reason.Code); });
+};
 // A transfer amount: a finite number above zero ("0.1", 0.1), never negative or text.
 var isPositiveAmount = function (amount) {
     var value = Number(amount);
@@ -76,49 +90,118 @@ var GasStations = /** @class */ (function () {
     function GasStations(secretsString) {
         var _this = this;
         this.insert = function (gasStation, projectId) { return __awaiter(_this, void 0, void 0, function () {
-            var project, error_1;
-            var _this = this;
+            var project, created, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 6, , 7]);
+                        _b.trys.push([0, 3, , 4]);
                         // Written by recordSent once the transfer is sent, never by the creator: transfer
                         // events are routed by them.
                         gasStation = (0, callerData_1.withoutKeys)(gasStation, ["transferId", "tx_hash"]);
                         return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();
-                        if (!(Object.keys(project).length > 0)) return [3 /*break*/, 3];
-                        if (project.typeProject !== "gasStation")
-                            throw new Error("That project is not configured for type gasStation. Please choose another one, create a new one or chnage this one for this kind of project. Be careful, if you change the project type, all your other instance could be impacted");
-                        gasStation.accountId = project.accountId;
-                        gasStation.codeProject = project.codeProject;
-                        gasStation.projectId = project.id;
-                        if (!project.parameters.gasStation.currency ||
-                            !project.parameters.gasStation.limitPer24H)
-                            throw new Error("That project is not fine configured. Please update your project with paramaeters for project type gasStation");
-                        if (!isPositiveAmount(gasStation.amount))
-                            throw new Error("Amount propertie is incorrect. Please enter a value > 0");
-                        // The daily limit is in the project's currency: no other currency is sent.
-                        if (String(gasStation.currency).toUpperCase() !== String(project.parameters.gasStation.currency).toUpperCase())
-                            throw new Error("Currency not allowed for this project: only ".concat(project.parameters.gasStation.currency));
-                        return [4 /*yield*/, this.isGasStationAvailable(project.accountId, project.id, gasStation.amount, gasStation.currency)];
+                        if (Object.keys(project).length > 0) {
+                            if (project.typeProject !== "gasStation")
+                                throw new Error("That project is not configured for type gasStation. Please choose another one, create a new one or chnage this one for this kind of project. Be careful, if you change the project type, all your other instance could be impacted");
+                            gasStation.accountId = project.accountId;
+                            gasStation.codeProject = project.codeProject;
+                            gasStation.projectId = project.id;
+                            if (!project.parameters.gasStation.currency ||
+                                !project.parameters.gasStation.limitPer24H)
+                                throw new Error("That project is not fine configured. Please update your project with paramaeters for project type gasStation");
+                            if (!isPositiveAmount(gasStation.amount))
+                                throw new Error("Amount propertie is incorrect. Please enter a value > 0");
+                            // The daily limit is in the project's currency: no other currency is sent.
+                            if (String(gasStation.currency).toUpperCase() !== String(project.parameters.gasStation.currency).toUpperCase())
+                                throw new Error("Currency not allowed for this project: only ".concat(project.parameters.gasStation.currency));
+                        }
+                        else {
+                            throw new Error("Project not found! Please check your codeProject or API Key");
+                        }
+                        return [4 /*yield*/, this.createWithinLimit(gasStation)];
                     case 2:
-                        if (!(_b.sent()))
-                            throw new Error("The daily purchase limit has been exceeded. Please change amount");
-                        return [3 /*break*/, 4];
-                    case 3: throw new Error("Project not found! Please check your codeProject or API Key");
-                    case 4: return [4 /*yield*/, this.GasStation.create(gasStation, { context: { accountId: gasStation.accountId } }).then(function (gasStation) { return __awaiter(_this, void 0, void 0, function () {
-                            return __generator(this, function (_b) {
-                                delete gasStation.audit;
-                                return [2 /*return*/, gasStation];
-                            });
-                        }); })];
-                    case 5: return [2 /*return*/, _b.sent()];
-                    case 6:
+                        created = _b.sent();
+                        delete created.audit;
+                        return [2 /*return*/, created];
+                    case 3:
                         error_1 = _b.sent();
                         throw new Error("Error during add new gasStation request ".concat(error_1));
-                    case 7: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        }); };
+        // Creates the transfer if it keeps its project within the daily limit. The check and
+        // the creation are one transaction with the project's limit record, at the version
+        // read before the check: of two creations at once, the second starts again and counts
+        // the first.
+        this.createWithinLimit = function (gasStation) { return __awaiter(_this, void 0, void 0, function () {
+            var accountId, projectId, context, key, _loop_1, this_1, attempt, state_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        accountId = gasStation.accountId, projectId = gasStation.projectId;
+                        context = { accountId: accountId };
+                        key = { pk: "account#".concat(accountId), sk: "gasStationLimit#".concat(projectId) };
+                        _loop_1 = function (attempt) {
+                            var limit, now, recent, id, entry, transaction, created, err_1;
+                            return __generator(this, function (_c) {
+                                switch (_c.label) {
+                                    case 0:
+                                        if (!attempt) return [3 /*break*/, 2];
+                                        return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, Math.random() * WAIT_MS * Math.pow(2, attempt)); })];
+                                    case 1:
+                                        _c.sent();
+                                        _c.label = 2;
+                                    case 2: return [4 /*yield*/, this_1.GasStationLimit.get(key, { consistent: true })];
+                                    case 3:
+                                        limit = _c.sent();
+                                        now = Date.now();
+                                        recent = ((limit === null || limit === void 0 ? void 0 : limit.recent) || []).filter(function (entry) { return new Date(entry.dateCreated).getTime() > now - RECENT_MS; });
+                                        return [4 /*yield*/, this_1.isGasStationAvailable(accountId, projectId, gasStation.amount, gasStation.currency, recent)];
+                                    case 4:
+                                        if (!(_c.sent()))
+                                            throw new Error("The daily purchase limit has been exceeded. Please change amount");
+                                        id = (0, crypto_1.randomUUID)();
+                                        entry = { id: id, amount: gasStation.amount, currency: gasStation.currency, dateCreated: new Date(now).toISOString() };
+                                        transaction = {};
+                                        return [4 /*yield*/, this_1.GasStation.create(__assign(__assign({}, gasStation), { id: id }), { transaction: transaction, context: context })];
+                                    case 5:
+                                        created = _c.sent();
+                                        return [4 /*yield*/, this_1.GasStationLimit.upsert({ accountId: accountId, projectId: projectId, version: ((limit === null || limit === void 0 ? void 0 : limit.version) || 0) + 1, recent: __spreadArray(__spreadArray([], recent, true), [entry], false) }, { transaction: transaction, where: limit ? "${version} = @{version}" : "attribute_not_exists(${version})", substitutions: limit ? { version: limit.version } : {} })];
+                                    case 6:
+                                        _c.sent();
+                                        _c.label = 7;
+                                    case 7:
+                                        _c.trys.push([7, 9, , 10]);
+                                        return [4 /*yield*/, this_1.table.transact("write", transaction)];
+                                    case 8:
+                                        _c.sent();
+                                        return [2 /*return*/, { value: created }];
+                                    case 9:
+                                        err_1 = _c.sent();
+                                        if (!metAnotherWrite(err_1))
+                                            throw err_1;
+                                        return [3 /*break*/, 10];
+                                    case 10: return [2 /*return*/];
+                                }
+                            });
+                        };
+                        this_1 = this;
+                        attempt = 0;
+                        _b.label = 1;
+                    case 1:
+                        if (!(attempt < CREATION_ATTEMPTS)) return [3 /*break*/, 4];
+                        return [5 /*yield**/, _loop_1(attempt)];
+                    case 2:
+                        state_1 = _b.sent();
+                        if (typeof state_1 === "object")
+                            return [2 /*return*/, state_1.value];
+                        _b.label = 3;
+                    case 3:
+                        attempt++;
+                        return [3 /*break*/, 1];
+                    case 4: throw new Error("Too many transfers are being created for this project. Please try again");
                 }
             });
         }); };
@@ -130,35 +213,44 @@ var GasStations = /** @class */ (function () {
          * @param projectId - The project.
          * @param amount - The new transfer's amount.
          * @param currency - Its currency; all currencies when absent.
+         * @param recent - Transfers just created, counted when the index does not show them yet.
          * @returns Whether the transfer fits within the limit.
          * @throws When the transfers or the project cannot be read.
          */
-        this.isGasStationAvailable = function (accountId, projectId, amount, currency) { return __awaiter(_this, void 0, void 0, function () {
-            var since, context, recent, counted, sum, project, e_1;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _b.trys.push([0, 3, , 4]);
-                        since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-                        context = { accountId: accountId };
-                        return [4 /*yield*/, this.GasStation.find({ projectId: projectId }, { index: "gs2", where: "${dateCreated} >= {" + since + "}", context: context })];
-                    case 1:
-                        recent = _b.sent();
-                        counted = (recent || []).filter(function (gas) {
-                            return gas.statusOrder !== "FAILED" && (!currency || String(gas.currency).toUpperCase() === String(currency).toUpperCase());
-                        });
-                        sum = counted.reduce(function (total, gas) { return total + (isPositiveAmount(gas.amount) ? Number(gas.amount) : 0); }, Number(amount));
-                        return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true, context: context })];
-                    case 2:
-                        project = _b.sent();
-                        return [2 /*return*/, Number(project.parameters.gasStation.limitPer24H) >= sum];
-                    case 3:
-                        e_1 = _b.sent();
-                        throw new Error("Error during isGasStationAvailable: ".concat(e_1.message));
-                    case 4: return [2 /*return*/];
-                }
+        this.isGasStationAvailable = function (accountId_1, projectId_1, amount_1, currency_1) {
+            var args_1 = [];
+            for (var _i = 4; _i < arguments.length; _i++) {
+                args_1[_i - 4] = arguments[_i];
+            }
+            return __awaiter(_this, __spreadArray([accountId_1, projectId_1, amount_1, currency_1], args_1, true), void 0, function (accountId, projectId, amount, currency, recent) {
+                var since, context, indexed, seen_1, counted, sum, project, e_1;
+                if (recent === void 0) { recent = []; }
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0:
+                            _b.trys.push([0, 3, , 4]);
+                            since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+                            context = { accountId: accountId };
+                            return [4 /*yield*/, this.GasStation.find({ projectId: projectId }, { index: "gs2", where: "${dateCreated} >= {" + since + "}", context: context })];
+                        case 1:
+                            indexed = (_b.sent()) || [];
+                            seen_1 = new Set(indexed.map(function (gas) { return gas.id; }));
+                            counted = __spreadArray(__spreadArray([], indexed, true), recent.filter(function (gas) { return !seen_1.has(gas.id); }), true).filter(function (gas) {
+                                return gas.statusOrder !== "FAILED" && (!currency || String(gas.currency).toUpperCase() === String(currency).toUpperCase());
+                            });
+                            sum = counted.reduce(function (total, gas) { return total + (isPositiveAmount(gas.amount) ? Number(gas.amount) : 0); }, Number(amount));
+                            return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true, context: context })];
+                        case 2:
+                            project = _b.sent();
+                            return [2 /*return*/, Number(project.parameters.gasStation.limitPer24H) >= sum];
+                        case 3:
+                            e_1 = _b.sent();
+                            throw new Error("Error during isGasStationAvailable: ".concat(e_1.message));
+                        case 4: return [2 /*return*/];
+                    }
+                });
             });
-        }); };
+        };
         this.findById = function (id) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -240,7 +332,7 @@ var GasStations = /** @class */ (function () {
             });
         }); };
         this.patchById = function (id, data) { return __awaiter(_this, void 0, void 0, function () {
-            var gasStation, err_1;
+            var gasStation, err_2;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -256,8 +348,8 @@ var GasStations = /** @class */ (function () {
                         return [4 /*yield*/, this.GasStation.update(data, { return: "get", context: { accountId: gasStation.accountId } })];
                     case 2: return [2 /*return*/, _b.sent()];
                     case 3:
-                        err_1 = _b.sent();
-                        throw new Error("Error during update gasStation ".concat(err_1));
+                        err_2 = _b.sent();
+                        throw new Error("Error during update gasStation ".concat(err_2));
                     case 4: return [2 /*return*/];
                 }
             });
@@ -284,7 +376,7 @@ var GasStations = /** @class */ (function () {
         // from any Temporal workflowId uniqueness, so it also protects against callers outside
         // the normal workflow path.
         this.reserveForTransfer = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            var gasStation, err_2, refused;
+            var gasStation, err_3, refused;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.GasStation.get({ id: id }, { index: "gs1", follow: true })];
@@ -302,16 +394,16 @@ var GasStations = /** @class */ (function () {
                             })];
                     case 3: return [2 /*return*/, _b.sent()];
                     case 4:
-                        err_2 = _b.sent();
+                        err_3 = _b.sent();
                         // Only a refused condition means "already reserved/sent". Callers treat that as
                         // final and must be able to tell it from a throttle or a timeout, which they retry.
-                        if ((err_2 === null || err_2 === void 0 ? void 0 : err_2.code) === "ConditionalCheckFailedException") {
+                        if ((err_3 === null || err_3 === void 0 ? void 0 : err_3.code) === "ConditionalCheckFailedException") {
                             refused = new Error("GasStation ".concat(id, " is not reservable for transfer: it is no longer in CREATED, PENDING_APPROVAL or APPROVED status (already reserved, sent, or otherwise moved on)."));
                             refused.name = "GasStationNotReservableError";
-                            refused.code = err_2.code;
+                            refused.code = err_3.code;
                             throw refused;
                         }
-                        throw err_2;
+                        throw err_3;
                     case 5: return [2 /*return*/];
                 }
             });
@@ -320,7 +412,7 @@ var GasStations = /** @class */ (function () {
         // its network hash when DFNS already has it. One conditional write; a retry of the same
         // send (same transfer id) gets the record back, any other caller a rejection.
         this.recordSent = function (id_1, _b) { return __awaiter(_this, [id_1, _b], void 0, function (id, _c) {
-            var gasStation, err_3, refused;
+            var gasStation, err_4, refused;
             var transferId = _c.transferId, txHash = _c.txHash;
             return __generator(this, function (_d) {
                 switch (_d.label) {
@@ -344,14 +436,14 @@ var GasStations = /** @class */ (function () {
                             })];
                     case 3: return [2 /*return*/, _d.sent()];
                     case 4:
-                        err_3 = _d.sent();
-                        if ((err_3 === null || err_3 === void 0 ? void 0 : err_3.code) === "ConditionalCheckFailedException") {
+                        err_4 = _d.sent();
+                        if ((err_4 === null || err_4 === void 0 ? void 0 : err_4.code) === "ConditionalCheckFailedException") {
                             refused = new Error("GasStation ".concat(id, " cannot record transfer ").concat(transferId, ": it is not SENDING, or already has a transfer id."));
                             refused.name = "GasStationNotSendableError";
-                            refused.code = err_3.code;
+                            refused.code = err_4.code;
                             throw refused;
                         }
-                        throw err_3;
+                        throw err_4;
                     case 5: return [2 /*return*/];
                 }
             });
@@ -398,6 +490,7 @@ var GasStations = /** @class */ (function () {
         this.Payment = this.table.getModel("Payment");
         this.Kyt = this.table.getModel("Kyt");
         this.GasStation = this.table.getModel("GasStation");
+        this.GasStationLimit = this.table.getModel("GasStationLimit");
     }
     var _a;
     _a = GasStations;
