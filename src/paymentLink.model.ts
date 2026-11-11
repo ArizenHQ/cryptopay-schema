@@ -100,6 +100,12 @@ export class PaymentLinks {
     }
   };
 
+  // Writes a merchant's change to a link still pending that no payer holds at `now` (ISO).
+  // Returns null when refused.
+  patchIfFree = async (id: string, data: any, now: string) =>
+    await this.conditionally(id, withoutKeys(data), {},
+      "${statusPaymentLink} = {pending} and (attribute_not_exists(${activationClaimedUntil}) or ${activationClaimedUntil} < @{now})", { now });
+
   // Claims a pending, unexpired link until `until`, unless another claim runs past `now`
   // (both ISO dates): two payers, on any task, never both turn the link into an order.
   // Returns null when refused.
@@ -120,7 +126,7 @@ export class PaymentLinks {
 
   // The link as last written, which an index read may not show yet.
   getCurrent = async (id: string) => {
-    const link = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
+    const link = await this.PaymentLink.get({ id: id }, { index: "gs1" });
     return link && (await this.PaymentLink.get({ pk: `account#${link.accountId}`, sk: `paymentLink#${id}` }, { consistent: true }));
   };
 

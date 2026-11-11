@@ -93,6 +93,19 @@ describe("payment link activation", () => {
   });
 });
 
+describe("merchant edit", () => {
+  test("refused while a payer holds the link or once it is no longer pending", async () => {
+    const link = await newLink();
+    expect(await links.patchIfFree(link.id, { internalRef: "free" }, at(0))).toMatchObject({ internalRef: "free" });
+    expect(await links.claimActivation(link.id, at(0), at(120))).not.toBeNull();
+    expect(await links.patchIfFree(link.id, { internalRef: "held" }, at(60))).toBeNull();
+    expect(await links.patchIfFree(link.id, { internalRef: "lapsed" }, at(121))).toMatchObject({ internalRef: "lapsed" });
+    await links.patchById(link.id, { statusPaymentLink: "activated", orderId: "order-edit" });
+    expect(await links.patchIfFree(link.id, { internalRef: "late" }, at(999))).toBeNull();
+    expect((await links.getCurrent(link.id)).internalRef).toBe("lapsed");
+  });
+});
+
 describe("payment link completion", () => {
   test("the claim that holds the link completes it; a lapsed claim taken over does not", async () => {
     const link = await newLink();

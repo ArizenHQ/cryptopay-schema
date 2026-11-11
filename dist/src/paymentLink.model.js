@@ -169,6 +169,16 @@ var PaymentLinks = /** @class */ (function () {
                 }
             });
         }); };
+        // Writes a merchant's change to a link still pending that no payer holds at `now` (ISO).
+        // Returns null when refused.
+        this.patchIfFree = function (id, data, now) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.conditionally(id, (0, callerData_1.withoutKeys)(data), {}, "${statusPaymentLink} = {pending} and (attribute_not_exists(${activationClaimedUntil}) or ${activationClaimedUntil} < @{now})", { now: now })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                }
+            });
+        }); };
         // Claims a pending, unexpired link until `until`, unless another claim runs past `now`
         // (both ISO dates): two payers, on any task, never both turn the link into an order.
         // Returns null when refused.
@@ -203,7 +213,7 @@ var PaymentLinks = /** @class */ (function () {
             var link, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
-                    case 0: return [4 /*yield*/, this.PaymentLink.get({ id: id }, { index: "gs1", follow: true })];
+                    case 0: return [4 /*yield*/, this.PaymentLink.get({ id: id }, { index: "gs1" })];
                     case 1:
                         link = _c.sent();
                         _b = link;
