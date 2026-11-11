@@ -240,7 +240,7 @@ var PaymentLinks = /** @class */ (function () {
                         _b.label = 2;
                     case 2:
                         _b.trys.push([2, 4, , 5]);
-                        return [4 /*yield*/, this.PaymentLink.update(__assign({ id: id }, fields), __assign(__assign({}, options), { where: where, substitutions: substitutions, return: "get", context: { accountId: link.accountId } }))];
+                        return [4 /*yield*/, this.PaymentLink.update(__assign(__assign({}, fields), { id: id }), __assign(__assign({}, options), { where: where, substitutions: substitutions, return: "get", context: { accountId: link.accountId } }))];
                     case 3: return [2 /*return*/, _b.sent()];
                     case 4:
                         err_2 = _b.sent();

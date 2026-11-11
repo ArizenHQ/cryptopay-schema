@@ -136,7 +136,7 @@ export class PaymentLinks {
     const link = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
     if (!link) throw new Error(`no PaymentLink found for id: ${id}`);
     try {
-      return await this.PaymentLink.update({ id, ...fields }, { ...options, where, substitutions, return: "get", context: { accountId: link.accountId } });
+      return await this.PaymentLink.update({ ...fields, id }, { ...options, where, substitutions, return: "get", context: { accountId: link.accountId } });
     } catch (err: any) {
       if (err?.code === "ConditionalCheckFailedException") return null;
       throw err;
