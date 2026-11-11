@@ -188,10 +188,10 @@ var Users = /** @class */ (function () {
         };
         // Replaces the password only if it is still the one the caller read: `seen` is the
         // record's passwordLastUpdatedAt at that read, missing when it had none. Every password
-        // write sets that date, so a change made in between wins. mustResetPassword is kept.
-        // Returns null when refused.
+        // write sets that date, so a change made in between wins. Nothing else of the record is
+        // written. Returns null when refused.
         this.replacePassword = function (id, password, seen) { return __awaiter(_this, void 0, void 0, function () {
-            var user, at, unchanged, _b, _c, _d, err_1;
+            var user, _b, _c, _d, err_1;
             var _e, _f;
             return __generator(this, function (_g) {
                 switch (_g.label) {
@@ -205,27 +205,22 @@ var Users = /** @class */ (function () {
                         if (!user) {
                             throw new Error("User not found");
                         }
-                        at = seen ? new Date(seen) : null;
-                        unchanged = at
-                            ? "${passwordLastUpdatedAt} = @{ms} or ${passwordLastUpdatedAt} = @{iso}"
-                            : "attribute_not_exists(${passwordLastUpdatedAt})";
                         _g.label = 2;
                     case 2:
                         _g.trys.push([2, 5, , 6]);
-                        _c = (_b = this.User).updateItem;
-                        _d = [user];
+                        _c = (_b = this.User).update;
+                        _d = [{ pk: "account#".concat(user.accountId), sk: "user#".concat(user.email) }];
                         _e = {};
                         _f = {};
                         return [4 /*yield*/, this.table.encrypt(password)];
                     case 3: return [4 /*yield*/, _c.apply(_b, _d.concat([(_e.set = (_f.password = _g.sent(), _f.passwordLastUpdatedAt = new Date().toISOString(), _f),
-                                _e.where = unchanged,
-                                _e.substitutions = at ? { ms: at.getTime(), iso: at.toISOString() } : {},
-                                _e.exists = true,
+                                _e.where = seen ? "${passwordLastUpdatedAt} = @{seen}" : "attribute_not_exists(${passwordLastUpdatedAt})",
+                                _e.substitutions = seen ? { seen: new Date(seen).toISOString() } : {},
                                 _e.return = "get",
                                 _e)]))];
                     case 4: 
-                    // The plain update: `update` would wrap it in the transaction that guards the
-                    // e-mail's uniqueness, which reports a refused condition as a duplicate e-mail.
+                    // Addressed by its primary key alone, so that the e-mail is not part of the write
+                    // and no uniqueness transaction runs.
                     return [2 /*return*/, _g.sent()];
                     case 5:
                         err_1 = _g.sent();

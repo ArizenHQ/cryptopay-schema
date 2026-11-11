@@ -110,6 +110,15 @@ export class PaymentLinks {
       "${statusPaymentLink} = {pending} and (attribute_not_exists(${activationClaimedUntil}) or ${activationClaimedUntil} < @{now})", { now });
   };
 
+  // Turns the link claimed until `until` into the order created meanwhile. Refused, and
+  // null, when that claim lapsed and another was taken since.
+  completeActivation = async (id: string, until: string, orderId: string, params: any) => {
+    const link = await this.PaymentLink.get({ id: id }, { index: "gs1", follow: true });
+    if (!link) throw new Error(`no PaymentLink fund for id: ${id}`);
+    return await this.conditionally(link, { set: { statusPaymentLink: "activated", orderId, params }, remove: ["activationClaimedUntil"] },
+      "${statusPaymentLink} = {pending} and ${activationClaimedUntil} = @{until}", { until });
+  };
+
   // Gives up the claim made until `until`, so that the payer can try again at once. A
   // claim taken since is kept. Returns null when there was nothing to give up.
   releaseActivation = async (id: string, until: string) => {

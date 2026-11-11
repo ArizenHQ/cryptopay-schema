@@ -186,6 +186,22 @@ var PaymentLinks = /** @class */ (function () {
                 }
             });
         }); };
+        // Turns the link claimed until `until` into the order created meanwhile. Refused, and
+        // null, when that claim lapsed and another was taken since.
+        this.completeActivation = function (id, until, orderId, params) { return __awaiter(_this, void 0, void 0, function () {
+            var link;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.PaymentLink.get({ id: id }, { index: "gs1", follow: true })];
+                    case 1:
+                        link = _b.sent();
+                        if (!link)
+                            throw new Error("no PaymentLink fund for id: ".concat(id));
+                        return [4 /*yield*/, this.conditionally(link, { set: { statusPaymentLink: "activated", orderId: orderId, params: params }, remove: ["activationClaimedUntil"] }, "${statusPaymentLink} = {pending} and ${activationClaimedUntil} = @{until}", { until: until })];
+                    case 2: return [2 /*return*/, _b.sent()];
+                }
+            });
+        }); };
         // Gives up the claim made until `until`, so that the payer can try again at once. A
         // claim taken since is kept. Returns null when there was nothing to give up.
         this.releaseActivation = function (id, until) { return __awaiter(_this, void 0, void 0, function () {

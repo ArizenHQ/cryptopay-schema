@@ -89,7 +89,42 @@ describe("payment link activation", () => {
   });
 });
 
+describe("payment link completion", () => {
+  test("the claim that holds the link completes it; a lapsed claim taken over does not", async () => {
+    const link = await newLink();
+    expect(await links.claimActivation(link.id, at(0), at(120))).not.toBeNull();
+    expect(await links.claimActivation(link.id, at(121), at(241))).not.toBeNull();
+    expect(await links.completeActivation(link.id, at(120), "order-late", {})).toBeNull();
+    expect((await links.getById(link.id)).statusPaymentLink).toBe("pending");
+
+    const done = await links.completeActivation(link.id, at(241), "order-1", { euroAmount: 5 });
+    expect(done).toMatchObject({ statusPaymentLink: "activated", orderId: "order-1", params: { euroAmount: 5 } });
+    expect(done.activationClaimedUntil).toBeUndefined();
+    expect(await links.completeActivation(link.id, at(241), "order-2", {})).toBeNull();
+  });
+
+  test("a link removed meanwhile is neither claimed nor completed", async () => {
+    const link = await newLink();
+    const claimed = await links.claimActivation(link.id, at(0), at(120));
+    expect(claimed).not.toBeNull();
+    const model = (links as any).PaymentLink;
+    await model.remove({ pk: `account#${accountId}`, sk: `paymentLink#${link.id}` });
+    await expect(links.completeActivation(link.id, at(120), "order-1", {})).rejects.toThrow(/no PaymentLink/);
+  });
+});
+
 describe("password replacement", () => {
+  test("only the password is written: a change of another field made after the read is kept", async () => {
+    const user = await users.insert({ accountId, email: "other@test.local", name: "User", password: "Typed!Passw0rd", permissionLevel: 4 } as any);
+    const read = await users.findById(user.id);
+    await (users as any).User.update({ pk: `account#${accountId}`, sk: "user#other@test.local" }, { set: { permissionLevel: 1, status: "inactive" } });
+    const replaced = await users.replacePassword(user.id, "scrypt$derived-5", read.passwordLastUpdatedAt);
+    expect(replaced).not.toBeNull();
+    expect(replaced.apiKey).toBeUndefined();
+    const after = await users.findById(user.id);
+    expect(after).toMatchObject({ password: "scrypt$derived-5", permissionLevel: 1, status: "inactive", email: "other@test.local", name: "User" });
+  });
+
   const newUser = async (email: string, more: any = {}) => users.insert({ accountId, email, name: "User", password: "Typed!Passw0rd", permissionLevel: 4, ...more } as any);
   const passwordOf = async (id: string) => (await users.findById(id)).password;
 

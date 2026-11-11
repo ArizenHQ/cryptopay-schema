@@ -144,8 +144,8 @@ export class Users {
 
   // Replaces the password only if it is still the one the caller read: `seen` is the
   // record's passwordLastUpdatedAt at that read, missing when it had none. Every password
-  // write sets that date, so a change made in between wins. mustResetPassword is kept.
-  // Returns null when refused.
+  // write sets that date, so a change made in between wins. Nothing else of the record is
+  // written. Returns null when refused.
   replacePassword = async (id: string, password: string, seen?: Date | string | null) => {
     if (!password || password.length < 8) {
       throw new Error("Password must be at least 8 characters long");
@@ -154,19 +154,13 @@ export class Users {
     if (!user) {
       throw new Error("User not found");
     }
-    // The date may be stored as an ISO string or as milliseconds, depending on the writer.
-    const at = seen ? new Date(seen) : null;
-    const unchanged = at
-      ? "${passwordLastUpdatedAt} = @{ms} or ${passwordLastUpdatedAt} = @{iso}"
-      : "attribute_not_exists(${passwordLastUpdatedAt})";
     try {
-      // The plain update: `update` would wrap it in the transaction that guards the
-      // e-mail's uniqueness, which reports a refused condition as a duplicate e-mail.
-      return await this.User.updateItem(user, {
+      // Addressed by its primary key alone, so that the e-mail is not part of the write
+      // and no uniqueness transaction runs.
+      return await this.User.update({ pk: `account#${user.accountId}`, sk: `user#${user.email}` }, {
         set: { password: await (this.table as any).encrypt(password), passwordLastUpdatedAt: new Date().toISOString() },
-        where: unchanged,
-        substitutions: at ? { ms: at.getTime(), iso: at.toISOString() } : {},
-        exists: true,
+        where: seen ? "${passwordLastUpdatedAt} = @{seen}" : "attribute_not_exists(${passwordLastUpdatedAt})",
+        substitutions: seen ? { seen: new Date(seen).toISOString() } : {},
         return: "get",
       });
     } catch (err: any) {
