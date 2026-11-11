@@ -1139,6 +1139,32 @@ declare const Schema: {
                 readonly value: "kyt#${orderId}";
             };
         };
+        readonly GasStationLimit: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "account#${accountId}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStationLimit#${projectId}";
+            };
+            readonly accountId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly projectId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly version: {
+                readonly type: NumberConstructor;
+                readonly required: true;
+            };
+            readonly recent: {
+                readonly type: ArrayConstructor;
+                readonly default: readonly [];
+            };
+        };
         readonly GasStation: {
             readonly pk: {
                 readonly type: StringConstructor;

@@ -7,12 +7,14 @@ export declare class GasStations {
     Account: any;
     Order: any;
     GasStation: any;
+    GasStationLimit: any;
     Payment: any;
     Kyt: any;
     secretsString: any;
     private constructor();
     static init: () => Promise<GasStations>;
     insert: (gasStation: any, projectId: String) => Promise<any>;
+    private createWithinLimit;
     /**
      * Whether a transfer keeps the project within its daily limit, in the project's
      * currency: the project's transfers of the last 24 hours in that currency, FAILED
@@ -21,10 +23,11 @@ export declare class GasStations {
      * @param projectId - The project.
      * @param amount - The new transfer's amount.
      * @param currency - Its currency; all currencies when absent.
+     * @param recent - Transfers just created, counted when the index does not show them yet.
      * @returns Whether the transfer fits within the limit.
      * @throws When the transfers or the project cannot be read.
      */
-    isGasStationAvailable: (accountId: string, projectId: string, amount: any, currency?: string) => Promise<boolean>;
+    isGasStationAvailable: (accountId: string, projectId: string, amount: any, currency?: string, recent?: any[]) => Promise<boolean>;
     findById: (id: string) => Promise<any>;
     findPublicById: (id: string) => Promise<any>;
     scan: (params?: any, query?: any) => Promise<import("./utils/paginateModel").PaginatedResult<any>>;

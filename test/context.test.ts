@@ -41,9 +41,11 @@ const order = (accountId: string) => ({
   pk: `account#${accountId}`, sk: "order#22222222-2222-4222-8222-222222222222", id: "22222222-2222-4222-8222-222222222222", orderId: "22222222-2222-4222-8222-222222222222", accountId, typeOrder: "crypto", amount: 1, statusOrder: "CREATED",
 });
 
-// A query answers `items`, a get answers the first one; writes answer nothing.
+// A query answers `items`, a get answers the first one, except for a gas station limit
+// record, which no test has; writes answer nothing.
 const serve = (items: any[]) => {
-  answer = (name) => {
+  answer = (name, input) => {
+    if (name === "GetItemCommand" && input.Key?.sk?.S?.startsWith("gasStationLimit#")) return {};
     if (name === "QueryCommand" || name === "ScanCommand") return { Items: items.map((i) => marshall(i, { removeUndefinedValues: true })), Count: items.length };
     if (name === "GetItemCommand") return items[0] ? { Item: marshall(items[0], { removeUndefinedValues: true }) } : {};
     if (name === "UpdateItemCommand" || name === "PutItemCommand") return { Attributes: items[0] ? marshall(items[0], { removeUndefinedValues: true }) : undefined };
@@ -60,6 +62,8 @@ const filterOf = (input: any) => {
   return Object.values(names).includes("accountId") ? input.ExpressionAttributeValues : null;
 };
 const accountOfWrite = (input: any) => input.Item?.accountId?.S ?? input.Key?.pk?.S;
+// The transfer a GasStation insert writes, within its transaction.
+const createdTransfer = () => last("TransactWriteItemsCommand").TransactItems.map((t: any) => t.Put).find(Boolean);
 
 beforeEach(() => { sent.length = 0; });
 
@@ -67,7 +71,7 @@ test("a GasStation insert writes under the project's account and leaves no filte
   const model = await GasStations.init();
   serve([project]);
   await model.insert({ amount: "1", currency: "ETH", internalRef: "r" }, "33333333-3333-4333-8333-333333333333").catch(() => {});
-  expect(accountOfWrite(last("PutItemCommand"))).toBe(A);
+  expect(accountOfWrite(createdTransfer())).toBe(A);
 
   serve([]);
   await model.list(null as any, null as any, { limit: 50, page: 0 });
@@ -215,6 +219,5 @@ test("a GasStation insert dates the transfer itself, whatever date the data carr
   const model = await GasStations.init();
   serve([project]);
   await model.insert({ amount: "1", currency: "ETH", internalRef: "r", dateCreated: "2000-01-01T00:00:00.000Z" }, P).catch(() => {});
-  const put = last("PutItemCommand");
-  expect(put.Item.dateCreated.S).not.toBe("2000-01-01T00:00:00.000Z");
+  expect(createdTransfer().Item.dateCreated.S).not.toBe("2000-01-01T00:00:00.000Z");
 });

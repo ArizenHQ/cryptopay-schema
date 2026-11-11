@@ -1,6 +1,7 @@
 // Conditional writes, on a real DynamoDB (DynamoDB Local): a payment link is turned into
 // an order by one activation at a time, and a password is replaced only if nobody
-// changed it since it was read.
+// changed it since it was read; a refresh token is exchanged once; gas station transfers
+// created at once stay within the daily limit.
 //
 // Needs DYNAMODB_ENDPOINT (e.g. http://localhost:8000); CI runs DynamoDB Local as a service.
 import { CreateTableCommand, DeleteTableCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
@@ -25,6 +26,7 @@ import { Projects } from "../src/projects.model";
 import { Users } from "../src/users.model";
 import { PaymentLinks } from "../src/paymentLink.model";
 import { RefreshToken } from "../src/refresh.token.model";
+import { GasStations } from "../src/gasStations.model";
 
 jest.setTimeout(60000);
 
@@ -199,5 +201,56 @@ describe("refresh token rotation", () => {
     expect(await tokens.findValid("u-rot", "jwt-0")).toBeFalsy();
     expect(await tokens.rotate("jwt-0", "jwt-d")).toBeNull();
     expect(await tokens.rotate("unknown", "jwt-e")).toBeNull();
+  });
+});
+
+describe("gas station daily limit", () => {
+  test("transfers created at once stay within the limit", async () => {
+    const projects = await Projects.init();
+    const gasStations = await GasStations.init();
+    const project = await projects.insert({
+      accountId, name: "GS", status: "active", codeProject: "gs-limit", typeProject: "gasStation",
+      parameters: { gasStation: { currency: "ETH", limitPer24H: 10, commissionRate: 0.01 } },
+    } as any);
+    const create = (n: number) => gasStations.insert({ address: "0x0000000000000000000000000000000000000001", currency: "ETH", amount: "4", internalRef: `ref-${n}` }, project.id);
+    const results = await Promise.allSettled(Array.from({ length: 10 }, (_, n) => create(n)));
+    const created = results.filter((r) => r.status === "fulfilled").map((r: any) => r.value);
+    expect(created).toHaveLength(2);
+    expect(created.every((g: any) => g.id && g.statusOrder === "CREATED" && g.audit === undefined)).toBe(true);
+    const refusals = results.filter((r) => r.status === "rejected").map((r: any) => String(r.reason.message));
+    expect(refusals.every((m) => /daily purchase limit|Too many transfers/.test(m))).toBe(true);
+
+    expect(Object.keys(created[0]).sort()).toEqual(Object.keys(await gasStations.findById(created[0].id)).filter((k) => k !== "audit").sort());
+
+    await expect(create(100)).rejects.toThrow(/daily purchase limit/);
+    expect(await gasStations.isGasStationAvailable(accountId, project.id, "2", "ETH")).toBe(true);
+    expect(await gasStations.isGasStationAvailable(accountId, project.id, "3", "ETH")).toBe(false);
+  });
+
+  test("a burst of transfers within the limit is all created", async () => {
+    const projects = await Projects.init();
+    const gasStations = await GasStations.init();
+    const project = await projects.insert({
+      accountId, name: "GS burst", status: "active", codeProject: "gs-burst", typeProject: "gasStation",
+      parameters: { gasStation: { currency: "ETH", limitPer24H: 1000000, commissionRate: 0.01 } },
+    } as any);
+    const results = await Promise.allSettled(Array.from({ length: 20 }, (_, n) =>
+      gasStations.insert({ address: "0x0000000000000000000000000000000000000001", currency: "ETH", amount: "1", internalRef: `burst-${n}` }, project.id)));
+    expect(results.filter((r) => r.status === "rejected").map((r: any) => String(r.reason.message))).toEqual([]);
+  });
+
+  test("a transfer just created counts before the index shows it, once, in its currency", async () => {
+    const projects = await Projects.init();
+    const gasStations = await GasStations.init();
+    const project = await projects.insert({
+      accountId, name: "GS recent", status: "active", codeProject: "gs-recent", typeProject: "gasStation",
+      parameters: { gasStation: { currency: "ETH", limitPer24H: 10, commissionRate: 0.01 } },
+    } as any);
+    const indexed = await gasStations.insert({ address: "0x0000000000000000000000000000000000000001", currency: "ETH", amount: "4", internalRef: "indexed" }, project.id);
+    const fits = (recent: any[]) => gasStations.isGasStationAvailable(accountId, project.id, "4", "ETH", recent);
+    expect(await fits([])).toBe(true);
+    expect(await fits([{ id: "not-indexed-yet", amount: "4", currency: "ETH" }])).toBe(false);
+    expect(await fits([{ id: indexed.id, amount: "4", currency: "ETH" }])).toBe(true);
+    expect(await fits([{ id: "other-currency", amount: "4", currency: "POL" }])).toBe(true);
   });
 });
