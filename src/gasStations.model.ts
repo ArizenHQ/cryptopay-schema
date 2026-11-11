@@ -12,10 +12,11 @@ import { randomUUID } from "crypto";
 
 // How long a created transfer stays listed with its project's limit, to cover the delay
 // of the index the daily total is read from; and how many times a creation that met
-// another one starts again, after a random wait that doubles each time.
+// another one starts again, after a random wait that doubles each time up to a second.
 const RECENT_MS = 5 * 60 * 1000;
 const CREATION_ATTEMPTS = 10;
 const WAIT_MS = 20;
+const MAX_WAIT_MS = 1000;
 
 // Whether a transaction was cancelled by another write to the same records, not by an
 // error of its own.
@@ -135,7 +136,7 @@ export class GasStations {
     const context = { accountId };
     const key = { pk: `account#${accountId}`, sk: `gasStationLimit#${projectId}` };
     for (let attempt = 0; attempt < CREATION_ATTEMPTS; attempt++) {
-      if (attempt) await new Promise((resolve) => setTimeout(resolve, Math.random() * WAIT_MS * 2 ** attempt));
+      if (attempt) await new Promise((resolve) => setTimeout(resolve, Math.random() * Math.min(MAX_WAIT_MS, WAIT_MS * 2 ** attempt)));
       const limit = await this.GasStationLimit.get(key, { consistent: true });
       const now = Date.now();
       const recent = (limit?.recent || []).filter((entry: any) => new Date(entry.dateCreated).getTime() > now - RECENT_MS);

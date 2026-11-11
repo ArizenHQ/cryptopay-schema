@@ -70,10 +70,11 @@ var callerData_1 = require("./utils/callerData");
 var crypto_1 = require("crypto");
 // How long a created transfer stays listed with its project's limit, to cover the delay
 // of the index the daily total is read from; and how many times a creation that met
-// another one starts again, after a random wait that doubles each time.
+// another one starts again, after a random wait that doubles each time up to a second.
 var RECENT_MS = 5 * 60 * 1000;
 var CREATION_ATTEMPTS = 10;
 var WAIT_MS = 20;
+var MAX_WAIT_MS = 1000;
 // Whether a transaction was cancelled by another write to the same records, not by an
 // error of its own.
 var metAnotherWrite = function (err) {
@@ -149,7 +150,7 @@ var GasStations = /** @class */ (function () {
                                 switch (_c.label) {
                                     case 0:
                                         if (!attempt) return [3 /*break*/, 2];
-                                        return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, Math.random() * WAIT_MS * Math.pow(2, attempt)); })];
+                                        return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, Math.random() * Math.min(MAX_WAIT_MS, WAIT_MS * Math.pow(2, attempt))); })];
                                     case 1:
                                         _c.sent();
                                         _c.label = 2;
