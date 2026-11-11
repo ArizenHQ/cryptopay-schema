@@ -93,6 +93,23 @@ export class RefreshToken {
     }
   };
   
+  // Revokes a live token in favour of `replacedByToken`: of two refreshes presenting the
+  // same token, one only gets it. Returns null when the token is unknown or already revoked.
+  rotate = async (tokenRefresh: string, replacedByToken: string) => {
+    const existing = await this.findByToken(tokenRefresh);
+    if (!existing) return null;
+    try {
+      return await this.RefreshToken.update({ ...existing, revoked: true, replacedByToken }, {
+        where: "${revoked} = @{live}",
+        substitutions: { live: false },
+        return: "get",
+      });
+    } catch (err: any) {
+      if (err?.code === "ConditionalCheckFailedException") return null;
+      throw err;
+    }
+  };
+
   findValid = async (userId: string, tokenRefresh: string) => {
     return await this.RefreshToken.get({ userId: userId, tokenRefresh: tokenRefresh, revoked: false }, { index: "gs3", follow: true });
   };

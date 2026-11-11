@@ -24,6 +24,7 @@ import { Accounts } from "../src/accounts.model";
 import { Projects } from "../src/projects.model";
 import { Users } from "../src/users.model";
 import { PaymentLinks } from "../src/paymentLink.model";
+import { RefreshToken } from "../src/refresh.token.model";
 
 jest.setTimeout(60000);
 
@@ -184,5 +185,19 @@ describe("password replacement", () => {
     await users.updatePassword(user.id, "Reset!Passw0rd");
     expect(await users.replacePassword(user.id, "scrypt$derived-4", read.passwordLastUpdatedAt)).toBeNull();
     expect(await passwordOf(user.id)).toBe("Reset!Passw0rd");
+  });
+});
+
+describe("refresh token rotation", () => {
+  test("of concurrent rotations of one token, one wins; a revoked token is not rotated again", async () => {
+    const tokens = await RefreshToken.init();
+    await tokens.create({ userId: "u-rot", tokenRefresh: "jwt-0", expiresAt: new Date("2999-01-01T00:00:00.000Z") });
+    const results = await Promise.all(["jwt-a", "jwt-b", "jwt-c"].map((next) => tokens.rotate("jwt-0", next)));
+    const won = results.filter(Boolean);
+    expect(won).toHaveLength(1);
+    expect(won[0]).toMatchObject({ revoked: true });
+    expect(await tokens.findValid("u-rot", "jwt-0")).toBeFalsy();
+    expect(await tokens.rotate("jwt-0", "jwt-d")).toBeNull();
+    expect(await tokens.rotate("unknown", "jwt-e")).toBeNull();
   });
 });

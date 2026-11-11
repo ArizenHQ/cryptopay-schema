@@ -21,6 +21,7 @@ export declare class RefreshToken {
     }) => Promise<any>;
     findByToken: (tokenRefresh: string) => Promise<any>;
     revoke: (tokenRefresh: string, replacedByToken?: string) => Promise<any>;
+    rotate: (tokenRefresh: string, replacedByToken: string) => Promise<any>;
     findValid: (userId: string, tokenRefresh: string) => Promise<any>;
     revokeAll: (userId: string) => Promise<any[]>;
     deleteExpired: (now?: Date) => Promise<any[]>;
