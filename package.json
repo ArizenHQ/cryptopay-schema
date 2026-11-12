@@ -16,7 +16,6 @@
   "author": "Alexandre Ouicher <alex@coinhouse.com>",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-api-gateway": "^3.1167.0",
     "@aws-sdk/client-dynamodb": "^3.1167.0",
     "@aws-sdk/client-secrets-manager": "^3.1167.0",
     "dynamodb-onetable": "^2.7.7"

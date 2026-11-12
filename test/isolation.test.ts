@@ -19,7 +19,6 @@ Object.assign(process.env, {
 });
 
 jest.mock("../src/utils/retrieveSecrets", () => ({ __esModule: true, default: async () => ({ CryptoPrimaryPassword: "isolation" }) }));
-jest.mock("../src/utils/ApiGatewayCryptoPayment", () => ({ importApiKey: async () => "key-id", configureUsagePlanKey: async () => {}, removeApiKey: async () => {} }));
 
 import Schema from "../src/schema";
 import { Accounts } from "../src/accounts.model";

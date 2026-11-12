@@ -21,7 +21,6 @@ jest.mock("@aws-sdk/client-dynamodb", () => {
   return { ...actual, DynamoDBClient };
 });
 jest.mock("../src/utils/retrieveSecrets", () => ({ __esModule: true, default: async () => ({ CryptoPrimaryPassword: "test" }) }));
-jest.mock("../src/utils/ApiGatewayCryptoPayment", () => ({ importApiKey: async () => "key-id", configureUsagePlanKey: async () => {}, removeApiKey: async () => {} }));
 
 import { GasStations } from "../src/gasStations.model";
 import { Orders } from "../src/orders.model";
@@ -185,13 +184,6 @@ test("a KYT insert looks up the existing KYT in the project's account only", asy
   const lookups = sent.filter((c) => c.name === "QueryCommand" && JSON.stringify(c.input).includes("0xabc"));
   expect(lookups.length).toBeGreaterThan(0);
   for (const q of lookups) expect(Object.values(filterOf(q.input) || {})).toContainEqual({ S: A });
-});
-
-test("a project's API key is stored on the project's own item", async () => {
-  const model = await Projects.init();
-  serve([]);
-  await model.createApiKey({ accountName: "A", project: { ...project, typeProject: "gasStation" } });
-  expect(last("UpdateItemCommand").Key.pk.S).toBe(`account#${A}`);
 });
 
 test("a reset token created for one user leaves the next lookup unfiltered", async () => {

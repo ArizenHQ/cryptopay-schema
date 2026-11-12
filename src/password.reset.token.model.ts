@@ -2,7 +2,7 @@ import { Dynamo } from "dynamodb-onetable/Dynamo";
 import { Table } from "dynamodb-onetable";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import Schema from "./schema";
-import retrieveSecrets from "./utils/retrieveSecrets";
+import encryptionSettings from "./utils/encryptionSettings";
 
 const client = new Dynamo({
   client: new DynamoDBClient({ region: "eu-west-1" }),
@@ -27,7 +27,7 @@ export class PasswordResetToken {
   }
 
   static init = async () => {
-    const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
+    const secretsString = await encryptionSettings();
     return new PasswordResetToken(secretsString);
   };
 

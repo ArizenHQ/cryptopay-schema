@@ -2,21 +2,6 @@
 # yarn lockfile v1
 
 
-"@aws-sdk/client-api-gateway@^3.1167.0":
-  version "3.1167.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-api-gateway/-/client-api-gateway-3.1167.0.tgz#0c881cef0f38ad9204fdadf9a1088f6fd36c27fd"
-  integrity sha512-kKsZohi17qrMYDWen1HKPWJ/hbCeO4u3seb26hXxdXpZo7ePwZRYe4pBZx/CHkDoV9ImEocs/MPN+IaLtaUvrQ==
-  dependencies:
-    "@aws-sdk/core" "^3.981.0"
-    "@aws-sdk/credential-provider-node" "^3.972.97"
-    "@aws-sdk/middleware-sdk-api-gateway" "^3.972.37"
-    "@aws-sdk/types" "^3.975.1"
-    "@smithy/core" "^3.40.0"
-    "@smithy/fetch-http-handler" "^5.8.1"
-    "@smithy/node-http-handler" "^4.14.2"
-    "@smithy/types" "^4.20.0"
-    tslib "^2.6.2"
-
 "@aws-sdk/client-dynamodb@^3.1167.0", "@aws-sdk/client-dynamodb@^3.716.0", "@aws-sdk/client-dynamodb@^3.879.0":
   version "3.1167.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/client-dynamodb/-/client-dynamodb-3.1167.0.tgz#17da49c32f598dd8ac0ba6e3142ea2cb04b20e38"
@@ -193,16 +178,6 @@
   integrity sha512-AtZS+UK7CciPbdiszPoG08A23kUojFxFnWIv155uPieSPcHR9D9Sovtp19U0j5qmD2DzHpG9OI7mb0Kiyvf3mA==
   dependencies:
     "@aws-sdk/endpoint-cache" "^3.972.11"
-    "@aws-sdk/types" "^3.975.1"
-    "@smithy/core" "^3.40.0"
-    "@smithy/types" "^4.20.0"
-    tslib "^2.6.2"
-
-"@aws-sdk/middleware-sdk-api-gateway@^3.972.37":
-  version "3.972.37"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/middleware-sdk-api-gateway/-/middleware-sdk-api-gateway-3.972.37.tgz#c204f30fce985681b2a0f68a45eb8ed6643fd65c"
-  integrity sha512-nALJKmuWNMb7IAtr76PyvXyNbAMFCS6i9MPo7uWbcz1o9H76J4lqtjRbSLR2SmHGnf5wMEMbjya9AoKYCtqT1w==
-  dependencies:
     "@aws-sdk/types" "^3.975.1"
     "@smithy/core" "^3.40.0"
     "@smithy/types" "^4.20.0"
