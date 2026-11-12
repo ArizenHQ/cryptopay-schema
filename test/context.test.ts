@@ -42,10 +42,10 @@ const order = (accountId: string) => ({
 });
 
 // A query answers `items`, a get answers the first one, except for a gas station limit
-// record, which no test has; writes answer nothing.
+// or internalRef record, which no test has; writes answer nothing.
 const serve = (items: any[]) => {
   answer = (name, input) => {
-    if (name === "GetItemCommand" && input.Key?.sk?.S?.startsWith("gasStationLimit#")) return {};
+    if (name === "GetItemCommand" && /^gasStation(Limit|Ref)#/.test(input.Key?.sk?.S || "")) return {};
     if (name === "QueryCommand" || name === "ScanCommand") return { Items: items.map((i) => marshall(i, { removeUndefinedValues: true })), Count: items.length };
     if (name === "GetItemCommand") return items[0] ? { Item: marshall(items[0], { removeUndefinedValues: true }) } : {};
     if (name === "UpdateItemCommand" || name === "PutItemCommand") return { Attributes: items[0] ? marshall(items[0], { removeUndefinedValues: true }) : undefined };
@@ -63,7 +63,7 @@ const filterOf = (input: any) => {
 };
 const accountOfWrite = (input: any) => input.Item?.accountId?.S ?? input.Key?.pk?.S;
 // The transfer a GasStation insert writes, within its transaction.
-const createdTransfer = () => last("TransactWriteItemsCommand").TransactItems.map((t: any) => t.Put).find(Boolean);
+const createdTransfer = () => last("TransactWriteItemsCommand").TransactItems.map((t: any) => t.Put).find((put: any) => put?.Item?.sk?.S?.startsWith("gasStation#"));
 
 beforeEach(() => { sent.length = 0; });
 

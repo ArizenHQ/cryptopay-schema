@@ -18,11 +18,22 @@ const CREATION_ATTEMPTS = 10;
 const WAIT_MS = 20;
 const MAX_WAIT_MS = 1000;
 
+const cancellationReasons = (err: any): any[] =>
+  err?.code === "TransactionCanceledException" ? err.context?.err?.CancellationReasons || [] : [];
 // Whether a transaction was cancelled by another write to the same records, not by an
 // error of its own.
 const metAnotherWrite = (err: any): boolean =>
-  err?.code === "TransactionCanceledException" &&
-  (err.context?.err?.CancellationReasons || []).some((reason: any) => ["ConditionalCheckFailed", "TransactionConflict"].includes(reason?.Code));
+  cancellationReasons(err).some((reason: any) => ["ConditionalCheckFailed", "TransactionConflict"].includes(reason?.Code));
+// The reference record is the creation transaction's first write: its refused condition
+// means another transfer of the project took the internalRef.
+const refTaken = (err: any): boolean => cancellationReasons(err)[0]?.Code === "ConditionalCheckFailed";
+
+// The error of a creation whose internalRef is already another transfer's of the
+// project: its name is GasStationRefTakenError, `transfer` that transfer as stored (null
+// if it is gone).
+export const GAS_STATION_REF_TAKEN = "GasStationRefTakenError";
+const refTakenError = (internalRef: string, transferId: string, transfer: any) =>
+  Object.assign(new Error(`internalRef ${internalRef} is already used by transfer ${transferId}`), { name: GAS_STATION_REF_TAKEN, transferId, transfer: transfer || null });
 // A transfer amount: a finite number above zero ("0.1", 0.1), never negative or text.
 const isPositiveAmount = (amount: any): boolean => {
   const value = Number(amount);
@@ -38,6 +49,7 @@ export class GasStations {
   Order: any;
   GasStation: any;
   GasStationLimit: any;
+  GasStationRef: any;
   Payment: any;
   Kyt: any;
   secretsString: any;
@@ -72,6 +84,7 @@ export class GasStations {
     this.Kyt = this.table.getModel("Kyt");
     this.GasStation = this.table.getModel("GasStation");
     this.GasStationLimit = this.table.getModel("GasStationLimit");
+    this.GasStationRef = this.table.getModel("GasStationRef");
   }
 
   static init = async () => {
@@ -123,20 +136,33 @@ export class GasStations {
       delete created.audit;
       return created;
     } catch (error) {
+      if ((error as any)?.name === GAS_STATION_REF_TAKEN) throw error;
       throw new Error(`Error during add new gasStation request ${error}`);
     }
   };
 
-  // Creates the transfer if it keeps its project within the daily limit. The check and
-  // the creation are one transaction with the project's limit record, at the version
-  // read before the check: of two creations at once, the second starts again and counts
-  // the first.
+  // Creates the transfer if its internalRef is free in the project and it keeps the
+  // project within the daily limit. The check and the creation are one transaction with
+  // the project's limit record, at the version read before the check, and the record of
+  // the internalRef, which must not exist: of two creations at once, the second starts
+  // again and counts the first, or is refused with GasStationRefTakenError when both
+  // name the same internalRef.
   private createWithinLimit = async (gasStation: any) => {
-    const { accountId, projectId } = gasStation;
+    const { accountId, projectId, internalRef } = gasStation;
     const context = { accountId };
     const key = { pk: `account#${accountId}`, sk: `gasStationLimit#${projectId}` };
+    const refKey = { pk: `account#${accountId}`, sk: `gasStationRef#${projectId}#${internalRef}` };
+    // Read on the table, not an index: the transfer may have been written a moment ago.
+    const taken = async (ref: any) => {
+      const transferId = (ref || (await this.GasStationRef.get(refKey, { consistent: true })))?.transferId;
+      const transfer = transferId ? await this.GasStation.get({ pk: `account#${accountId}`, sk: `gasStation#${transferId}` }, { consistent: true }) : null;
+      if (transfer) delete transfer.audit;
+      return refTakenError(internalRef, transferId, transfer);
+    };
     for (let attempt = 0; attempt < CREATION_ATTEMPTS; attempt++) {
       if (attempt) await new Promise((resolve) => setTimeout(resolve, Math.random() * Math.min(MAX_WAIT_MS, WAIT_MS * 2 ** attempt)));
+      const ref = await this.GasStationRef.get(refKey, { consistent: true });
+      if (ref) throw await taken(ref);
       const limit = await this.GasStationLimit.get(key, { consistent: true });
       const now = Date.now();
       const recent = (limit?.recent || []).filter((entry: any) => new Date(entry.dateCreated).getTime() > now - RECENT_MS);
@@ -145,6 +171,7 @@ export class GasStations {
       const id = randomUUID();
       const entry = { id, amount: gasStation.amount, currency: gasStation.currency, dateCreated: new Date(now).toISOString() };
       const transaction = {};
+      await this.GasStationRef.create({ accountId, projectId, internalRef, transferId: id }, { transaction, context, exists: false });
       const created = await this.GasStation.create({ ...gasStation, id }, { transaction, context });
       await this.GasStationLimit.upsert(
         { accountId, projectId, version: (limit?.version || 0) + 1, recent: [...recent, entry] },
@@ -154,6 +181,7 @@ export class GasStations {
         await this.table.transact("write", transaction);
         return created;
       } catch (err: any) {
+        if (refTaken(err)) throw await taken(null);
         if (!metAnotherWrite(err)) throw err;
       }
     }
@@ -335,10 +363,11 @@ export class GasStations {
       { index: "gs1", follow: true }
     );
     if (!gasStation) throw new Error(`gasStation not found`);
-    return await this.Order.remove({
-      sk: `gasStation#${id}`,
-      pk: `account#${gasStation.accountId}`,
-    });
+    // Its internalRef goes with it, free for another transfer.
+    const transaction = {};
+    await this.Order.remove({ sk: `gasStation#${id}`, pk: `account#${gasStation.accountId}` }, { transaction });
+    await this.GasStationRef.remove({ pk: `account#${gasStation.accountId}`, sk: `gasStationRef#${gasStation.projectId}#${gasStation.internalRef}` }, { transaction });
+    return await this.table.transact("write", transaction);
   };
 }
 export default GasStations;

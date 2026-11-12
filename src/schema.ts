@@ -441,6 +441,16 @@ const Schema = {
       version: { type: Number, required: true },
       recent: { type: Array, default: [] },
     },
+    // A project's internalRef, written in the same transaction as the transfer it names:
+    // a second transfer under the same reference is refused, even created at the same time.
+    GasStationRef: {
+      pk: { type: String, value: "account#${accountId}" },
+      sk: { type: String, value: "gasStationRef#${projectId}#${internalRef}" },
+      accountId: { type: String, required: true },
+      projectId: { type: String, required: true },
+      internalRef: { type: String, required: true },
+      transferId: { type: String, required: true },
+    },
     GasStation: {
       pk: { type: String, value: "account#${accountId}" },
       sk: { type: String, value: "gasStation#${id}" },
