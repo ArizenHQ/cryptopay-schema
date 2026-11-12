@@ -1,11 +1,9 @@
-import retrieveSecrets from "./retrieveSecrets";
-
 // The key the models encrypt their crypt:true attributes with (user passwords, project
-// HMAC secrets). CRYPTO_PRIMARY_PASSWORD, set by the service from its own secret, is
-// read first; without it, the key is read from the CardPayment configuration secret.
-const encryptionSettings = async (): Promise<{ CryptoPrimaryPassword: string }> =>
-	process.env.CRYPTO_PRIMARY_PASSWORD
-		? { CryptoPrimaryPassword: process.env.CRYPTO_PRIMARY_PASSWORD }
-		: retrieveSecrets("/coinhouse-solution/CardPayment-configuration");
+// HMAC secrets), set by the service from its own secret.
+const encryptionSettings = async (): Promise<{ CryptoPrimaryPassword: string }> => {
+	const key = process.env.CRYPTO_PRIMARY_PASSWORD;
+	if (!key) throw new Error("CRYPTO_PRIMARY_PASSWORD is not set: encrypted attributes can be neither read nor written");
+	return { CryptoPrimaryPassword: key };
+};
 
 export default encryptionSettings;

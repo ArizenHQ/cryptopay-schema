@@ -36,15 +36,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var retrieveSecrets_1 = require("./retrieveSecrets");
 // The key the models encrypt their crypt:true attributes with (user passwords, project
-// HMAC secrets). CRYPTO_PRIMARY_PASSWORD, set by the service from its own secret, is
-// read first; without it, the key is read from the CardPayment configuration secret.
+// HMAC secrets), set by the service from its own secret.
 var encryptionSettings = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var key;
     return __generator(this, function (_a) {
-        return [2 /*return*/, process.env.CRYPTO_PRIMARY_PASSWORD
-                ? { CryptoPrimaryPassword: process.env.CRYPTO_PRIMARY_PASSWORD }
-                : (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
+        key = process.env.CRYPTO_PRIMARY_PASSWORD;
+        if (!key)
+            throw new Error("CRYPTO_PRIMARY_PASSWORD is not set: encrypted attributes can be neither read nor written");
+        return [2 /*return*/, { CryptoPrimaryPassword: key }];
     });
 }); };
 exports.default = encryptionSettings;

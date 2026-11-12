@@ -20,7 +20,7 @@ jest.mock("@aws-sdk/client-dynamodb", () => {
   }
   return { ...actual, DynamoDBClient };
 });
-jest.mock("../src/utils/retrieveSecrets", () => ({ __esModule: true, default: async () => ({ CryptoPrimaryPassword: "test" }) }));
+process.env.CRYPTO_PRIMARY_PASSWORD = "test";
 
 import { GasStations } from "../src/gasStations.model";
 import { Orders } from "../src/orders.model";

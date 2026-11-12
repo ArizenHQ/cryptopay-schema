@@ -17,7 +17,6 @@
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1167.0",
-    "@aws-sdk/client-secrets-manager": "^3.1167.0",
     "dynamodb-onetable": "^2.7.7"
   },
   "devDependencies": {

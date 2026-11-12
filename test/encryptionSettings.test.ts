@@ -1,22 +1,15 @@
-// The encryption key comes from the service's environment when it sets it, and from
-// the CardPayment configuration secret otherwise.
-const retrieveSecrets = jest.fn(async () => ({ CryptoPrimaryPassword: "from-secret" }));
-jest.mock("../src/utils/retrieveSecrets", () => ({ __esModule: true, default: retrieveSecrets }));
-
+// The encryption key comes from the service's environment, and only from there.
 import encryptionSettings from "../src/utils/encryptionSettings";
 
-afterEach(() => {
-  delete process.env.CRYPTO_PRIMARY_PASSWORD;
-  retrieveSecrets.mockClear();
-});
+afterEach(() => { delete process.env.CRYPTO_PRIMARY_PASSWORD; });
 
-test("CRYPTO_PRIMARY_PASSWORD is the key, without reading any secret", async () => {
+test("CRYPTO_PRIMARY_PASSWORD is the key", async () => {
   process.env.CRYPTO_PRIMARY_PASSWORD = "from-env";
   expect(await encryptionSettings()).toEqual({ CryptoPrimaryPassword: "from-env" });
-  expect(retrieveSecrets).not.toHaveBeenCalled();
 });
 
-test("without it, the key is read from the CardPayment configuration secret", async () => {
-  expect(await encryptionSettings()).toEqual({ CryptoPrimaryPassword: "from-secret" });
-  expect(retrieveSecrets).toHaveBeenCalledWith("/coinhouse-solution/CardPayment-configuration");
+test("without it, the models refuse to start rather than read another source", async () => {
+  await expect(encryptionSettings()).rejects.toThrow(/CRYPTO_PRIMARY_PASSWORD is not set/);
+  process.env.CRYPTO_PRIMARY_PASSWORD = "";
+  await expect(encryptionSettings()).rejects.toThrow(/CRYPTO_PRIMARY_PASSWORD is not set/);
 });
