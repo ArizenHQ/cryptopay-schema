@@ -4,7 +4,7 @@ export { Projects } from './src/projects.model';
 export { Orders } from './src/orders.model';
 export { Payments } from './src/payments.model';
 export { Kyts } from './src/kyts.model';
-export { GasStations } from './src/gasStations.model';
+export { GasStations, GAS_STATION_REF_TAKEN } from './src/gasStations.model';
 export { GasStationStatements } from './src/gasStationStatements.model';
 export { AuditLogs } from './src/auditLogs.model';
 export { Conversions } from './src/conversions.model';

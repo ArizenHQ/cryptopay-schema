@@ -1165,6 +1165,32 @@ declare const Schema: {
                 readonly default: readonly [];
             };
         };
+        readonly GasStationRef: {
+            readonly pk: {
+                readonly type: StringConstructor;
+                readonly value: "account#${accountId}";
+            };
+            readonly sk: {
+                readonly type: StringConstructor;
+                readonly value: "gasStationRef#${projectId}#${internalRef}";
+            };
+            readonly accountId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly projectId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly internalRef: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+            readonly transferId: {
+                readonly type: StringConstructor;
+                readonly required: true;
+            };
+        };
         readonly GasStation: {
             readonly pk: {
                 readonly type: StringConstructor;
