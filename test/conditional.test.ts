@@ -26,7 +26,7 @@ import { Projects } from "../src/projects.model";
 import { Users } from "../src/users.model";
 import { PaymentLinks } from "../src/paymentLink.model";
 import { RefreshToken } from "../src/refresh.token.model";
-import { GasStations } from "../src/gasStations.model";
+import { GasStations, GAS_STATION_REF_TAKEN } from "../src/gasStations.model";
 
 jest.setTimeout(60000);
 
@@ -252,5 +252,54 @@ describe("gas station daily limit", () => {
     expect(await fits([{ id: "not-indexed-yet", amount: "4", currency: "ETH" }])).toBe(false);
     expect(await fits([{ id: indexed.id, amount: "4", currency: "ETH" }])).toBe(true);
     expect(await fits([{ id: "other-currency", amount: "4", currency: "POL" }])).toBe(true);
+  });
+});
+
+describe("gas station internalRef", () => {
+  test("transfers created at once under one internalRef make one transfer; the others learn which", async () => {
+    const projects = await Projects.init();
+    const gasStations = await GasStations.init();
+    const project = await projects.insert({
+      accountId, name: "GS ref", status: "active", codeProject: "gs-ref", typeProject: "gasStation",
+      parameters: { gasStation: { currency: "ETH", limitPer24H: 1000, commissionRate: 0.01 } },
+    } as any);
+    const create = () => gasStations.insert({ address: "0x0000000000000000000000000000000000000001", currency: "ETH", amount: "1", internalRef: "same-ref" }, project.id);
+    const results = await Promise.allSettled(Array.from({ length: 8 }, create));
+    const created = results.filter((r) => r.status === "fulfilled").map((r: any) => r.value);
+    expect(created).toHaveLength(1);
+    const refusals = results.filter((r) => r.status === "rejected").map((r: any) => r.reason);
+    expect(refusals.every((e: any) => e.name === GAS_STATION_REF_TAKEN && e.transferId === created[0].id && e.transfer?.id === created[0].id)).toBe(true);
+    expect(refusals[0].transfer.audit).toBeUndefined();
+
+    await expect(create()).rejects.toMatchObject({ name: "GasStationRefTakenError", transferId: created[0].id });
+    const transfers: any = await gasStations.list(accountId, project.id, {});
+    expect((transfers.items || transfers).filter((t: any) => t.internalRef === "same-ref")).toHaveLength(1);
+  });
+
+  test("a removed transfer frees its internalRef", async () => {
+    const projects = await Projects.init();
+    const gasStations = await GasStations.init();
+    const project = await projects.insert({
+      accountId, name: "GS ref removed", status: "active", codeProject: "gs-ref-removed", typeProject: "gasStation",
+      parameters: { gasStation: { currency: "ETH", limitPer24H: 1000, commissionRate: 0.01 } },
+    } as any);
+    const create = () => gasStations.insert({ address: "0x0000000000000000000000000000000000000001", currency: "ETH", amount: "1", internalRef: "removed-ref" }, project.id);
+    const first = await create();
+    await gasStations.removeById(first.id);
+    const second = await create();
+    expect(second.id).not.toBe(first.id);
+  });
+
+  test("an internalRef is a project's: another project uses the same one", async () => {
+    const projects = await Projects.init();
+    const gasStations = await GasStations.init();
+    const insertProject = (code: string) => projects.insert({
+      accountId, name: code, status: "active", codeProject: code, typeProject: "gasStation",
+      parameters: { gasStation: { currency: "ETH", limitPer24H: 1000, commissionRate: 0.01 } },
+    } as any);
+    const [a, b] = [await insertProject("gs-ref-a"), await insertProject("gs-ref-b")];
+    const create = (projectId: string) => gasStations.insert({ address: "0x0000000000000000000000000000000000000001", currency: "ETH", amount: "1", internalRef: "shared" }, projectId);
+    expect((await create(a.id)).id).toBeTruthy();
+    expect((await create(b.id)).id).toBeTruthy();
   });
 });
