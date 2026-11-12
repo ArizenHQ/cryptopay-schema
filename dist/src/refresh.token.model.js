@@ -64,7 +64,7 @@ var client = new Dynamo_1.Dynamo({
     client: new client_dynamodb_1.DynamoDBClient({ region: "eu-west-1" }),
 });
 var schema_1 = require("./schema");
-var retrieveSecrets_1 = require("./utils/retrieveSecrets");
+var encryptionSettings_1 = require("./utils/encryptionSettings");
 var RefreshToken = /** @class */ (function () {
     function RefreshToken(secretsString) {
         var _this = this;
@@ -213,7 +213,7 @@ var RefreshToken = /** @class */ (function () {
         var secretsString;
         return __generator(_a, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
+                case 0: return [4 /*yield*/, (0, encryptionSettings_1.default)()];
                 case 1:
                     secretsString = _b.sent();
                     return [2 /*return*/, new _a(secretsString)];

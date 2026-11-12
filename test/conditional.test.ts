@@ -17,8 +17,7 @@ Object.assign(process.env, {
   AWS_REGION: "eu-west-1",
 });
 
-jest.mock("../src/utils/retrieveSecrets", () => ({ __esModule: true, default: async () => ({ CryptoPrimaryPassword: "conditional" }) }));
-jest.mock("../src/utils/ApiGatewayCryptoPayment", () => ({ importApiKey: async () => "key-id", configureUsagePlanKey: async () => {}, removeApiKey: async () => {} }));
+process.env.CRYPTO_PRIMARY_PASSWORD = "conditional";
 
 import Schema from "../src/schema";
 import { Accounts } from "../src/accounts.model";

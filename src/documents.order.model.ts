@@ -3,7 +3,7 @@ import { Table } from "dynamodb-onetable";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 const client = new Dynamo({ client: new DynamoDBClient({ region: "eu-west-1" }) });
 import Schema from './schema'
-import retrieveSecrets from "./utils/retrieveSecrets";
+import encryptionSettings from "./utils/encryptionSettings";
 import { paginateModel } from './utils/paginateModel';
 import { withoutKeys } from "./utils/callerData";
 
@@ -50,7 +50,7 @@ export class DocumentOrder {
   }
 
   static init = async () => {
-    const secretsString = await retrieveSecrets("/coinhouse-solution/CardPayment-configuration")
+    const secretsString = await encryptionSettings()
     return new DocumentOrder(secretsString)
   }
 

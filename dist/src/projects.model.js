@@ -50,8 +50,7 @@ var Dynamo_1 = require("dynamodb-onetable/Dynamo");
 var dynamodb_onetable_1 = require("dynamodb-onetable");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 var schema_1 = require("./schema");
-var ApiGatewayCryptoPayment_js_1 = require("./utils/ApiGatewayCryptoPayment.js");
-var retrieveSecrets_1 = require("./utils/retrieveSecrets");
+var encryptionSettings_1 = require("./utils/encryptionSettings");
 var crypto_1 = require("crypto");
 var paginateModel_1 = require("./utils/paginateModel");
 var blockchains_1 = require("./blockchains");
@@ -63,20 +62,19 @@ var Projects = /** @class */ (function () {
     function Projects(secretsString) {
         var _this = this;
         this.insert = function (data) { return __awaiter(_this, void 0, void 0, function () {
-            var account_1, resellerAccountId, context, isValid, projectData, error_1;
-            var _this = this;
+            var account, resellerAccountId, context, isValid, projectData, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _b.trys.push([0, 2, , 3]);
                         return [4 /*yield*/, this.Account.get({ pk: "account#".concat(data.accountId) })];
                     case 1:
-                        account_1 = _b.sent();
-                        if (!account_1)
+                        account = _b.sent();
+                        if (!account)
                             throw new Error("Account not found");
                         resellerAccountId = null;
-                        if (account_1.parentAccountId) {
-                            resellerAccountId = account_1.parentAccountId;
+                        if (account.parentAccountId) {
+                            resellerAccountId = account.parentAccountId;
                         }
                         context = { accountId: data.accountId };
                         isValid = this.checkData(data);
@@ -97,19 +95,7 @@ var Projects = /** @class */ (function () {
                             if (resellerAccountId) {
                                 projectData.gs5pk = "reseller#".concat(resellerAccountId);
                             }
-                            return [2 /*return*/, this.Project.create(projectData, { context: context }).then(function (project) { return __awaiter(_this, void 0, void 0, function () {
-                                    return __generator(this, function (_b) {
-                                        switch (_b.label) {
-                                            case 0: return [4 /*yield*/, this.createApiKey({
-                                                    accountName: account_1.name,
-                                                    project: project,
-                                                })];
-                                            case 1:
-                                                _b.sent();
-                                                return [2 /*return*/, project];
-                                        }
-                                    });
-                                }); })];
+                            return [2 /*return*/, this.Project.create(projectData, { context: context })];
                         }
                         else {
                             throw new Error("Invalid data provided: ".concat(isValid));
@@ -263,51 +249,11 @@ var Projects = /** @class */ (function () {
                         project = _b.sent();
                         if (!project)
                             throw new Error("Project not found");
-                        if (!(project.typeProject === "cryptoPayment")) return [3 /*break*/, 3];
-                        return [4 /*yield*/, (0, ApiGatewayCryptoPayment_js_1.removeApiKey)(project.apiKeyId)];
-                    case 2:
-                        _b.sent();
-                        _b.label = 3;
-                    case 3: return [4 /*yield*/, this.Project.remove({
-                            sk: "project#".concat(id),
-                            pk: "account#".concat(project.accountId),
-                        })];
-                    case 4: return [2 /*return*/, _b.sent()];
-                }
-            });
-        }); };
-        this.createApiKey = function (obj) { return __awaiter(_this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        if (!(obj.project.typeProject === "cryptoPayment" ||
-                            obj.project.typeProject === "gasStation")) return [3 /*break*/, 2];
-                        return [4 /*yield*/, (0, ApiGatewayCryptoPayment_js_1.importApiKey)(obj)
-                                .then(function (keyId) { return __awaiter(_this, void 0, void 0, function () {
-                                return __generator(this, function (_b) {
-                                    switch (_b.label) {
-                                        case 0: return [4 /*yield*/, (0, ApiGatewayCryptoPayment_js_1.configureUsagePlanKey)(keyId).catch(function (error) {
-                                                console.error(error);
-                                                throw new Error("Error during configure usage plan key ".concat(error));
-                                            })];
-                                        case 1:
-                                            _b.sent();
-                                            return [4 /*yield*/, this.Project.update({ id: obj.project.id, apiKeyId: keyId }, { context: { accountId: obj.project.accountId } })];
-                                        case 2:
-                                            _b.sent();
-                                            return [2 /*return*/];
-                                    }
-                                });
-                            }); })
-                                .catch(function (error) {
-                                console.error(error);
-                                throw new Error("Error during import key ".concat(error));
+                        return [4 /*yield*/, this.Project.remove({
+                                sk: "project#".concat(id),
+                                pk: "account#".concat(project.accountId),
                             })];
-                    case 1:
-                        _b.sent();
-                        _b.label = 2;
-                    case 2: return [2 /*return*/];
+                    case 2: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };
@@ -467,7 +413,7 @@ var Projects = /** @class */ (function () {
         var secretsString;
         return __generator(_a, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, (0, retrieveSecrets_1.default)("/coinhouse-solution/CardPayment-configuration")];
+                case 0: return [4 /*yield*/, (0, encryptionSettings_1.default)()];
                 case 1:
                     secretsString = _b.sent();
                     return [2 /*return*/, new _a(secretsString)];

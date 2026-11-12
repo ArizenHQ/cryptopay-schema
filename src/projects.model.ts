@@ -2,12 +2,7 @@ import { Dynamo } from "dynamodb-onetable/Dynamo";
 import { Model, Table } from "dynamodb-onetable";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import Schema from "./schema";
-import {
-  importApiKey,
-  removeApiKey,
-  configureUsagePlanKey,
-} from "./utils/ApiGatewayCryptoPayment.js";
-import retrieveSecrets from "./utils/retrieveSecrets";
+import encryptionSettings from "./utils/encryptionSettings";
 import { randomBytes } from "crypto";
 import { paginateModel } from './utils/paginateModel';
 import { blockchainNames, listCurrenciesForBlockchain, currencyNetworkMap } from './blockchains';
@@ -54,9 +49,7 @@ export class Projects {
   }
 
   static init = async () => {
-    const secretsString = await retrieveSecrets(
-      "/coinhouse-solution/CardPayment-configuration"
-    );
+    const secretsString = await encryptionSettings();
     return new Projects(secretsString);
   };
 
@@ -91,13 +84,7 @@ export class Projects {
           projectData.gs5pk = `reseller#${resellerAccountId}`;
         }
 
-        return this.Project.create(projectData, { context }).then(async (project: any) => {
-          await this.createApiKey({
-            accountName: account.name,
-            project: project,
-          });
-          return project;
-        });
+        return this.Project.create(projectData, { context });
       } else {
         throw new Error(`Invalid data provided: ${isValid}`);
       }
@@ -196,32 +183,10 @@ export class Projects {
       { index: "gs2", follow: true }
     );
     if (!project) throw new Error(`Project not found`);
-    if (project.typeProject === "cryptoPayment")
-      await removeApiKey(project.apiKeyId);
     return await this.Project.remove({
       sk: `project#${id}`,
       pk: `account#${project.accountId}`,
     });
-  };
-
-  createApiKey = async (obj: any) => {
-    if (
-      obj.project.typeProject === "cryptoPayment" ||
-      obj.project.typeProject === "gasStation"
-    ) {
-      await importApiKey(obj)
-        .then(async (keyId: any) => {
-          await configureUsagePlanKey(keyId).catch((error) => {
-            console.error(error);
-            throw new Error(`Error during configure usage plan key ${error}`);
-          });
-          await this.Project.update({ id: obj.project.id, apiKeyId: keyId }, { context: { accountId: obj.project.accountId } });
-        })
-        .catch((error) => {
-          console.error(error);
-          throw new Error(`Error during import key ${error}`);
-        });
-    }
   };
 
     // Méthode pour mettre à jour les projets existants avec les valeurs gs5pk appropriées

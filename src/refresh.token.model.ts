@@ -5,7 +5,7 @@ const client = new Dynamo({
   client: new DynamoDBClient({ region: "eu-west-1" }),
 });
 import Schema from "./schema";
-import retrieveSecrets from "./utils/retrieveSecrets";
+import encryptionSettings from "./utils/encryptionSettings";
 import { paginateModel } from "./utils/paginateModel";
 import { createHash } from "crypto";
 export class RefreshToken {
@@ -47,9 +47,7 @@ export class RefreshToken {
   }
 
   static init = async () => {
-    const secretsString = await retrieveSecrets(
-      "/coinhouse-solution/CardPayment-configuration"
-    );
+    const secretsString = await encryptionSettings();
     return new RefreshToken(secretsString);
   };
 

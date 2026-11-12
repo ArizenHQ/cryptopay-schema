@@ -2,7 +2,7 @@
 // deleteExpired over the real table with a client whose send is replaced, so its
 // condition is built and marshalled as it is sent.
 process.env.TABLE_CRYPTOPAY_ACCOUNTS = "t";
-jest.mock("../src/utils/retrieveSecrets", () => ({ __esModule: true, default: async () => ({ CryptoPrimaryPassword: "x" }) }));
+process.env.CRYPTO_PRIMARY_PASSWORD = "x";
 import { RefreshToken } from "../src/refresh.token.model";
 import { PasswordResetToken } from "../src/password.reset.token.model";
 

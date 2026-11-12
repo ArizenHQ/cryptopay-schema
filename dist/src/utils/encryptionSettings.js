@@ -35,42 +35,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var client_secrets_manager_1 = require("@aws-sdk/client-secrets-manager");
-// One client for the process; a stalled call fails instead of holding its caller.
-var client = new client_secrets_manager_1.SecretsManagerClient({
-    region: "eu-west-1",
-    requestHandler: { requestTimeout: 30000, connectionTimeout: 5000 },
-});
-// The secret's JSON value, parsed.
-var retrieveSecrets = function () {
-    var args_1 = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        args_1[_i] = arguments[_i];
-    }
-    return __awaiter(void 0, __spreadArray([], args_1, true), void 0, function (secret) {
-        var SecretString;
-        if (secret === void 0) { secret = "/cardpayment-service/adyen"; }
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, client.send(new client_secrets_manager_1.GetSecretValueCommand({ SecretId: secret }))];
-                case 1:
-                    SecretString = (_a.sent()).SecretString;
-                    if (typeof SecretString !== "string")
-                        throw new Error("Secret ".concat(secret, " has no text value"));
-                    return [2 /*return*/, JSON.parse(SecretString)];
-            }
-        });
+// The key the models encrypt their crypt:true attributes with (user passwords, project
+// HMAC secrets), set by the service from its own secret.
+var encryptionSettings = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var key;
+    return __generator(this, function (_a) {
+        key = process.env.CRYPTO_PRIMARY_PASSWORD;
+        if (!key)
+            throw new Error("CRYPTO_PRIMARY_PASSWORD is not set: encrypted attributes can be neither read nor written");
+        return [2 /*return*/, { CryptoPrimaryPassword: key }];
     });
-};
-exports.default = retrieveSecrets;
-//# sourceMappingURL=retrieveSecrets.js.map
+}); };
+exports.default = encryptionSettings;
+//# sourceMappingURL=encryptionSettings.js.map
