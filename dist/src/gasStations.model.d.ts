@@ -1,4 +1,5 @@
 import { Table } from "dynamodb-onetable";
+export declare const GAS_STATION_REF_TAKEN = "GasStationRefTakenError";
 export declare class GasStations {
     Crypto: any;
     table: Table;
@@ -8,6 +9,7 @@ export declare class GasStations {
     Order: any;
     GasStation: any;
     GasStationLimit: any;
+    GasStationRef: any;
     Payment: any;
     Kyt: any;
     secretsString: any;
@@ -41,6 +43,6 @@ export declare class GasStations {
         transferId: string;
         txHash?: string | null;
     }) => Promise<any>;
-    removeById: (id: string) => Promise<any>;
+    removeById: (id: string) => Promise<void>;
 }
 export default GasStations;

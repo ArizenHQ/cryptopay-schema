@@ -56,7 +56,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GasStations = void 0;
+exports.GasStations = exports.GAS_STATION_REF_TAKEN = void 0;
 var Dynamo_1 = require("dynamodb-onetable/Dynamo");
 var dynamodb_onetable_1 = require("dynamodb-onetable");
 var client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
@@ -75,12 +75,21 @@ var RECENT_MS = 5 * 60 * 1000;
 var CREATION_ATTEMPTS = 10;
 var WAIT_MS = 20;
 var MAX_WAIT_MS = 1000;
+var cancellationReasons = function (err) { var _a, _b; return (err === null || err === void 0 ? void 0 : err.code) === "TransactionCanceledException" ? ((_b = (_a = err.context) === null || _a === void 0 ? void 0 : _a.err) === null || _b === void 0 ? void 0 : _b.CancellationReasons) || [] : []; };
 // Whether a transaction was cancelled by another write to the same records, not by an
 // error of its own.
 var metAnotherWrite = function (err) {
-    var _a, _b;
-    return (err === null || err === void 0 ? void 0 : err.code) === "TransactionCanceledException" &&
-        (((_b = (_a = err.context) === null || _a === void 0 ? void 0 : _a.err) === null || _b === void 0 ? void 0 : _b.CancellationReasons) || []).some(function (reason) { return ["ConditionalCheckFailed", "TransactionConflict"].includes(reason === null || reason === void 0 ? void 0 : reason.Code); });
+    return cancellationReasons(err).some(function (reason) { return ["ConditionalCheckFailed", "TransactionConflict"].includes(reason === null || reason === void 0 ? void 0 : reason.Code); });
+};
+// The reference record is the creation transaction's first write: its refused condition
+// means another transfer of the project took the internalRef.
+var refTaken = function (err) { var _a; return ((_a = cancellationReasons(err)[0]) === null || _a === void 0 ? void 0 : _a.Code) === "ConditionalCheckFailed"; };
+// The error of a creation whose internalRef is already another transfer's of the
+// project: its name is GasStationRefTakenError, `transfer` that transfer as stored (null
+// if it is gone).
+exports.GAS_STATION_REF_TAKEN = "GasStationRefTakenError";
+var refTakenError = function (internalRef, transferId, transfer) {
+    return Object.assign(new Error("internalRef ".concat(internalRef, " is already used by transfer ").concat(transferId)), { name: exports.GAS_STATION_REF_TAKEN, transferId: transferId, transfer: transfer || null });
 };
 // A transfer amount: a finite number above zero ("0.1", 0.1), never negative or text.
 var isPositiveAmount = function (amount) {
@@ -127,25 +136,61 @@ var GasStations = /** @class */ (function () {
                         return [2 /*return*/, created];
                     case 3:
                         error_1 = _b.sent();
+                        if ((error_1 === null || error_1 === void 0 ? void 0 : error_1.name) === exports.GAS_STATION_REF_TAKEN)
+                            throw error_1;
                         throw new Error("Error during add new gasStation request ".concat(error_1));
                     case 4: return [2 /*return*/];
                 }
             });
         }); };
-        // Creates the transfer if it keeps its project within the daily limit. The check and
-        // the creation are one transaction with the project's limit record, at the version
-        // read before the check: of two creations at once, the second starts again and counts
-        // the first.
+        // Creates the transfer if its internalRef is free in the project and it keeps the
+        // project within the daily limit. The check and the creation are one transaction with
+        // the project's limit record, at the version read before the check, and the record of
+        // the internalRef, which must not exist: of two creations at once, the second starts
+        // again and counts the first, or is refused with GasStationRefTakenError when both
+        // name the same internalRef.
         this.createWithinLimit = function (gasStation) { return __awaiter(_this, void 0, void 0, function () {
-            var accountId, projectId, context, key, _loop_1, this_1, attempt, state_1;
+            var accountId, projectId, internalRef, context, key, refKey, taken, _loop_1, this_1, attempt, state_1;
+            var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        accountId = gasStation.accountId, projectId = gasStation.projectId;
+                        accountId = gasStation.accountId, projectId = gasStation.projectId, internalRef = gasStation.internalRef;
                         context = { accountId: accountId };
                         key = { pk: "account#".concat(accountId), sk: "gasStationLimit#".concat(projectId) };
+                        refKey = { pk: "account#".concat(accountId), sk: "gasStationRef#".concat(projectId, "#").concat(internalRef) };
+                        taken = function (ref) { return __awaiter(_this, void 0, void 0, function () {
+                            var transferId, _b, transfer, _c;
+                            var _d;
+                            return __generator(this, function (_e) {
+                                switch (_e.label) {
+                                    case 0:
+                                        _b = ref;
+                                        if (_b) return [3 /*break*/, 2];
+                                        return [4 /*yield*/, this.GasStationRef.get(refKey, { consistent: true })];
+                                    case 1:
+                                        _b = (_e.sent());
+                                        _e.label = 2;
+                                    case 2:
+                                        transferId = (_d = (_b)) === null || _d === void 0 ? void 0 : _d.transferId;
+                                        if (!transferId) return [3 /*break*/, 4];
+                                        return [4 /*yield*/, this.GasStation.get({ pk: "account#".concat(accountId), sk: "gasStation#".concat(transferId) }, { consistent: true })];
+                                    case 3:
+                                        _c = _e.sent();
+                                        return [3 /*break*/, 5];
+                                    case 4:
+                                        _c = null;
+                                        _e.label = 5;
+                                    case 5:
+                                        transfer = _c;
+                                        if (transfer)
+                                            delete transfer.audit;
+                                        return [2 /*return*/, refTakenError(internalRef, transferId, transfer)];
+                                }
+                            });
+                        }); };
                         _loop_1 = function (attempt) {
-                            var limit, now, recent, id, entry, transaction, created, err_1;
+                            var ref, limit, now, recent, id, entry, transaction, created, err_1;
                             return __generator(this, function (_c) {
                                 switch (_c.label) {
                                     case 0:
@@ -154,37 +199,50 @@ var GasStations = /** @class */ (function () {
                                     case 1:
                                         _c.sent();
                                         _c.label = 2;
-                                    case 2: return [4 /*yield*/, this_1.GasStationLimit.get(key, { consistent: true })];
+                                    case 2: return [4 /*yield*/, this_1.GasStationRef.get(refKey, { consistent: true })];
                                     case 3:
+                                        ref = _c.sent();
+                                        if (!ref) return [3 /*break*/, 5];
+                                        return [4 /*yield*/, taken(ref)];
+                                    case 4: throw _c.sent();
+                                    case 5: return [4 /*yield*/, this_1.GasStationLimit.get(key, { consistent: true })];
+                                    case 6:
                                         limit = _c.sent();
                                         now = Date.now();
                                         recent = ((limit === null || limit === void 0 ? void 0 : limit.recent) || []).filter(function (entry) { return new Date(entry.dateCreated).getTime() > now - RECENT_MS; });
                                         return [4 /*yield*/, this_1.isGasStationAvailable(accountId, projectId, gasStation.amount, gasStation.currency, recent)];
-                                    case 4:
+                                    case 7:
                                         if (!(_c.sent()))
                                             throw new Error("The daily purchase limit has been exceeded. Please change amount");
                                         id = (0, crypto_1.randomUUID)();
                                         entry = { id: id, amount: gasStation.amount, currency: gasStation.currency, dateCreated: new Date(now).toISOString() };
                                         transaction = {};
-                                        return [4 /*yield*/, this_1.GasStation.create(__assign(__assign({}, gasStation), { id: id }), { transaction: transaction, context: context })];
-                                    case 5:
-                                        created = _c.sent();
-                                        return [4 /*yield*/, this_1.GasStationLimit.upsert({ accountId: accountId, projectId: projectId, version: ((limit === null || limit === void 0 ? void 0 : limit.version) || 0) + 1, recent: __spreadArray(__spreadArray([], recent, true), [entry], false) }, { transaction: transaction, where: limit ? "${version} = @{version}" : "attribute_not_exists(${version})", substitutions: limit ? { version: limit.version } : {} })];
-                                    case 6:
-                                        _c.sent();
-                                        _c.label = 7;
-                                    case 7:
-                                        _c.trys.push([7, 9, , 10]);
-                                        return [4 /*yield*/, this_1.table.transact("write", transaction)];
+                                        return [4 /*yield*/, this_1.GasStationRef.create({ accountId: accountId, projectId: projectId, internalRef: internalRef, transferId: id }, { transaction: transaction, context: context, exists: false })];
                                     case 8:
                                         _c.sent();
-                                        return [2 /*return*/, { value: created }];
+                                        return [4 /*yield*/, this_1.GasStation.create(__assign(__assign({}, gasStation), { id: id }), { transaction: transaction, context: context })];
                                     case 9:
+                                        created = _c.sent();
+                                        return [4 /*yield*/, this_1.GasStationLimit.upsert({ accountId: accountId, projectId: projectId, version: ((limit === null || limit === void 0 ? void 0 : limit.version) || 0) + 1, recent: __spreadArray(__spreadArray([], recent, true), [entry], false) }, { transaction: transaction, where: limit ? "${version} = @{version}" : "attribute_not_exists(${version})", substitutions: limit ? { version: limit.version } : {} })];
+                                    case 10:
+                                        _c.sent();
+                                        _c.label = 11;
+                                    case 11:
+                                        _c.trys.push([11, 13, , 16]);
+                                        return [4 /*yield*/, this_1.table.transact("write", transaction)];
+                                    case 12:
+                                        _c.sent();
+                                        return [2 /*return*/, { value: created }];
+                                    case 13:
                                         err_1 = _c.sent();
+                                        if (!refTaken(err_1)) return [3 /*break*/, 15];
+                                        return [4 /*yield*/, taken(null)];
+                                    case 14: throw _c.sent();
+                                    case 15:
                                         if (!metAnotherWrite(err_1))
                                             throw err_1;
-                                        return [3 /*break*/, 10];
-                                    case 10: return [2 /*return*/];
+                                        return [3 /*break*/, 16];
+                                    case 16: return [2 /*return*/];
                                 }
                             });
                         };
@@ -450,7 +508,7 @@ var GasStations = /** @class */ (function () {
             });
         }); };
         this.removeById = function (id) { return __awaiter(_this, void 0, void 0, function () {
-            var gasStation;
+            var gasStation, transaction;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.GasStation.get({ id: id }, { index: "gs1", follow: true })];
@@ -458,11 +516,15 @@ var GasStations = /** @class */ (function () {
                         gasStation = _b.sent();
                         if (!gasStation)
                             throw new Error("gasStation not found");
-                        return [4 /*yield*/, this.Order.remove({
-                                sk: "gasStation#".concat(id),
-                                pk: "account#".concat(gasStation.accountId),
-                            })];
-                    case 2: return [2 /*return*/, _b.sent()];
+                        transaction = {};
+                        return [4 /*yield*/, this.Order.remove({ sk: "gasStation#".concat(id), pk: "account#".concat(gasStation.accountId) }, { transaction: transaction })];
+                    case 2:
+                        _b.sent();
+                        return [4 /*yield*/, this.GasStationRef.remove({ pk: "account#".concat(gasStation.accountId), sk: "gasStationRef#".concat(gasStation.projectId, "#").concat(gasStation.internalRef) }, { transaction: transaction })];
+                    case 3:
+                        _b.sent();
+                        return [4 /*yield*/, this.table.transact("write", transaction)];
+                    case 4: return [2 /*return*/, _b.sent()];
                 }
             });
         }); };
@@ -492,6 +554,7 @@ var GasStations = /** @class */ (function () {
         this.Kyt = this.table.getModel("Kyt");
         this.GasStation = this.table.getModel("GasStation");
         this.GasStationLimit = this.table.getModel("GasStationLimit");
+        this.GasStationRef = this.table.getModel("GasStationRef");
     }
     var _a;
     _a = GasStations;
