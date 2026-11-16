@@ -54,6 +54,8 @@ const Schema = {
       },
       parentAccountId: { type: String, required: false },
       isReseller: { type: Boolean, default: false },
+      // Set by Coinhouse admins only: GasStation sends crypto out of Coinhouse wallets.
+      gasStationEnabled: { type: Boolean, default: false },
       gs1pk: { type: String, value: "account#" },
       gs1sk: { type: String, value: "account#${name}${id}" },
       gs5pk: { type: String, default: "standard#account" },

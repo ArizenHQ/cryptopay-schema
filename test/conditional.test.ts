@@ -60,6 +60,7 @@ beforeAll(async () => {
   links = await PaymentLinks.init();
   users = await Users.init();
   accountId = (await accounts.insert({ name: "Account" })).id;
+  await accounts.patchById(accountId, { gasStationEnabled: true });
   projectId = (await projects.insert({ accountId, name: "Project", status: "active", codeProject: "links", typeProject: "cryptoPayment", parameters: {} } as any)).id;
 });
 
@@ -200,6 +201,24 @@ describe("refresh token rotation", () => {
     expect(await tokens.findValid("u-rot", "jwt-0")).toBeFalsy();
     expect(await tokens.rotate("jwt-0", "jwt-d")).toBeNull();
     expect(await tokens.rotate("unknown", "jwt-e")).toBeNull();
+  });
+});
+
+describe("gas station account switch", () => {
+  test("an account is created without GasStation, and a transfer of its project is refused until it is enabled", async () => {
+    const accountsModel = await Accounts.init();
+    const projectsModel = await Projects.init();
+    const gasStations = await GasStations.init();
+    const account = await accountsModel.insert({ name: "Account off", gasStationEnabled: true });
+    expect(account.gasStationEnabled).toBe(false);
+    const project = await projectsModel.insert({
+      accountId: account.id, name: "GS off", status: "active", codeProject: "gs-off", typeProject: "gasStation",
+      parameters: { gasStation: { currency: "ETH", limitPer24H: 10, commissionRate: 0.01 } },
+    } as any);
+    const create = () => gasStations.insert({ address: "0x0000000000000000000000000000000000000001", currency: "ETH", amount: "1", internalRef: "off" }, project.id);
+    await expect(create()).rejects.toThrow(/not enabled for this account/);
+    await accountsModel.patchById(account.id, { gasStationEnabled: true });
+    await expect(create()).resolves.toMatchObject({ statusOrder: "CREATED" });
   });
 });
 

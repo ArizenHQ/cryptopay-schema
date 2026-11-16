@@ -40,11 +40,12 @@ const order = (accountId: string) => ({
   pk: `account#${accountId}`, sk: "order#22222222-2222-4222-8222-222222222222", id: "22222222-2222-4222-8222-222222222222", orderId: "22222222-2222-4222-8222-222222222222", accountId, typeOrder: "crypto", amount: 1, statusOrder: "CREATED",
 });
 
-// A query answers `items`, a get answers the first one, except for a gas station limit
-// or internalRef record, which no test has; writes answer nothing.
+// A query answers `items` and a get the first one; a gas station limit or internalRef
+// record is absent, and an account is enabled for GasStation. Writes answer nothing.
 const serve = (items: any[]) => {
   answer = (name, input) => {
     if (name === "GetItemCommand" && /^gasStation(Limit|Ref)#/.test(input.Key?.sk?.S || "")) return {};
+    if (name === "GetItemCommand" && input.Key?.sk?.S === "account#") return { Item: marshall({ ...input.Key, gasStationEnabled: true }) };
     if (name === "QueryCommand" || name === "ScanCommand") return { Items: items.map((i) => marshall(i, { removeUndefinedValues: true })), Count: items.length };
     if (name === "GetItemCommand") return items[0] ? { Item: marshall(items[0], { removeUndefinedValues: true }) } : {};
     if (name === "UpdateItemCommand" || name === "PutItemCommand") return { Attributes: items[0] ? marshall(items[0], { removeUndefinedValues: true }) : undefined };

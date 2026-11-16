@@ -75,6 +75,7 @@ beforeAll(async () => {
   const B = await m.accounts.insert({ name: "Account B" });
   Object.assign(acc, { R: R.id, A: A.id, A2: A2.id, B: B.id });
   for (const [k, v] of Object.entries(acc)) name[v] = k;
+  for (const k of ["A", "A2", "B"]) await m.accounts.patchById(acc[k], { gasStationEnabled: true });
 
   // Interleaved: every model is written for B last, so a context left by a write for B
   // would scope the lists below to B.
