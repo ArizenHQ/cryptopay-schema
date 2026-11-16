@@ -297,40 +297,55 @@ var Accounts = /** @class */ (function () {
             });
         };
         this.updateAccountsWithDefaultGs5pk = function () { return __awaiter(_this, void 0, void 0, function () {
-            var accounts, updatedCount, errorCount, _i, accounts_1, account, error_1;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var accounts, updatedCount, errorCount, _i, accounts_1, account, error_1, error_2;
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
+                        _c.trys.push([0, 8, , 9]);
                         return [4 /*yield*/, this.Account.scan()];
                     case 1:
-                        accounts = _b.sent();
+                        accounts = _c.sent();
                         console.log("Found ".concat(accounts.length, " accounts to check."));
                         updatedCount = 0;
                         errorCount = 0;
-                        for (_i = 0, accounts_1 = accounts; _i < accounts_1.length; _i++) {
-                            account = accounts_1[_i];
-                            try {
-                                // Si c'est un compte client, gs5pk doit être "reseller#x"
-                                this.patchById(account.id, account);
-                                updatedCount++;
-                            }
-                            catch (error) {
-                                console.error("Error updating account ".concat(account.id, ":"), error);
-                                errorCount++;
-                            }
-                        }
+                        _i = 0, accounts_1 = accounts;
+                        _c.label = 2;
+                    case 2:
+                        if (!(_i < accounts_1.length)) return [3 /*break*/, 7];
+                        account = accounts_1[_i];
+                        _c.label = 3;
+                    case 3:
+                        _c.trys.push([3, 5, , 6]);
+                        // patchById derives gs5pk from the parent: only that is rewritten, never a field
+                        // an admin may change meanwhile.
+                        return [4 /*yield*/, this.patchById(account.id, { parentAccountId: (_b = account.parentAccountId) !== null && _b !== void 0 ? _b : null })];
+                    case 4:
+                        // patchById derives gs5pk from the parent: only that is rewritten, never a field
+                        // an admin may change meanwhile.
+                        _c.sent();
+                        updatedCount++;
+                        return [3 /*break*/, 6];
+                    case 5:
+                        error_1 = _c.sent();
+                        console.error("Error updating account ".concat(account.id, ":"), error_1);
+                        errorCount++;
+                        return [3 /*break*/, 6];
+                    case 6:
+                        _i++;
+                        return [3 /*break*/, 2];
+                    case 7:
                         console.log("Update completed: ".concat(updatedCount, " accounts updated, ").concat(errorCount, " errors."));
                         return [2 /*return*/, {
                                 total: accounts.length,
                                 updated: updatedCount,
                                 errors: errorCount
                             }];
-                    case 2:
-                        error_1 = _b.sent();
-                        console.error("Update error:", error_1);
-                        throw error_1;
-                    case 3: return [2 /*return*/];
+                    case 8:
+                        error_2 = _c.sent();
+                        console.error("Update error:", error_2);
+                        throw error_2;
+                    case 9: return [2 /*return*/];
                 }
             });
         }); };

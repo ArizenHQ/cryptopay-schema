@@ -120,6 +120,10 @@ declare const Schema: {
                 readonly type: BooleanConstructor;
                 readonly default: false;
             };
+            readonly gasStationEnabled: {
+                readonly type: BooleanConstructor;
+                readonly default: false;
+            };
             readonly gs1pk: {
                 readonly type: StringConstructor;
                 readonly value: "account#";

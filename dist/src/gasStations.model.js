@@ -100,46 +100,49 @@ var GasStations = /** @class */ (function () {
     function GasStations(secretsString) {
         var _this = this;
         this.insert = function (gasStation, projectId) { return __awaiter(_this, void 0, void 0, function () {
-            var project, created, error_1;
+            var project, account, created, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 3, , 4]);
+                        _b.trys.push([0, 6, , 7]);
                         // Written by recordSent once the transfer is sent, never by the creator: transfer
                         // events are routed by them.
                         gasStation = (0, callerData_1.withoutKeys)(gasStation, ["transferId", "tx_hash"]);
                         return [4 /*yield*/, this.Project.get({ id: projectId }, { index: "gs2", follow: true })];
                     case 1:
                         project = _b.sent();
-                        if (Object.keys(project).length > 0) {
-                            if (project.typeProject !== "gasStation")
-                                throw new Error("That project is not configured for type gasStation. Please choose another one, create a new one or chnage this one for this kind of project. Be careful, if you change the project type, all your other instance could be impacted");
-                            gasStation.accountId = project.accountId;
-                            gasStation.codeProject = project.codeProject;
-                            gasStation.projectId = project.id;
-                            if (!project.parameters.gasStation.currency ||
-                                !project.parameters.gasStation.limitPer24H)
-                                throw new Error("That project is not fine configured. Please update your project with paramaeters for project type gasStation");
-                            if (!isPositiveAmount(gasStation.amount))
-                                throw new Error("Amount propertie is incorrect. Please enter a value > 0");
-                            // The daily limit is in the project's currency: no other currency is sent.
-                            if (String(gasStation.currency).toUpperCase() !== String(project.parameters.gasStation.currency).toUpperCase())
-                                throw new Error("Currency not allowed for this project: only ".concat(project.parameters.gasStation.currency));
-                        }
-                        else {
-                            throw new Error("Project not found! Please check your codeProject or API Key");
-                        }
-                        return [4 /*yield*/, this.createWithinLimit(gasStation)];
+                        if (!(Object.keys(project).length > 0)) return [3 /*break*/, 3];
+                        if (project.typeProject !== "gasStation")
+                            throw new Error("That project is not configured for type gasStation. Please choose another one, create a new one or chnage this one for this kind of project. Be careful, if you change the project type, all your other instance could be impacted");
+                        return [4 /*yield*/, this.Account.get({ id: project.accountId })];
                     case 2:
+                        account = _b.sent();
+                        if ((account === null || account === void 0 ? void 0 : account.gasStationEnabled) !== true)
+                            throw new Error("GasStation is not enabled for this account");
+                        gasStation.accountId = project.accountId;
+                        gasStation.codeProject = project.codeProject;
+                        gasStation.projectId = project.id;
+                        if (!project.parameters.gasStation.currency ||
+                            !project.parameters.gasStation.limitPer24H)
+                            throw new Error("That project is not fine configured. Please update your project with paramaeters for project type gasStation");
+                        if (!isPositiveAmount(gasStation.amount))
+                            throw new Error("Amount propertie is incorrect. Please enter a value > 0");
+                        // The daily limit is in the project's currency: no other currency is sent.
+                        if (String(gasStation.currency).toUpperCase() !== String(project.parameters.gasStation.currency).toUpperCase())
+                            throw new Error("Currency not allowed for this project: only ".concat(project.parameters.gasStation.currency));
+                        return [3 /*break*/, 4];
+                    case 3: throw new Error("Project not found! Please check your codeProject or API Key");
+                    case 4: return [4 /*yield*/, this.createWithinLimit(gasStation)];
+                    case 5:
                         created = _b.sent();
                         delete created.audit;
                         return [2 /*return*/, created];
-                    case 3:
+                    case 6:
                         error_1 = _b.sent();
                         if ((error_1 === null || error_1 === void 0 ? void 0 : error_1.name) === exports.GAS_STATION_REF_TAKEN)
                             throw error_1;
                         throw new Error("Error during add new gasStation request ".concat(error_1));
-                    case 4: return [2 /*return*/];
+                    case 7: return [2 /*return*/];
                 }
             });
         }); };
