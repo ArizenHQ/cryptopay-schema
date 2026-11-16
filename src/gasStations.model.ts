@@ -107,6 +107,10 @@ export class GasStations {
             "That project is not configured for type gasStation. Please choose another one, create a new one or chnage this one for this kind of project. Be careful, if you change the project type, all your other instance could be impacted"
           );
 
+        const account = await this.Account.get({ id: project.accountId });
+        if (account?.gasStationEnabled !== true)
+          throw new Error("GasStation is not enabled for this account");
+
         gasStation.accountId = project.accountId;
         gasStation.codeProject = project.codeProject;
         gasStation.projectId = project.id;

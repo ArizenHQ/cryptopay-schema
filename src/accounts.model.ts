@@ -214,8 +214,9 @@ export class Accounts {
       
       for (const account of accounts) {
         try {
-          // Si c'est un compte client, gs5pk doit être "reseller#x"
-          this.patchById(account.id, account);
+          // patchById derives gs5pk from the parent: only that is rewritten, never a field
+          // an admin may change meanwhile.
+          await this.patchById(account.id, { parentAccountId: account.parentAccountId ?? null });
           updatedCount++;
         } catch (error) {
           console.error(`Error updating account ${account.id}:`, error);
