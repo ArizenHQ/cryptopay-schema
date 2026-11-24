@@ -555,6 +555,8 @@ const Schema = {
       userId: { type: String, required: true },
       tokenRefresh: { type: String, required: true }, // Le JWT du refresh_token
       expiresAt: { type: Date, required: true },
+      // Epoch seconds copy of expiresAt: the table's TTL attribute, so DynamoDB deletes expired tokens.
+      ttl: { type: Date, ttl: true },
       revoked: { type: Boolean, default: false },
       replacedByToken: { type: String },
       ip: { type: String },

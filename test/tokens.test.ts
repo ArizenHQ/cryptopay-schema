@@ -32,3 +32,22 @@ test.each([
   expect(deleted).toBe("DeleteItemCommand");
   expect(removal.Key).toEqual({ pk: { S: "user#u" }, sk: { S: `${sortPrefix}t` } });
 });
+
+test("RefreshToken.create stores expiresAt as the epoch-seconds ttl DynamoDB expires the token on", async () => {
+  const tokens = await RefreshToken.init();
+  const sent: any[] = [];
+  tokens.RefreshToken.table.client.send = async (command: any) => {
+    sent.push(command.input);
+    return {};
+  };
+  await tokens.create({ userId: "u", tokenRefresh: "jwt", expiresAt: new Date("2026-01-01T00:00:00Z") });
+  expect(sent[0].Item.ttl).toEqual({ N: "1767225600" });
+});
+
+test("RefreshToken alone carries the table's TTL attribute: DynamoDB deletes any item whose ttl has passed", async () => {
+  const { default: Schema } = await import("../src/schema");
+  const ttlModels = Object.entries(Schema.models as Record<string, Record<string, any>>)
+    .filter(([, fields]) => Object.entries(fields).some(([name, field]) => name === "ttl" || field?.ttl || field?.map === "ttl"))
+    .map(([model]) => model);
+  expect(ttlModels).toEqual(["RefreshToken"]);
+});
