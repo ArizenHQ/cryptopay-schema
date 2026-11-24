@@ -75,6 +75,7 @@ var RefreshToken = /** @class */ (function () {
                         userId: userId,
                         tokenRefresh: tokenRefresh,
                         expiresAt: expiresAt,
+                        ttl: expiresAt,
                         ip: ip,
                         userAgent: userAgent,
                     })];

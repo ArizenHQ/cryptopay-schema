@@ -1521,6 +1521,10 @@ declare const Schema: {
                 readonly type: DateConstructor;
                 readonly required: true;
             };
+            readonly ttl: {
+                readonly type: DateConstructor;
+                readonly ttl: true;
+            };
             readonly revoked: {
                 readonly type: BooleanConstructor;
                 readonly default: false;
