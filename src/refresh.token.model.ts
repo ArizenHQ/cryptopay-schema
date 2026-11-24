@@ -68,6 +68,7 @@ export class RefreshToken {
       userId,
       tokenRefresh,
       expiresAt,
+      ttl: expiresAt,
       ip,
       userAgent,
     });
